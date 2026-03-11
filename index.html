@@ -460,8 +460,10 @@ const SPACES=['Auditório','Lab Informática','Lab Multi (Bio/Qui/Fis)','Área V
 const SPACE_CLS={};SPACES.forEach((s,i)=>SPACE_CLS[s]='ch-'+i);
 
 async function sb(method,path,body){
-  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{method,headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':'return=minimal'},body:body?JSON.stringify(body):undefined});
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||res.statusText);}
+  const headers={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Accept':'application/json'};
+  if(method==='POST')headers['Prefer']='return=representation';
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{method,headers,body:body?JSON.stringify(body):undefined});
+  if(!res.ok){const e=await res.json().catch(()=>({}));console.error('Supabase error:',e);throw new Error(e.message||e.hint||res.statusText);}
   const t=await res.text();return t?JSON.parse(t):null;
 }
 const api={get:p=>sb('GET',p),post:(p,b)=>sb('POST',p,b),patch:(p,b)=>sb('PATCH',p,b),delete:p=>sb('DELETE',p)};
@@ -507,7 +509,12 @@ async function doLogin(){
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
     await loadAll();renderCal();renderMine();renderLegend();
     if(ME.role==='admin'){addLog('🔑',ME.fullname+' fez login');renderAdmin();}
-  }catch{document.getElementById('l-err').style.display='block';}
+  }catch(err){
+    const errEl=document.getElementById('l-err');
+    errEl.style.display='block';
+    errEl.textContent=(err.message&&err.message!=='invalid')?'Erro: '+err.message:'Usuário ou senha incorretos.';
+    console.error('Login error:',err);
+  }
   btn.innerHTML='Entrar';btn.disabled=false;
 }
 document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
