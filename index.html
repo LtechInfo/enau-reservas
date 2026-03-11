@@ -561,7 +561,7 @@ function renderWeek(){
   let slots=[...new Set(BOOKINGS.filter(b=>weekDates.includes(b.date)&&(!filter||b.space===filter)).map(b=>b.time_start+'–'+b.time_end))].sort();
   if(!slots.length)slots=['07:00–07:50','07:50–08:40','09:50–10:40','10:40–11:30','13:00–13:50','13:50–14:40'];
   let html='<div class="cal-table-wrap"><table class="cal"><thead><tr><th>Horário</th>';
-  days.forEach((d,i)=>{const isT=d.getTime()===today.getTime();html+='<th class="'+(isT?'today-h')+'">'+ DAYS_W[i]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span></th>';});
+  days.forEach((d,i)=>{const isT=d.getTime()===today.getTime();html+='<th class="'+(isT?'today-h':'')+'">'++ DAYS_W[i]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span></th>';});
   html+='</tr></thead><tbody>';
   slots.forEach(slot=>{
     html+='<tr><td>'+slot.replace('–','<br>')+'</td>';
@@ -590,7 +590,7 @@ function renderMonth(){
     const isT=dt.getTime()===today.getTime();
     const dayBks=BOOKINGS.filter(b=>b.date===ds&&(!filter||b.space===filter));
     const shown=dayBks.slice(0,3),more=dayBks.length-3;
-    html+='<div class="month-day'+(isT?' today-day':'')+'" onclick="prefillNew(\''+ds+'\')"><div class="month-day-num'+(isT?' today-num')+'">'+ d+(isT?'<span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>'+
+    html+='<div class="month-day'+(isT?' today-day':'')+'" onclick="prefillNew(\''+ds+'\')"><div class="month-day-num'+(isT?' today-num':'')+'">'+ d+(isT?' <span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>'+
       shown.map(b=>'<span class="month-chip '+(SPACE_CLS[b.space]||'ch-0')+'" onclick="event.stopPropagation();openModal(\''+b.id+'\')">'+b.space+'</span>').join('')+
       (more>0?'<div class="month-more">+'+more+' mais</div>':'')+
     '</div>';
@@ -681,7 +681,7 @@ function openModal(id){
   const hl=hoursUntil(b),isOwner=b.booked_by===ME.username,isAdmin=ME.role==='admin';
   const canAct=isAdmin||(isOwner&&hl>=5);
   document.getElementById('m-title').textContent=b.space+(b.recur_group?' ↻':'');
-  document.getElementById('m-body').innerHTML='<div class="row"><p><strong>Data:</strong> '+fmtDate(b.date)+'</p><p><strong>Horário:</strong> '+b.time_start+' – '+b.time_end+'</p><p><strong>Professor:</strong> '+b.teacher+'</p><p><strong>Turma:</strong> '+b.turma+'</p>'+(b.lesson?'<p><strong>Período/Aula:</strong> '+b.lesson+'</p>':'')+(b.notes?'<p><strong>Obs/Recursos:</strong> '+b.notes+'</p>':'')+'<p><strong>Agendado por:</strong> '+b.booked_by_name+'</p>'+(b.recur_group?'<div class="info-note" style="margin-top:.5rem">↻ Reserva recorrente</div>':'')+(isOwner&&!canAct?'<div class="info-note" style="margin-top:.5rem">⏰ Menos de 5h. Edição bloqueada.</div>':''):(!isOwner&&!isAdmin?'<div class="info-note" style="margin-top:.5rem">ℹ️ Somente visualização.</div>':'')}+'</div>';
+  document.getElementById('m-body').innerHTML='<div class="row"><p><strong>Data:</strong> '+fmtDate(b.date)+'</p><p><strong>Horário:</strong> '+b.time_start+' – '+b.time_end+'</p><p><strong>Professor:</strong> '+b.teacher+'</p><p><strong>Turma:</strong> '+b.turma+'</p>'+(b.lesson?'<p><strong>Período/Aula:</strong> '+b.lesson+'</p>':'')+(b.notes?'<p><strong>Obs/Recursos:</strong> '+b.notes+'</p>':'')+'<p><strong>Agendado por:</strong> '+b.booked_by_name+'</p>'+(b.recur_group?'<div class="info-note" style="margin-top:.5rem">↻ Reserva recorrente</div>':'')+(isOwner&&!canAct?'<div class="info-note" style="margin-top:.5rem">⏰ Menos de 5h. Edição bloqueada.</div>':(!isOwner&&!isAdmin?'<div class="info-note" style="margin-top:.5rem">ℹ️ Somente visualização.</div>':''))+'</div>';
   const acts=document.getElementById('m-acts');
   acts.innerHTML='<button class="btn btn-outline" onclick="closeModal()">Fechar</button>';
   if(canAct){
