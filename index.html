@@ -135,6 +135,26 @@ table.data tr:hover td{background:var(--cream);}
 .empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
 .empty .ico{font-size:2.4rem;margin-bottom:.6rem;}
 .batch-hint{font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6;}
+
+/* MULTI-SELECT CUSTOM */
+.ms-wrap{position:relative;}
+.ms-trigger{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);background:var(--cream);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:.5rem;transition:border-color .18s,box-shadow .18s;text-align:left;min-height:44px;flex-wrap:wrap;}
+.ms-trigger:focus,.ms-trigger.open{border-color:var(--plum-mid);box-shadow:0 0 0 3px rgba(92,45,114,.12);background:var(--white);}
+.ms-trigger .placeholder{color:#9ca3af;font-size:.92rem;}
+.ms-tags{display:flex;flex-wrap:wrap;gap:.3rem;flex:1;}
+.ms-tag{display:inline-flex;align-items:center;gap:.25rem;background:var(--plum);color:#fff;font-size:.72rem;font-weight:600;padding:.18rem .5rem;border-radius:4px;line-height:1.4;}
+.ms-tag .rm{cursor:pointer;opacity:.7;font-size:.85rem;line-height:1;padding:0 .1rem;}.ms-tag .rm:hover{opacity:1;}
+.ms-arrow{flex-shrink:0;font-size:.7rem;color:var(--muted);transition:transform .18s;}
+.ms-trigger.open .ms-arrow{transform:rotate(180deg);}
+.ms-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border:1.5px solid var(--border);border-radius:8px;box-shadow:var(--shadow-lg);z-index:150;max-height:220px;overflow-y:auto;animation:up .15s ease;}
+.ms-dropdown label{display:flex;align-items:center;gap:.6rem;padding:.5rem .9rem;font-size:.88rem;cursor:pointer;transition:background .1s;color:var(--ink);}
+.ms-dropdown label:hover{background:var(--cream-d);}
+.ms-dropdown label input[type=checkbox]{width:15px;height:15px;accent-color:var(--plum);flex-shrink:0;cursor:pointer;}
+.ms-dropdown label.checked{background:#f5edf8;font-weight:500;}
+.ms-sep{padding:.35rem .9rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--cream-d);border-bottom:1px solid var(--border);}
+/* teacher display */
+.teacher-display{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);background:#f0e8f5;display:flex;align-items:center;gap:.5rem;min-height:44px;}
+.teacher-display .ticon{font-size:1rem;}
 </style>
 </head>
 <body>
@@ -223,10 +243,72 @@ table.data tr:hover td{background:var(--cream);}
           <div><label class="lbl">Horário Início *</label><input type="time" id="f-start" step="600"></div>
           <div><label class="lbl">Horário Fim *</label><input type="time" id="f-end" step="600"></div>
         </div>
-        <div class="form-row three">
-          <div><label class="lbl">Professor Responsável *</label><input type="text" id="f-teacher" placeholder="Nome do professor"></div>
-          <div><label class="lbl">Turma / Série *</label><input type="text" id="f-class" placeholder="Ex: 9º ano, EF, EM"></div>
-          <div><label class="lbl">Aula / Período</label><input type="text" id="f-lesson" placeholder="Ex: 3ª aula, 1ª a 4ª"></div>
+        <div class="form-row">
+          <div>
+            <label class="lbl">Professor Responsável *</label>
+            <div class="teacher-display" id="f-teacher-display">
+              <span class="ticon">👤</span>
+              <span id="f-teacher-name">—</span>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Período *</label>
+            <select id="f-periodo">
+              <option value="">Selecione...</option>
+              <option value="Manhã">Manhã</option>
+              <option value="Tarde">Tarde</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="lbl">Turma(s) / Série *</label>
+            <div class="ms-wrap" id="ms-turma-wrap">
+              <button type="button" class="ms-trigger" id="ms-turma-btn" onclick="toggleMs('turma')">
+                <div class="ms-tags" id="ms-turma-tags"><span class="placeholder">Selecione uma ou mais turmas...</span></div>
+                <span class="ms-arrow">▼</span>
+              </button>
+              <div class="ms-dropdown" id="ms-turma-drop" style="display:none">
+                <div class="ms-sep">Educação Infantil</div>
+                <label><input type="checkbox" value="Maternal 1" onchange="msChange('turma')"> Maternal 1</label>
+                <label><input type="checkbox" value="Maternal 2" onchange="msChange('turma')"> Maternal 2</label>
+                <label><input type="checkbox" value="Infantil 1" onchange="msChange('turma')"> Infantil 1</label>
+                <label><input type="checkbox" value="Infantil 2" onchange="msChange('turma')"> Infantil 2</label>
+                <div class="ms-sep">Ensino Fundamental</div>
+                <label><input type="checkbox" value="1 EF" onchange="msChange('turma')"> 1 EF</label>
+                <label><input type="checkbox" value="2 EF" onchange="msChange('turma')"> 2 EF</label>
+                <label><input type="checkbox" value="3 EF" onchange="msChange('turma')"> 3 EF</label>
+                <label><input type="checkbox" value="4 EF" onchange="msChange('turma')"> 4 EF</label>
+                <label><input type="checkbox" value="5 EF" onchange="msChange('turma')"> 5 EF</label>
+                <label><input type="checkbox" value="6 EF" onchange="msChange('turma')"> 6 EF</label>
+                <label><input type="checkbox" value="7 EF" onchange="msChange('turma')"> 7 EF</label>
+                <label><input type="checkbox" value="8 EF" onchange="msChange('turma')"> 8 EF</label>
+                <label><input type="checkbox" value="9 EF" onchange="msChange('turma')"> 9 EF</label>
+                <div class="ms-sep">Ensino Médio</div>
+                <label><input type="checkbox" value="1ª EM" onchange="msChange('turma')"> 1ª EM</label>
+                <label><input type="checkbox" value="2ª EM" onchange="msChange('turma')"> 2ª EM</label>
+                <label><input type="checkbox" value="3ª EM" onchange="msChange('turma')"> 3ª EM</label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="lbl">Aula(s)</label>
+            <div class="ms-wrap" id="ms-aula-wrap">
+              <button type="button" class="ms-trigger" id="ms-aula-btn" onclick="toggleMs('aula')">
+                <div class="ms-tags" id="ms-aula-tags"><span class="placeholder">Selecione uma ou mais aulas...</span></div>
+                <span class="ms-arrow">▼</span>
+              </button>
+              <div class="ms-dropdown" id="ms-aula-drop" style="display:none">
+                <label><input type="checkbox" value="1ª aula" onchange="msChange('aula')"> 1ª aula</label>
+                <label><input type="checkbox" value="2ª aula" onchange="msChange('aula')"> 2ª aula</label>
+                <label><input type="checkbox" value="3ª aula" onchange="msChange('aula')"> 3ª aula</label>
+                <label><input type="checkbox" value="4ª aula" onchange="msChange('aula')"> 4ª aula</label>
+                <label><input type="checkbox" value="5ª aula" onchange="msChange('aula')"> 5ª aula</label>
+                <label><input type="checkbox" value="6ª aula" onchange="msChange('aula')"> 6ª aula</label>
+                <label><input type="checkbox" value="7ª aula" onchange="msChange('aula')"> 7ª aula</label>
+              </div>
+            </div>
+          </div>
         </div>
         <div><label class="lbl">Observações / Recursos necessários</label><textarea id="f-notes" placeholder="Ex: Datashow, Internet, Powerpoint, Word, Excel..."></textarea></div>
         <div class="info-note">ℹ️ A reserva pode ser editada ou cancelada com pelo menos <strong>5 horas</strong> de antecedência.</div>
@@ -330,6 +412,7 @@ async function doLogin(){
     document.getElementById('topbar').style.display='flex';
     document.getElementById('app').style.display='block';
     document.getElementById('topbar-user').textContent=user.fullname;
+    document.getElementById('f-teacher-name').textContent=user.fullname;
     // Admin tab: strictly admin only
     document.querySelector('.admin-tab').style.display=user.role==='admin'?'inline-block':'none';
     const now=new Date();
@@ -393,9 +476,14 @@ function hoursUntil(b){return(new Date(b.date+'T'+b.time_start)-new Date())/3600
 async function submitBooking(){
   const space=document.getElementById('f-space').value,date=document.getElementById('f-date').value;
   const start=document.getElementById('f-start').value,end=document.getElementById('f-end').value;
-  const teacher=document.getElementById('f-teacher').value.trim(),cls=document.getElementById('f-class').value.trim();
-  const lesson=document.getElementById('f-lesson').value.trim(),notes=document.getElementById('f-notes').value.trim();
-  if(!space||!date||!start||!end||!teacher||!cls){toast('Preencha todos os campos obrigatórios (*).','err');return;}
+  const teacher=ME.fullname;
+  const periodo=document.getElementById('f-periodo').value;
+  const turmas=msGetValues('turma');
+  const aulas=msGetValues('aula');
+  const notes=document.getElementById('f-notes').value.trim();
+  const cls=turmas.join(', ');
+  const lesson=(periodo?periodo:'')+(aulas.length?' · '+aulas.join(', '):'');
+  if(!space||!date||!start||!end||!periodo||!turmas.length){toast('Preencha todos os campos obrigatórios (*).','err');return;}
   if(start>=end){toast('Horário fim deve ser após o início.','err');return;}
   const conflict=BOOKINGS.find(b=>b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId));
   if(conflict){toast(`Conflito! "${space}" já reservado das ${conflict.time_start}–${conflict.time_end} por ${conflict.teacher}.`,'err');return;}
@@ -423,7 +511,11 @@ async function submitBooking(){
   btn.innerHTML='Confirmar Reserva';btn.disabled=false;
 }
 
-function clearForm(){['f-space','f-start','f-end','f-teacher','f-class','f-lesson','f-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-date').value=new Date().toISOString().split('T')[0];}
+function clearForm(){
+  ['f-space','f-start','f-end','f-notes','f-periodo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+  msClear('turma');msClear('aula');
+}
 function cancelEdit(){editId=null;clearForm();document.getElementById('btn-cancel-edit').style.display='none';document.getElementById('btn-submit').textContent='Confirmar Reserva';document.getElementById('form-card-title').textContent='Preencha os dados';}
 function prefillNew(ds){showTab('new',document.querySelectorAll('.tab')[1]);document.getElementById('f-date').value=ds;}
 
@@ -453,11 +545,29 @@ function startEdit(id){
   closeModal();const b=BOOKINGS.find(x=>x.id==id);if(!b)return;
   if(b.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');return;}
   showTab('new',document.querySelectorAll('.tab')[1]);
-  ['f-space','f-date','f-start','f-end','f-teacher','f-class','f-lesson','f-notes'].forEach((fid,i)=>{
-    const vals=[b.space,b.date,b.time_start,b.time_end,b.teacher,b.turma,b.lesson||'',b.notes||''];
-    document.getElementById(fid).value=vals[i];
-  });
-  editId=id;document.getElementById('btn-submit').textContent='Salvar Alterações';document.getElementById('btn-cancel-edit').style.display='inline-flex';document.getElementById('form-card-title').textContent='Editando Reserva';
+  document.getElementById('f-space').value=b.space;
+  document.getElementById('f-date').value=b.date;
+  document.getElementById('f-start').value=b.time_start;
+  document.getElementById('f-end').value=b.time_end;
+  document.getElementById('f-notes').value=b.notes||'';
+  // periodo e aulas: lesson = "Manhã · 1ª aula, 2ª aula"
+  if(b.lesson){
+    const parts=b.lesson.split(' · ');
+    const per=parts[0]||'';
+    const aulasStr=parts[1]||'';
+    document.getElementById('f-periodo').value=per;
+    msClear('aula');
+    if(aulasStr)aulasStr.split(', ').forEach(a=>msSetValue('aula',a.trim()));
+    msRender('aula');
+  } else { document.getElementById('f-periodo').value='';msClear('aula'); }
+  // turmas
+  msClear('turma');
+  if(b.turma)b.turma.split(', ').forEach(t=>msSetValue('turma',t.trim()));
+  msRender('turma');
+  editId=id;
+  document.getElementById('btn-submit').textContent='Salvar Alterações';
+  document.getElementById('btn-cancel-edit').style.display='inline-flex';
+  document.getElementById('form-card-title').textContent='Editando Reserva';
 }
 
 async function deleteBooking(id){
@@ -578,6 +688,77 @@ async function removeUser(id,uname){
     toast('Usuário removido.','ok');renderAdmUsers();
   }catch(e){toast('Erro: '+e.message,'err');}
 }
+
+/* ═══════════════════════════════════════════
+   MULTI-SELECT
+═══════════════════════════════════════════ */
+const MS_STATE={turma:new Set(),aula:new Set()};
+
+function toggleMs(key){
+  const drop=document.getElementById('ms-'+key+'-drop');
+  const btn=document.getElementById('ms-'+key+'-btn');
+  const isOpen=drop.style.display!=='none';
+  // close all
+  ['turma','aula'].forEach(k=>{
+    document.getElementById('ms-'+k+'-drop').style.display='none';
+    document.getElementById('ms-'+k+'-btn').classList.remove('open');
+  });
+  if(!isOpen){drop.style.display='block';btn.classList.add('open');}
+}
+
+function msChange(key){
+  const drop=document.getElementById('ms-'+key+'-drop');
+  const checked=[...drop.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.value);
+  MS_STATE[key]=new Set(checked);
+  // update label styles
+  drop.querySelectorAll('label').forEach(lbl=>{
+    lbl.classList.toggle('checked',lbl.querySelector('input').checked);
+  });
+  msRender(key);
+}
+
+function msRender(key){
+  const tags=document.getElementById('ms-'+key+'-tags');
+  const vals=[...MS_STATE[key]];
+  if(!vals.length){tags.innerHTML='<span class="placeholder">'+(key==='turma'?'Selecione uma ou mais turmas...':'Selecione uma ou mais aulas...')+'</span>';return;}
+  tags.innerHTML=vals.map(v=>`<span class="ms-tag">${v}<span class="rm" onclick="msRemove('${key}','${v}',event)">×</span></span>`).join('');
+}
+
+function msRemove(key,val,e){
+  e.stopPropagation();
+  MS_STATE[key].delete(val);
+  const drop=document.getElementById('ms-'+key+'-drop');
+  const cb=drop.querySelector(`input[value="${val}"]`);
+  if(cb){cb.checked=false;cb.closest('label').classList.remove('checked');}
+  msRender(key);
+}
+
+function msClear(key){
+  MS_STATE[key]=new Set();
+  const drop=document.getElementById('ms-'+key+'-drop');
+  drop.querySelectorAll('input[type=checkbox]').forEach(c=>{c.checked=false;c.closest('label').classList.remove('checked');});
+  msRender(key);
+}
+
+function msSetValue(key,val){
+  MS_STATE[key].add(val);
+  const drop=document.getElementById('ms-'+key+'-drop');
+  const cb=drop.querySelector(`input[value="${val}"]`);
+  if(cb){cb.checked=true;cb.closest('label').classList.add('checked');}
+}
+
+function msGetValues(key){return[...MS_STATE[key]];}
+
+// close dropdowns on outside click
+document.addEventListener('click',e=>{
+  ['turma','aula'].forEach(key=>{
+    const wrap=document.getElementById('ms-'+key+'-wrap');
+    if(wrap&&!wrap.contains(e.target)){
+      document.getElementById('ms-'+key+'-drop').style.display='none';
+      document.getElementById('ms-'+key+'-btn').classList.remove('open');
+    }
+  });
+});
 
 function showTab(id,btn){
   if(id==='admin'&&(!ME||ME.role!=='admin'))return;
