@@ -115,7 +115,7 @@ textarea{resize:vertical;min-height:72px;}
 .tab.on{color:var(--plum);font-weight:600;}.tab.on::after{transform:scaleX(1);}
 .tab-panel{display:none;}.tab-panel.on{display:block;animation:up .25s ease both;}
 @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.ph{margin-bottom:1.5rem;}.ph h2{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--plum);}
+.ph{margin-bottom:1.5rem;}.ph h2{font-family:'Outfit',sans-serif;font-size:1.7rem;font-weight:700;color:var(--plum);}
 .ph p{font-size:.85rem;color:var(--muted);margin-top:.2rem;}
 .cal-bar{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap;}
 .nav-btn{width:34px;height:34px;border-radius:7px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--plum);}
@@ -160,8 +160,8 @@ table.cal tbody tr td:hover .plus-hint{opacity:1;}
 .month-chip{font-size:.65rem;font-weight:600;padding:.15rem .35rem;border-radius:3px;margin-bottom:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
 .month-more{font-size:.65rem;color:var(--muted);margin-top:2px;}
 .card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.2rem;}
-.card h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--plum);margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:1px solid var(--border);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.card h3{font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:700;color:var(--plum);margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1rem;}
 .form-row.three{grid-template-columns:1fr 1fr 1fr;}
 @media(max-width:580px){.form-row,.form-row.three{grid-template-columns:1fr;}}
 .info-note{background:#f5edf8;border:1px solid #d8b8e8;border-radius:6px;padding:.6rem .9rem;font-size:.8rem;color:var(--ink2);margin-top:.8rem;}
@@ -199,7 +199,7 @@ table.data tr:hover td{background:var(--cream);}
 .overlay{position:fixed;inset:0;background:rgba(26,10,34,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .18s ease;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--white);border-radius:12px;padding:1.8rem;max-width:520px;width:100%;box-shadow:var(--shadow-lg);border-top:4px solid var(--coral);animation:up .22s ease both;max-height:90vh;overflow-y:auto;}
-.modal h3{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--plum);margin-bottom:1.1rem;}
+.modal h3{font-family:'Outfit',sans-serif;font-size:1.3rem;font-weight:700;color:var(--plum);margin-bottom:1.1rem;}
 .modal .row{font-size:.88rem;color:var(--ink2);line-height:1.8;}
 .modal .row p{margin-bottom:.2rem;}
 .modal .row strong{color:var(--ink);}
@@ -231,6 +231,31 @@ table.data tr:hover td{background:var(--cream);}
 .ms-dropdown label.checked{background:#f5edf8;font-weight:500;}
 .ms-sep{padding:.35rem .9rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--cream-d);border-bottom:1px solid var(--border);}
 .teacher-display{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);background:#f0e8f5;display:flex;align-items:center;gap:.5rem;min-height:44px;}
+
+.today-card{background:var(--white);border:1.5px solid var(--border);border-left:4px solid var(--plum);border-radius:10px;padding:1.1rem 1.3rem;margin-bottom:.8rem;}
+.today-empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.today-item{display:flex;gap:.9rem;align-items:flex-start;padding:.55rem 0;border-bottom:1px solid var(--border);}
+.today-item:last-child{border-bottom:none;}
+.today-time{font-weight:700;color:var(--plum);font-size:.85rem;min-width:90px;padding-top:.1rem;}
+.today-space{font-weight:700;color:var(--ink);font-size:.88rem;}
+.today-meta{font-size:.8rem;color:var(--muted);line-height:1.6;}
+body.dark .today-card{background:var(--white);border-color:var(--border);}
+body.dark .today-space{color:#e8d5f0;}
+body.dark .today-meta{color:#9a7aaa;}
+.blocked-day{background:#fce8ee!important;border-color:#f9a8b8!important;}
+body.dark .blocked-day{background:#2a0f1a!important;border-color:#5a1a2a!important;}
+.blocked-chip{display:block;font-size:.68rem;font-weight:700;color:#b83255;background:#fce8ee;padding:.15rem .4rem;border-radius:3px;margin-bottom:2px;}
+body.dark .blocked-chip{background:#2a0f1a;color:#f9a8b8;}
+.mine-filter{display:flex;gap:.7rem;margin-bottom:1.2rem;align-items:center;flex-wrap:wrap;}
+.mine-filter select{padding:.5rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.88rem;background:var(--white);color:var(--ink);outline:none;cursor:pointer;}
+body.dark .mine-filter select{background:var(--white);border-color:var(--border);color:var(--ink);}
+.block-list{border:1.5px solid var(--border);border-radius:8px;background:var(--white);max-height:260px;overflow-y:auto;}
+.block-row{display:flex;gap:.6rem;align-items:center;padding:.55rem .8rem;border-bottom:1px solid var(--border);font-size:.83rem;color:var(--ink);}
+.block-row:last-child{border-bottom:none;}
+.block-date{font-weight:700;color:var(--plum);min-width:90px;}
+.block-reason{flex:1;color:var(--muted);}
+body.dark .block-list{background:var(--white);border-color:var(--border);}
+body.dark .block-row{color:var(--ink);}
 </style>
 </head>
 <body>
@@ -270,6 +295,7 @@ table.data tr:hover td{background:var(--cream);}
   <div class="wrap">
     <div class="tabs">
       <button class="tab on" onclick="showTab('calendar',this)">&#x1F4C5; Calendário</button>
+      <button class="tab" id="tab-btn-hoje" onclick="showTab('hoje',this)">&#x1F4CC; Hoje</button>
       <button class="tab" onclick="showTab('new',this)">＋ Nova Reserva</button>
       <button class="tab" onclick="showTab('mine',this)">&#x1F4CB; Minhas Reservas</button>
       <button class="tab admin-tab" onclick="showTab('admin',this)" style="display:none">&#x2699;&#xFE0F; Admin</button>
@@ -294,6 +320,11 @@ table.data tr:hover td{background:var(--cream);}
       </div>
       <div id="cal-content"></div>
       <div class="legend" id="cal-legend"></div>
+    </div>
+
+    <div class="tab-panel" id="tab-hoje">
+      <div class="ph"><h2>Reservas de Hoje</h2><p id="hoje-date"></p></div>
+      <div id="hoje-content"></div>
     </div>
 
     <div class="tab-panel" id="tab-new">
@@ -396,6 +427,22 @@ table.data tr:hover td{background:var(--cream);}
 
     <div class="tab-panel" id="tab-mine">
       <div class="ph"><h2>Minhas Reservas</h2></div>
+      <div class="mine-filter">
+        <select id="mine-filter-prof" onchange="renderMine()" style="display:none">
+          <option value="">Todos os professores</option>
+        </select>
+        <select id="mine-filter-space" onchange="renderMine()">
+          <option value="">Todos os espaços</option>
+          <option>Auditório</option><option>Lab Informática</option><option>Lab Multi (Bio/Qui/Fis)</option>
+          <option>Área Verde</option><option>Biblioteca</option><option>Skill Lab</option>
+          <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
+        </select>
+        <select id="mine-filter-period" onchange="renderMine()">
+          <option value="">Todos os períodos</option>
+          <option value="future">Próximas</option>
+          <option value="past">Passadas</option>
+        </select>
+      </div>
       <div id="mine-list"></div>
     </div>
 
@@ -414,6 +461,15 @@ table.data tr:hover td{background:var(--cream);}
         <div class="log-wrap" id="activity-log"></div>
       </div>
       <div class="card">
+        <h3>&#x1F6AB; Bloqueio de Datas</h3>
+        <div class="form-row" style="margin-bottom:.8rem">
+          <div><label class="lbl">Data</label><input type="date" id="block-date"></div>
+          <div><label class="lbl">Motivo</label><input type="text" id="block-reason" placeholder="Ex: Feriado, Recesso, Evento..."></div>
+        </div>
+        <button class="btn btn-primary" onclick="addBlockedDate()" style="margin-bottom:1.2rem">Bloquear Data</button>
+        <div class="block-list" id="block-list"><div style="padding:1rem;text-align:center;color:var(--muted)">Nenhuma data bloqueada.</div></div>
+      </div>
+      <div class="card">
         <h3>Gerenciar Usuários</h3>
         <div style="display:flex;gap:.6rem;margin-bottom:1.2rem;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="showUserForm('single')">＋ Adicionar Usuário</button>
@@ -427,6 +483,10 @@ table.data tr:hover td{background:var(--cream);}
           <div class="form-row">
             <div><label class="lbl">Nome completo</label><input type="text" id="a-full" placeholder="Carlos Mendes"></div>
             <div><label class="lbl">Perfil</label><select id="a-role"><option value="user">Usuário (Professor/Funcionário)</option><option value="admin">Administrador</option></select></div>
+          </div>
+          <div class="form-row" style="margin-top:.2rem">
+            <div><label class="lbl">E-mail <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label><input type="email" id="a-email" placeholder="carlos@colegioENAU.com.br"></div>
+            <div></div>
           </div>
           <div style="margin-top:1rem"><button class="btn btn-primary" onclick="addUser()">Adicionar</button></div>
         </div>
@@ -442,7 +502,7 @@ table.data tr:hover td{background:var(--cream);}
       </div>
       <div class="card">
         <h3>Usuários Cadastrados</h3>
-        <div class="tbl-wrap"><table class="data"><thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Ações</th></tr></thead><tbody id="adm-users"></tbody></table></div>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Usuário</th><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Ações</th></tr></thead><tbody id="adm-users"></tbody></table></div>
       </div>
     </div>
   </div>
@@ -476,9 +536,10 @@ function initDemo(){
   if(!gLS('eb',null))sLS('eb',[]);
   if(!gLS('ec',null))sLS('ec',[]);
   if(!gLS('el',null))sLS('el',[]);
+  if(!gLS('ebl',null))sLS('ebl',[]);
 }
 
-let ME=null,editId=null,BOOKINGS=[],CANCELLED=[],ACTIVITY_LOG=[];
+let ME=null,editId=null,BOOKINGS=[],CANCELLED=[],ACTIVITY_LOG=[],BLOCKED_DATES=[];
 let calView='week',weekStart=monday(new Date()),monthCursor=new Date();
 function monday(d){const dt=new Date(d),day=dt.getDay();dt.setDate(dt.getDate()-(day===0?6:day-1));dt.setHours(0,0,0,0);return dt;}
 
@@ -549,6 +610,7 @@ async function loadAll(){
       api.get('activity_log?select=*&order=ts.desc&limit=200').catch(()=>[]),
     ]);
     BOOKINGS=results[0]||[];CANCELLED=results[1]||[];ACTIVITY_LOG=results[2]||[];
+    BLOCKED_DATES=gLS('ebl',[]);
   }
 }
 
@@ -651,7 +713,9 @@ async function submitBooking(){
   var lesson=periodo+(aulas.length?' · '+aulas.join(', '):'');
   var isRecur=document.getElementById('f-recur-on').checked&&!editId;
   if(!space||!date||!start||!end||!periodo||!turmas.length){toast('Preencha todos os campos obrigatórios (*).','err');return;}
+  if(BLOCKED_DATES.find(function(d){return d.date===date;})){toast('Esta data está bloqueada pelo administrador.','err');return;}
   if(start>=end){toast('Horário fim deve ser após o início.','err');return;}
+  if(!editId){var bookDt=new Date(date+'T'+start);var diffH=(bookDt-new Date())/3600000;if(diffH<24){toast('Agendamento deve ser feito com no mínimo 24 horas de antecedência.','err');return;}}
   var btn=document.getElementById('btn-submit');btn.innerHTML='<span class="spin"></span> Salvando...';btn.disabled=true;
   if(isRecur){
     var until=document.getElementById('f-recur-until').value;
@@ -823,7 +887,7 @@ function showUserForm(m){
 
 function renderAdmin(){
   if(ME.role!=='admin')return;
-  renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();
+  renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();
 }
 
 function renderAdmBookings(){
@@ -856,29 +920,30 @@ function renderLog(){
 async function renderAdmUsers(){
   var users=[];
   if(isDemo())users=gLS('eu',[]);
-  else users=await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc').catch(function(){return [];});
+  else users=await api.get('usuarios?select=id,username,fullname,role,email&order=fullname.asc').catch(function(){return [];});
   document.getElementById('adm-users').innerHTML=users.map(function(u,i){
     var editBtn='<button class="btn btn-outline" style="padding:.3rem .6rem;font-size:.74rem" onclick=\'openEditUser('+JSON.stringify({id:u.id||i,username:u.username,fullname:u.fullname,role:u.role})+')\'>✏️ Editar</button>';
     var delBtn=u.username!=='admin'?'<button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.74rem" onclick="removeUser('+(u.id||i)+',\''+u.username+'\')">🗑 Remover</button>':'';
-    return '<tr><td>'+u.username+'</td><td>'+u.fullname+'</td><td>'+(u.role==='admin'?'🔑 Admin':'👤 Usuário')+'</td><td><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+editBtn+delBtn+'</div></td></tr>';
+    return '<tr><td>'+u.username+'</td><td>'+u.fullname+'</td><td>'+(u.email||'—')+'</td><td>'+(u.role==='admin'?'🔑 Admin':'👤 Usuário')+'</td><td><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+editBtn+delBtn+'</div></td></tr>';
   }).join('');
 }
 
 function openEditUser(u){
   if(typeof u==='string')u=JSON.parse(u);
   document.getElementById('m-title').textContent='Editar Usuário: '+u.username;
-  document.getElementById('m-body').innerHTML='<label class="mlbl">Nome completo</label><input type="text" id="eu-full" value="'+u.fullname+'"><label class="mlbl">Nova senha <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.8rem">(deixe em branco para não alterar)</span></label><input type="password" id="eu-pass" placeholder="Nova senha (mín. 6 chars)"><label class="mlbl">Perfil</label><select id="eu-role"><option value="user"'+(u.role==='user'?' selected':'')+'>Usuário</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Administrador</option></select>';
+  document.getElementById('m-body').innerHTML='<label class="mlbl">Nome completo</label><input type="text" id="eu-full" value="'+u.fullname+'"><label class="mlbl">E-mail</label><input type="email" id="eu-email" value="'+(u.email||'')+'" placeholder="email@colegioENAU.com.br"><label class="mlbl">Nova senha <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.8rem">(deixe em branco para não alterar)</span></label><input type="password" id="eu-pass" placeholder="Nova senha (mín. 6 chars)"><label class="mlbl">Perfil</label><select id="eu-role"><option value="user"'+(u.role==='user'?' selected':'')+'>Usuário</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Administrador</option></select>';
   document.getElementById('m-acts').innerHTML='<button class="btn btn-outline" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveEditUser('+u.id+',\''+u.username+'\')">Salvar</button>';
   document.getElementById('overlay').style.display='flex';
 }
 
 async function saveEditUser(id,username){
   var full=document.getElementById('eu-full').value.trim();
+  var email=document.getElementById('eu-email')?document.getElementById('eu-email').value.trim():'';
   var pass=document.getElementById('eu-pass').value;
   var role=document.getElementById('eu-role').value;
   if(!full){toast('Nome não pode ser vazio.','err');return;}
   if(pass&&pass.length<6){toast('Senha mínimo 6 caracteres.','err');return;}
-  var payload={fullname:full,role:role};if(pass)payload.password=pass;
+  var payload={fullname:full,role:role,email:email||null};if(pass)payload.password=pass;
   try{
     if(isDemo()){var us=gLS('eu',[]);var idx=us.findIndex(function(u){return u.username===username;});if(idx>-1)us[idx]=Object.assign({},us[idx],payload);sLS('eu',us);}
     else await api.patch('usuarios?id=eq.'+id,payload);
@@ -892,11 +957,12 @@ async function addUser(){
   var pass=document.getElementById('a-pass').value;
   var full=document.getElementById('a-full').value.trim();
   var role=document.getElementById('a-role').value;
+  var email=document.getElementById('a-email')?document.getElementById('a-email').value.trim():'';
   if(!uname||!pass||!full){toast('Preencha todos os campos.','err');return;}
   if(pass.length<6){toast('Senha mínimo 6 caracteres.','err');return;}
   try{
-    if(isDemo()){var us=gLS('eu',[]);if(us.find(function(u){return u.username===uname;})){toast('Usuário já existe.','err');return;}us.push({id:Date.now(),username:uname,password:pass,fullname:full,role:role});sLS('eu',us);}
-    else await api.post('usuarios',{username:uname,password:pass,fullname:full,role:role});
+    if(isDemo()){var us=gLS('eu',[]);if(us.find(function(u){return u.username===uname;})){toast('Usuário já existe.','err');return;}us.push({id:Date.now(),username:uname,password:pass,fullname:full,role:role,email:email||null});sLS('eu',us);}
+    else await api.post('usuarios',{username:uname,password:pass,fullname:full,role:role,email:email||null});
     addLog('➕','Admin criou usuário '+uname+' ('+full+')');
     toast('Usuário adicionado!','ok');
     ['a-uname','a-pass','a-full'].forEach(function(id){document.getElementById(id).value='';});
@@ -988,6 +1054,7 @@ function showTab(id,btn){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
   document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
   if(id==='calendar')renderCal();
+  if(id==='hoje')renderHoje();
   if(id==='mine')renderMine();
   if(id==='admin')renderAdmin();
 }
@@ -1006,6 +1073,74 @@ if(localStorage.getItem('enau_dark')){
   document.getElementById('btn-dark').textContent='☀️';
   document.getElementById('btn-dark-login').textContent='☀️';
 }
+
+// ── Tela Hoje ──────────────────────────────────────────────────
+function renderHoje(){
+  var now=new Date();
+  var today=now.toISOString().split('T')[0];
+  var el=document.getElementById('hoje-date');
+  var days=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  el.textContent=days[now.getDay()]+', '+fmtDate(today);
+  var list=BOOKINGS.filter(function(b){return b.date===today;}).sort(function(a,b){return a.time_start>b.time_start?1:-1;});
+  var blocked=BLOCKED_DATES.find(function(d){return d.date===today;});
+  var wrap=document.getElementById('hoje-content');
+  var html='';
+  if(blocked)html+='<div class="info-note" style="margin-bottom:1rem;border-color:var(--coral);color:var(--coral)">🚫 Data bloqueada: <strong>'+blocked.reason+'</strong></div>';
+  if(!list.length){wrap.innerHTML=html+'<div class="today-empty"><div style="font-size:2.2rem">📭</div><p>Nenhuma reserva para hoje.</p></div>';return;}
+  html+='<div style="margin-bottom:.5rem;font-size:.8rem;color:var(--muted);font-weight:600">'+list.length+' reserva'+(list.length!==1?'s':'')+' hoje</div>';
+  html+=list.map(function(b){
+    return '<div class="today-card"><div class="today-item"><div class="today-time">'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</div><div><div class="today-space">'+b.space+(b.recur_group?' ↻':'')+'</div><div class="today-meta">👤 '+b.teacher+' · 🎓 '+b.turma+(b.lesson?' · 📖 '+b.lesson:'')+(b.notes?'<br>📌 '+b.notes:'')+'</div></div></div></div>';
+  }).join('');
+  wrap.innerHTML=html;
+}
+
+// ── Bloqueio de Datas ──────────────────────────────────────────
+function addBlockedDate(){
+  var date=document.getElementById('block-date').value;
+  var reason=document.getElementById('block-reason').value.trim();
+  if(!date||!reason){toast('Preencha data e motivo.','err');return;}
+  if(BLOCKED_DATES.find(function(d){return d.date===date;})){toast('Data já bloqueada.','err');return;}
+  var entry={date:date,reason:reason};
+  BLOCKED_DATES.push(entry);
+  BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
+  sLS('ebl',BLOCKED_DATES);
+  addLog('🚫','Admin bloqueou '+fmtDate(date)+': '+reason);
+  toast('Data bloqueada!','ok');
+  document.getElementById('block-date').value='';
+  document.getElementById('block-reason').value='';
+  renderBlockedDates();renderCal();
+}
+
+function removeBlockedDate(date){
+  if(!confirm('Desbloquear '+fmtDate(date)+'?'))return;
+  BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
+  sLS('ebl',BLOCKED_DATES);
+  addLog('✅','Admin desbloqueou '+fmtDate(date));
+  toast('Data desbloqueada.','ok');
+  renderBlockedDates();renderCal();
+}
+
+function renderBlockedDates(){
+  var el=document.getElementById('block-list');
+  if(!BLOCKED_DATES.length){el.innerHTML='<div style="padding:1rem;text-align:center;color:var(--muted)">Nenhuma data bloqueada.</div>';return;}
+  el.innerHTML=BLOCKED_DATES.map(function(d){
+    return '<div class="block-row"><span class="block-date">'+fmtDate(d.date)+'</span><span class="block-reason">'+d.reason+'</span><button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.75rem" onclick="removeBlockedDate(''+d.date+'')">Remover</button></div>';
+  }).join('');
+}
+
+// ── Confirmação antes de sair ──────────────────────────────────
+function formIsDirty(){
+  var sp=document.getElementById('f-space').value;
+  var st=document.getElementById('f-start').value;
+  var tu=msGetValues('turma').length>0;
+  return !!(sp||st||tu);
+}
+window.addEventListener('beforeunload',function(e){
+  if(document.getElementById('tab-new').classList.contains('on')&&formIsDirty()){
+    e.preventDefault();e.returnValue='';
+  }
+});
+
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
 </body>
