@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENAU · Reserva de Espaços</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:     #111827;
+  --ink2:    #374151;
+  --muted:   #6b7280;
+  --border:  #e5e7eb;
+  --bg:      #f9f7f4;
+  --white:   #ffffff;
+  --accent:  #1d4ed8;
+  --accent2: #3b82f6;
+  --gold:    #b45309;
+  --gold-bg: #fef3c7;
+  --red:     #dc2626;
+  --red-bg:  #fef2f2;
+  --green:   #15803d;
+  --green-bg:#dcfce7;
+  --lab:     #1d4ed8;
+  --lab-bg:  #eff6ff;
+  --quad:    #15803d;
+  --quad-bg: #dcfce7;
+  --aud:     #b45309;
+  --aud-bg:  #fef3c7;
+  --shadow:  0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,.14);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body {
+  font-family:'Outfit',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  font-size:15px;
+}
+
+/* ── TOPBAR ── */
+#topbar {
+  background:var(--ink);
+  height:58px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+  position:sticky;top:0;z-index:90;
+  border-bottom:2px solid var(--accent);
+}
+.logo {
+  font-family:'Playfair Display',serif;
+  color:#fff;font-size:1.25rem;letter-spacing:.02em;
+}
+.logo em { color:#93c5fd; font-style:normal; }
+.topbar-right { display:flex;align-items:center;gap:.8rem; }
+#topbar-user { color:#d1d5db;font-size:.82rem;font-weight:500; }
+.btn-sm {
+  padding:.3rem .85rem;border-radius:5px;font-family:'Outfit',sans-serif;
+  font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;
+}
+.btn-ghost { background:rgba(255,255,255,.1);color:#e5e7eb; }
+.btn-ghost:hover { background:rgba(255,255,255,.2); }
+
+/* ── LAYOUT ── */
+#login-wrap {
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;
+}
+#app { display:none; }
+
+.wrap { max-width:1100px;margin:0 auto;padding:1.8rem 1.2rem; }
+
+/* ── LOGIN ── */
+.login-box {
+  background:var(--white);border-radius:12px;
+  box-shadow:var(--shadow-lg);
+  width:100%;max-width:400px;
+  overflow:hidden;
+  animation:up .45s ease both;
+}
+.login-hero {
+  background:var(--ink);
+  padding:2rem 2rem 1.4rem;
+  border-bottom:3px solid var(--accent);
+}
+.login-hero h1 {
+  font-family:'Playfair Display',serif;
+  color:#fff;font-size:2rem;margin-bottom:.2rem;
+}
+.login-hero p { color:#9ca3af;font-size:.85rem; }
+.login-body { padding:1.8rem 2rem 2rem; }
+
+label.lbl {
+  display:block;font-size:.75rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.07em;
+  color:var(--ink2);margin-bottom:.4rem;margin-top:1rem;
+}
+label.lbl:first-child { margin-top:0; }
+
+input[type=text],input[type=password],input[type=date],
+input[type=time],input[type=email],select,textarea {
+  width:100%;padding:.65rem .9rem;
+  border:1.5px solid var(--border);border-radius:6px;
+  font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);
+  background:var(--bg);outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+input:focus,select:focus,textarea:focus {
+  border-color:var(--accent2);
+  box-shadow:0 0 0 3px rgba(59,130,246,.12);
+  background:var(--white);
+}
+textarea { resize:vertical;min-height:72px; }
+
+.btn {
+  display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.65rem 1.3rem;border-radius:7px;
+  font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;
+}
+.btn-primary { background:var(--accent);color:#fff; }
+.btn-primary:hover { background:#1e40af; }
+.btn-primary:active { transform:scale(.98); }
+.btn-danger  { background:var(--red-bg);color:var(--red);border:1.5px solid #fecaca; }
+.btn-danger:hover  { background:#fee2e2; }
+.btn-outline { background:var(--white);color:var(--ink2);border:1.5px solid var(--border); }
+.btn-outline:hover { border-color:var(--ink2); }
+.btn-full { width:100%;margin-top:.8rem; }
+
+.err-box {
+  background:var(--red-bg);border:1px solid #fecaca;color:var(--red);
+  padding:.6rem .9rem;border-radius:6px;font-size:.83rem;
+  margin-top:.8rem;display:none;
+}
+
+/* ── TABS ── */
+.tabs { display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.8rem; }
+.tab {
+  padding:.65rem 1.3rem;background:none;border:none;
+  font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:500;
+  color:var(--muted);cursor:pointer;position:relative;transition:color .15s;
+  white-space:nowrap;
+}
+.tab::after {
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:var(--accent);transform:scaleX(0);transition:transform .2s;
+}
+.tab.on { color:var(--ink);font-weight:600; }
+.tab.on::after { transform:scaleX(1); }
+.tab-panel { display:none; }
+.tab-panel.on { display:block;animation:up .25s ease both; }
+
+@keyframes up { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── PAGE HEADER ── */
+.ph { margin-bottom:1.5rem; }
+.ph h2 { font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--ink); }
+.ph p  { font-size:.85rem;color:var(--muted);margin-top:.2rem; }
+
+/* ── CALENDAR ── */
+.cal-bar {
+  display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap;
+}
+.nav-btn {
+  width:34px;height:34px;border-radius:6px;border:1.5px solid var(--border);
+  background:var(--white);cursor:pointer;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.nav-btn:hover { border-color:var(--accent2);color:var(--accent); }
+.week-lbl { font-weight:600;font-size:.9rem;color:var(--ink);min-width:190px;text-align:center; }
+.cal-filter {
+  margin-left:auto;padding:.4rem .8rem;border:1.5px solid var(--border);
+  border-radius:6px;font-family:'Outfit',sans-serif;font-size:.83rem;
+  background:var(--white);cursor:pointer;outline:none;
+}
+.cal-filter:focus { border-color:var(--accent2); }
+
+/* TABLE CALENDAR */
+.cal-table-wrap { overflow-x:auto;border-radius:10px;border:1.5px solid var(--border);background:var(--white); }
+table.cal {
+  width:100%;border-collapse:collapse;min-width:640px;
+}
+table.cal thead tr th {
+  background:var(--ink);color:#fff;
+  padding:.65rem .6rem;font-size:.78rem;font-weight:600;
+  text-align:center;letter-spacing:.04em;
+  border-right:1px solid rgba(255,255,255,.08);
+}
+table.cal thead tr th:first-child { text-align:left;padding-left:1rem;width:90px; }
+table.cal thead tr th.today-h { background:#1e3a8a; }
+table.cal thead tr th:last-child { border-right:none; }
+
+table.cal tbody tr td {
+  vertical-align:top;padding:4px;
+  border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+  min-height:58px;cursor:pointer;transition:background .12s;
+  position:relative;
+}
+table.cal tbody tr td:hover { background:#f0f7ff; }
+table.cal tbody tr td.today-c { background:#eff6ff; }
+table.cal tbody tr td:first-child {
+  background:var(--bg);cursor:default;
+  padding:.5rem .6rem .5rem 1rem;
+  font-size:.75rem;font-weight:600;color:var(--muted);
+  white-space:nowrap;line-height:1.5;border-right:2px solid var(--border);
+}
+table.cal tbody tr td:last-child { border-right:none; }
+table.cal tbody tr:last-child td { border-bottom:none; }
+
+.chip {
+  display:block;padding:.22rem .45rem;border-radius:4px;
+  font-size:.71rem;font-weight:600;line-height:1.35;cursor:pointer;
+  margin-bottom:2px;transition:filter .12s;
+}
+.chip:hover { filter:brightness(.92); }
+.ch-lab  { background:var(--lab-bg);color:var(--lab); }
+.ch-quad { background:var(--quad-bg);color:var(--quad); }
+.ch-aud  { background:var(--aud-bg);color:var(--aud); }
+
+.plus-hint {
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:1.3rem;color:#d1d5db;pointer-events:none;
+  opacity:0;transition:opacity .12s;
+}
+table.cal tbody tr td:hover .plus-hint { opacity:1; }
+
+/* LEGEND */
+.legend { display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;font-size:.8rem; }
+.legend span { display:flex;align-items:center;gap:.35rem;color:var(--muted); }
+.dot { width:10px;height:10px;border-radius:2px;display:inline-block; }
+
+/* ── CARD ── */
+.card {
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:10px;padding:1.5rem;margin-bottom:1.2rem;
+}
+.card h3 {
+  font-family:'Playfair Display',serif;font-size:1.2rem;
+  color:var(--ink);margin-bottom:1.2rem;padding-bottom:.7rem;
+  border-bottom:1px solid var(--border);
+}
+
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+.form-row.three { grid-template-columns:1fr 1fr 1fr; }
+.form-row .full { grid-column:1/-1; }
+@media(max-width:580px){
+  .form-row,.form-row.three { grid-template-columns:1fr; }
+}
+
+.info-note {
+  background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;
+  padding:.6rem .9rem;font-size:.8rem;color:#1d4ed8;margin-top:.8rem;
+}
+
+/* ── BOOKING LIST ── */
+.bk-card {
+  background:var(--white);border:1.5px solid var(--border);
+  border-left:4px solid var(--accent);border-radius:8px;
+  padding:1rem 1.2rem;margin-bottom:.8rem;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+  animation:up .25s ease both;
+}
+.bk-card.lab  { border-left-color:var(--lab); }
+.bk-card.quad { border-left-color:var(--quad); }
+.bk-card.aud  { border-left-color:var(--aud); }
+
+.bk-info h4 { font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:.25rem; }
+.bk-info .meta { font-size:.8rem;color:var(--muted);line-height:1.7; }
+.bk-info .meta strong { color:var(--ink2); }
+.bk-acts { display:flex;gap:.5rem;flex-shrink:0;flex-wrap:wrap; }
+
+.badge {
+  display:inline-block;padding:.15rem .55rem;border-radius:20px;
+  font-size:.7rem;font-weight:600;margin-left:.5rem;vertical-align:middle;
+}
+.badge-ok  { background:var(--green-bg);color:var(--green); }
+.badge-lock{ background:var(--gold-bg);color:var(--gold); }
+
+/* ── ADMIN TABLE ── */
+.tbl-wrap { overflow-x:auto;border-radius:8px;border:1.5px solid var(--border); }
+table.data { width:100%;border-collapse:collapse;font-size:.83rem;min-width:600px; }
+table.data thead { background:var(--ink);color:#fff; }
+table.data th {
+  padding:.7rem 1rem;text-align:left;font-weight:600;
+  font-size:.76rem;letter-spacing:.05em;white-space:nowrap;
+  border-right:1px solid rgba(255,255,255,.08);
+}
+table.data th:last-child { border-right:none; }
+table.data td {
+  padding:.65rem 1rem;border-bottom:1px solid var(--border);
+  background:var(--white);color:var(--ink);vertical-align:middle;
+}
+table.data tr:last-child td { border-bottom:none; }
+table.data tr:hover td { background:var(--bg); }
+
+/* ── MODAL ── */
+.overlay {
+  position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:200;
+  display:flex;align-items:center;justify-content:center;padding:1rem;
+  animation:fadeIn .18s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal {
+  background:var(--white);border-radius:12px;padding:1.8rem;
+  max-width:500px;width:100%;
+  box-shadow:var(--shadow-lg);
+  border-top:4px solid var(--accent);
+  animation:up .22s ease both;
+}
+.modal h3 { font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:1.1rem; }
+.modal .row { display:flex;gap:.6rem;flex-direction:column;font-size:.88rem;color:var(--ink2);line-height:1.7; }
+.modal .row strong { color:var(--ink); }
+.modal-acts { display:flex;gap:.7rem;margin-top:1.4rem;flex-wrap:wrap; }
+
+/* ── TOAST ── */
+#toast {
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;
+  background:var(--ink);color:#fff;
+  padding:.75rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:500;
+  border-left:4px solid var(--accent2);display:none;
+  max-width:300px;box-shadow:var(--shadow-lg);animation:up .25s ease;
+}
+#toast.ok  { border-left-color:#22c55e; }
+#toast.err { border-left-color:var(--red); }
+
+/* ── SPINNER ── */
+.spin {
+  display:inline-block;width:18px;height:18px;
+  border:2.5px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty {
+  text-align:center;padding:3rem 1rem;color:var(--muted);
+}
+.empty .ico { font-size:2.4rem;margin-bottom:.6rem; }
+
+/* ── SPACE BADGES in filter ── */
+.space-tag {
+  display:inline-block;padding:.15rem .6rem;border-radius:4px;
+  font-size:.75rem;font-weight:600;
+}
+.st-lab  { background:var(--lab-bg);color:var(--lab); }
+.st-quad { background:var(--quad-bg);color:var(--quad); }
+.st-aud  { background:var(--aud-bg);color:var(--aud); }
+
+/* ── CONFIG BANNER ── */
+#config-banner {
+  background:#fef3c7;border-bottom:2px solid #fbbf24;
+  padding:.8rem 1.5rem;font-size:.83rem;color:#92400e;
+  display:flex;align-items:center;gap:.5rem;
+}
+</style>
+</head>
+<body>
+
+<!-- CONFIG BANNER (shown until Supabase is configured) -->
+<div id="config-banner">
+  ⚙️ <strong>Configure o Supabase:</strong> abra o código e preencha <code>SUPABASE_URL</code> e <code>SUPABASE_KEY</code> nas primeiras linhas do script. <a href="#" onclick="document.getElementById('config-banner').style.display='none';return false" style="margin-left:auto;color:#92400e;font-weight:700">✕</a>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar" style="display:none">
+  <div class="logo">ENAU <em>·</em> Reservas</div>
+  <div class="topbar-right">
+    <span id="topbar-user"></span>
+    <button class="btn-sm btn-ghost" onclick="logout()">Sair</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-wrap">
+  <div class="login-box">
+    <div class="login-hero">
+      <h1>ENAU</h1>
+      <p>Sistema de Reserva de Espaços</p>
+    </div>
+    <div class="login-body">
+      <label class="lbl">Usuário</label>
+      <input type="text" id="l-user" placeholder="seu.usuario" autocomplete="username">
+      <label class="lbl">Senha</label>
+      <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+      <button class="btn btn-primary btn-full" id="btn-login" onclick="doLogin()">Entrar</button>
+      <div class="err-box" id="l-err">Usuário ou senha incorretos.</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="wrap">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab on" onclick="showTab('calendar',this)">📅 Calendário</button>
+      <button class="tab" onclick="showTab('new',this)">＋ Nova Reserva</button>
+      <button class="tab" onclick="showTab('mine',this)">📋 Minhas Reservas</button>
+      <button class="tab admin-tab" onclick="showTab('admin',this)" style="display:none">⚙️ Admin</button>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="tab-panel on" id="tab-calendar">
+      <div class="ph">
+        <h2>Calendário de Reservas</h2>
+        <p id="ph-date"></p>
+      </div>
+      <div class="cal-bar">
+        <button class="nav-btn" onclick="weekNav(-1)">‹</button>
+        <span class="week-lbl" id="wlbl"></span>
+        <button class="nav-btn" onclick="weekNav(1)">›</button>
+        <select class="cal-filter" id="cal-filter" onchange="renderCal()">
+          <option value="">Todos os espaços</option>
+          <option>Laboratório</option>
+          <option>Quadra/Ginásio</option>
+          <option>Auditório</option>
+        </select>
+      </div>
+      <div class="cal-table-wrap">
+        <table class="cal" id="cal-table"></table>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--lab-bg);border:1.5px solid var(--lab)"></span>Laboratório</span>
+        <span><span class="dot" style="background:var(--quad-bg);border:1.5px solid var(--quad)"></span>Quadra/Ginásio</span>
+        <span><span class="dot" style="background:var(--aud-bg);border:1.5px solid var(--aud)"></span>Auditório</span>
+      </div>
+    </div>
+
+    <!-- NEW BOOKING -->
+    <div class="tab-panel" id="tab-new">
+      <div class="ph"><h2>Nova Reserva</h2></div>
+      <div class="card">
+        <h3>Preencha os dados</h3>
+        <div class="form-row">
+          <div>
+            <label class="lbl">Espaço *</label>
+            <select id="f-space">
+              <option value="">Selecione...</option>
+              <option>Laboratório</option>
+              <option>Quadra/Ginásio</option>
+              <option>Auditório</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Data *</label>
+            <input type="date" id="f-date">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="lbl">Horário Início *</label>
+            <input type="time" id="f-start" step="600">
+          </div>
+          <div>
+            <label class="lbl">Horário Fim *</label>
+            <input type="time" id="f-end" step="600">
+          </div>
+        </div>
+        <div class="form-row three">
+          <div>
+            <label class="lbl">Professor Responsável *</label>
+            <input type="text" id="f-teacher" placeholder="Nome do professor">
+          </div>
+          <div>
+            <label class="lbl">Turma / Série *</label>
+            <input type="text" id="f-class" placeholder="Ex: 9º ano, EF, EM">
+          </div>
+          <div>
+            <label class="lbl">Aula / Período</label>
+            <input type="text" id="f-lesson" placeholder="Ex: 3ª aula, 1ª a 4ª">
+          </div>
+        </div>
+        <div>
+          <label class="lbl">Observações / Recursos necessários</label>
+          <textarea id="f-notes" placeholder="Ex: Datashow, Internet, Powerpoint, Word, Excel..."></textarea>
+        </div>
+        <div class="info-note">ℹ️ A reserva pode ser editada ou cancelada com pelo menos <strong>5 horas</strong> de antecedência.</div>
+        <div style="margin-top:1.2rem;display:flex;gap:.8rem;flex-wrap:wrap">
+          <button class="btn btn-primary" id="btn-submit" onclick="submitBooking()">Confirmar Reserva</button>
+          <button class="btn btn-outline" id="btn-cancel-edit" style="display:none" onclick="cancelEdit()">Cancelar Edição</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY BOOKINGS -->
+    <div class="tab-panel" id="tab-mine">
+      <div class="ph"><h2>Minhas Reservas</h2></div>
+      <div id="mine-list"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="tab-panel" id="tab-admin">
+      <!-- Add user -->
+      <div class="card">
+        <h3>Adicionar Usuário</h3>
+        <div class="form-row">
+          <div>
+            <label class="lbl">Usuário</label>
+            <input type="text" id="a-uname" placeholder="Ex: prof.carlos">
+          </div>
+          <div>
+            <label class="lbl">Senha (mín. 6 chars)</label>
+            <input type="password" id="a-pass" placeholder="••••••">
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="lbl">Nome completo</label>
+            <input type="text" id="a-full" placeholder="Carlos Mendes">
+          </div>
+          <div>
+            <label class="lbl">Perfil</label>
+            <select id="a-role">
+              <option value="user">Usuário (Professor/Funcionário)</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:1rem">
+          <button class="btn btn-primary" onclick="addUser()">Adicionar</button>
+        </div>
+      </div>
+
+      <!-- All bookings -->
+      <div class="card">
+        <h3>Todas as Reservas</h3>
+        <div class="tbl-wrap">
+          <table class="data">
+            <thead><tr>
+              <th>Espaço</th><th>Data</th><th>Horário</th>
+              <th>Professor</th><th>Turma</th><th>Aula</th><th>Feito por</th><th>Ação</th>
+            </tr></thead>
+            <tbody id="adm-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="card">
+        <h3>Usuários Cadastrados</h3>
+        <div class="tbl-wrap">
+          <table class="data">
+            <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Ação</th></tr></thead>
+            <tbody id="adm-users"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" style="display:none" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <h3 id="m-title"></h3>
+    <div class="row" id="m-body"></div>
+    <div class="modal-acts" id="m-acts"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   ▶ CONFIGURE AQUI
+══════════════════════════════════════════ */
+const SUPABASE_URL = 'https://uybjxwnjsiftudoymkat.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Ymp4d25qc2lmdHVkb3lta2F0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMTMzODksImV4cCI6MjA4ODc4OTM4OX0.FLbcu27bnLc9BkPFP5AMzJ-pxTdpA112FjS2iDx9JtQ';
+
+/* ══════════════════════════════════════════
+   API HELPER
+══════════════════════════════════════════ */
+async function sb(method, path, body) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || res.statusText);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+const api = {
+  get:    (path)       => sb('GET',    path),
+  post:   (path, body) => sb('POST',   path, body),
+  patch:  (path, body) => sb('PATCH',  path, body),
+  delete: (path)       => sb('DELETE', path),
+};
+
+/* ══════════════════════════════════════════
+   DEMO MODE (localStorage) — usado se Supabase não configurado
+══════════════════════════════════════════ */
+function isDemo() {
+  return SUPABASE_URL.includes('SEU_PROJETO');
+}
+
+function gLS(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } }
+function sLS(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+function initDemo() {
+  if (!gLS('enau_users', null)) {
+    sLS('enau_users', [
+      { id:1, username:'admin',      password:'admin123', fullname:'Administrador', role:'admin' },
+      { id:2, username:'prof.lucas', password:'enau2024', fullname:'Lucas Oliveira', role:'user' },
+      { id:3, username:'prof.ana',   password:'enau2024', fullname:'Ana Paula',     role:'user' },
+    ]);
+  }
+  if (!gLS('enau_bookings', null)) sLS('enau_bookings', []);
+}
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let ME = null;
+let editId = null;
+let weekStart = monday(new Date());
+let BOOKINGS = []; // cache
+
+function monday(d) {
+  const dt = new Date(d);
+  const day = dt.getDay();
+  dt.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+
+/* ══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════ */
+async function doLogin() {
+  const u = document.getElementById('l-user').value.trim();
+  const p = document.getElementById('l-pass').value;
+  const btn = document.getElementById('btn-login');
+  btn.innerHTML = '<span class="spin"></span>';
+  btn.disabled = true;
+
+  try {
+    let user = null;
+
+    if (isDemo()) {
+      initDemo();
+      const users = gLS('enau_users', []);
+      user = users.find(x => x.username === u && x.password === p) || null;
+    } else {
+      const rows = await api.get(`usuarios?username=eq.${encodeURIComponent(u)}&password=eq.${encodeURIComponent(p)}&select=*`);
+      user = rows && rows[0] ? rows[0] : null;
+    }
+
+    if (!user) throw new Error('invalid');
+
+    ME = user;
+    document.getElementById('l-err').style.display = 'none';
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('topbar').style.display = 'flex';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('topbar-user').textContent = user.fullname;
+    if (user.role === 'admin') document.querySelector('.admin-tab').style.display = 'inline-block';
+
+    const now = new Date();
+    document.getElementById('ph-date').textContent =
+      now.toLocaleDateString('pt-BR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    document.getElementById('f-date').value = now.toISOString().split('T')[0];
+
+    if (isDemo()) document.getElementById('config-banner').style.display = 'flex';
+    else document.getElementById('config-banner').style.display = 'none';
+
+    await loadBookings();
+    renderCal();
+    renderMine();
+    if (ME.role === 'admin') renderAdmin();
+
+  } catch {
+    document.getElementById('l-err').style.display = 'block';
+  }
+
+  btn.innerHTML = 'Entrar';
+  btn.disabled = false;
+}
+
+document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function logout() {
+  ME = null; BOOKINGS = [];
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('topbar').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('l-user').value = '';
+  document.getElementById('l-pass').value = '';
+}
+
+/* ══════════════════════════════════════════
+   LOAD BOOKINGS
+══════════════════════════════════════════ */
+async function loadBookings() {
+  if (isDemo()) {
+    BOOKINGS = gLS('enau_bookings', []);
+  } else {
+    BOOKINGS = await api.get('reservas?select=*&order=date.asc,time_start.asc') || [];
+  }
+}
+
+/* ══════════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════════ */
+const DAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function weekNav(d) { weekStart.setDate(weekStart.getDate() + d*7); renderCal(); }
+
+function renderCal() {
+  const filter = document.getElementById('cal-filter').value;
+  const days = Array.from({length:6}, (_,i) => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const fmt = d => d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  document.getElementById('wlbl').textContent = `${fmt(days[0])} – ${fmt(days[5])}`;
+
+  const CHIP_CLS = { 'Laboratório':'ch-lab','Quadra/Ginásio':'ch-quad','Auditório':'ch-aud' };
+
+  // Collect unique time slots from bookings this week
+  const weekDates = days.map(d => d.toISOString().split('T')[0]);
+  const slots = [...new Set(
+    BOOKINGS
+      .filter(b => weekDates.includes(b.date) && (!filter || b.space === filter))
+      .map(b => b.time_start + '–' + b.time_end)
+  )].sort();
+
+  if (!slots.length) {
+    // Empty week — show generic rows
+    slots.push('07:00–07:50','07:50–08:40','08:40–09:30','09:50–10:40','10:40–11:30','13:00–13:50','13:50–14:40','15:50–16:40');
+  }
+
+  let html = '<thead><tr><th>Horário</th>';
+  days.forEach((d, i) => {
+    const isT = d.getTime() === today.getTime();
+    html += `<th class="${isT ? 'today-h' : ''}">${DAYS[i]}<br><span style="font-weight:400;font-size:.75rem">${d.getDate()}/${d.getMonth()+1}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  slots.forEach(slot => {
+    html += `<tr><td>${slot.replace('–','<br>')}</td>`;
+    days.forEach(d => {
+      const ds = d.toISOString().split('T')[0];
+      const isT = d.getTime() === today.getTime();
+      const cell = BOOKINGS.filter(b =>
+        b.date === ds &&
+        (b.time_start + '–' + b.time_end) === slot &&
+        (!filter || b.space === filter)
+      );
+      let chips = cell.map(b =>
+        `<span class="chip ${CHIP_CLS[b.space]||''}" onclick="openModal('${b.id}')" title="${b.purpose||''}">${b.space.split('/')[0]} · ${b.teacher}</span>`
+      ).join('');
+      html += `<td class="${isT ? 'today-c' : ''}" onclick="prefillNew('${ds}')">
+        ${chips}<span class="plus-hint">+</span></td>`;
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody>';
+  document.getElementById('cal-table').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
+   BOOKING CRUD
+══════════════════════════════════════════ */
+function hoursUntil(b) {
+  const dt = new Date(b.date + 'T' + b.time_start);
+  return (dt - new Date()) / 3600000;
+}
+
+async function submitBooking() {
+  const space   = document.getElementById('f-space').value;
+  const date    = document.getElementById('f-date').value;
+  const start   = document.getElementById('f-start').value;
+  const end     = document.getElementById('f-end').value;
+  const teacher = document.getElementById('f-teacher').value.trim();
+  const cls     = document.getElementById('f-class').value.trim();
+  const lesson  = document.getElementById('f-lesson').value.trim();
+  const notes   = document.getElementById('f-notes').value.trim();
+
+  if (!space || !date || !start || !end || !teacher || !cls) {
+    toast('Preencha todos os campos obrigatórios (*).', 'err'); return;
+  }
+  if (start >= end) { toast('Horário fim deve ser após o início.', 'err'); return; }
+
+  // Conflict check
+  const conflict = BOOKINGS.find(b =>
+    b.space === space && b.date === date &&
+    b.time_start < end && b.time_end > start &&
+    (!editId || b.id !== editId)
+  );
+  if (conflict) {
+    toast(`Conflito! ${space} já reservado das ${conflict.time_start}–${conflict.time_end} por ${conflict.teacher}.`, 'err');
+    return;
+  }
+
+  const payload = { space, date, time_start:start, time_end:end, teacher, turma:cls, lesson, notes,
+                    booked_by:ME.username, booked_by_name:ME.fullname };
+
+  const btn = document.getElementById('btn-submit');
+  btn.innerHTML = '<span class="spin"></span> Salvando...';
+  btn.disabled = true;
+
+  try {
+    if (editId) {
+      if (isDemo()) {
+        const idx = BOOKINGS.findIndex(b => b.id === editId);
+        if (idx > -1) BOOKINGS[idx] = { ...BOOKINGS[idx], ...payload };
+        sLS('enau_bookings', BOOKINGS);
+      } else {
+        await api.patch(`reservas?id=eq.${editId}`, payload);
+        await loadBookings();
+      }
+      toast('Reserva atualizada!', 'ok');
+      editId = null;
+      document.getElementById('btn-cancel-edit').style.display = 'none';
+    } else {
+      if (isDemo()) {
+        const newB = { ...payload, id:'bk_'+Date.now(), created_at:new Date().toISOString() };
+        BOOKINGS.push(newB);
+        sLS('enau_bookings', BOOKINGS);
+      } else {
+        const rows = await api.post('reservas', payload);
+        BOOKINGS.push(rows[0]);
+      }
+      toast('Reserva confirmada!', 'ok');
+    }
+
+    clearForm();
+    renderCal();
+    renderMine();
+    if (ME.role === 'admin') renderAdmin();
+
+  } catch(e) { toast('Erro ao salvar: ' + e.message, 'err'); }
+
+  btn.innerHTML = 'Confirmar Reserva';
+  btn.disabled = false;
+}
+
+function clearForm() {
+  ['f-space','f-start','f-end','f-teacher','f-class','f-lesson','f-notes']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+}
+
+function cancelEdit() {
+  editId = null;
+  clearForm();
+  document.getElementById('btn-cancel-edit').style.display = 'none';
+  document.getElementById('btn-submit').textContent = 'Confirmar Reserva';
+}
+
+function prefillNew(dateStr) {
+  showTab('new', document.querySelectorAll('.tab')[1]);
+  document.getElementById('f-date').value = dateStr;
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+function openModal(id) {
+  const b = BOOKINGS.find(x => x.id == id || x.id === id);
+  if (!b) return;
+
+  const hl = hoursUntil(b);
+  const canAct = ME.role === 'admin' || (b.booked_by === ME.username && hl >= 5);
+
+  document.getElementById('m-title').textContent = b.space;
+  document.getElementById('m-body').innerHTML = `
+    <p><strong>Data:</strong> ${fmtDate(b.date)}</p>
+    <p><strong>Horário:</strong> ${b.time_start} – ${b.time_end}</p>
+    <p><strong>Professor:</strong> ${b.teacher}</p>
+    <p><strong>Turma:</strong> ${b.turma}</p>
+    ${b.lesson ? `<p><strong>Aula/Período:</strong> ${b.lesson}</p>` : ''}
+    ${b.notes   ? `<p><strong>Obs/Recursos:</strong> ${b.notes}</p>` : ''}
+    <p><strong>Agendado por:</strong> ${b.booked_by_name}</p>
+    ${!canAct && b.booked_by === ME.username
+      ? `<div class="info-note" style="margin-top:.6rem">⏰ Menos de 5h para o início. Edição bloqueada.</div>` : ''}
+  `;
+
+  const acts = document.getElementById('m-acts');
+  acts.innerHTML = `<button class="btn btn-outline" onclick="closeModal()">Fechar</button>`;
+  if (canAct) {
+    acts.innerHTML += `<button class="btn btn-primary" onclick="startEdit('${b.id}')">✏️ Editar</button>`;
+    acts.innerHTML += `<button class="btn btn-danger" onclick="deleteBooking('${b.id}')">🗑 Cancelar</button>`;
+  }
+
+  document.getElementById('overlay').style.display = 'flex';
+}
+
+function startEdit(id) {
+  closeModal();
+  const b = BOOKINGS.find(x => x.id == id || x.id === id);
+  if (!b) return;
+  showTab('new', document.querySelectorAll('.tab')[1]);
+  document.getElementById('f-space').value   = b.space;
+  document.getElementById('f-date').value    = b.date;
+  document.getElementById('f-start').value   = b.time_start;
+  document.getElementById('f-end').value     = b.time_end;
+  document.getElementById('f-teacher').value = b.teacher;
+  document.getElementById('f-class').value   = b.turma;
+  document.getElementById('f-lesson').value  = b.lesson || '';
+  document.getElementById('f-notes').value   = b.notes || '';
+  editId = id;
+  document.getElementById('btn-submit').textContent = 'Salvar Alterações';
+  document.getElementById('btn-cancel-edit').style.display = 'inline-flex';
+}
+
+async function deleteBooking(id) {
+  if (!confirm('Cancelar esta reserva?')) return;
+  try {
+    if (isDemo()) {
+      BOOKINGS = BOOKINGS.filter(b => b.id != id);
+      sLS('enau_bookings', BOOKINGS);
+    } else {
+      await api.delete(`reservas?id=eq.${id}`);
+      BOOKINGS = BOOKINGS.filter(b => b.id != id);
+    }
+    toast('Reserva cancelada.', 'ok');
+    closeModal();
+    renderCal(); renderMine();
+    if (ME.role === 'admin') renderAdmin();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+function closeModal() { document.getElementById('overlay').style.display = 'none'; }
+function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+
+/* ══════════════════════════════════════════
+   MY BOOKINGS
+══════════════════════════════════════════ */
+function renderMine() {
+  const list = document.getElementById('mine-list');
+  const mine = BOOKINGS
+    .filter(b => b.booked_by === ME.username)
+    .sort((a,b) => (a.date+a.time_start) > (b.date+b.time_start) ? 1 : -1);
+
+  if (!mine.length) {
+    list.innerHTML = `<div class="empty"><div class="ico">📭</div><p>Nenhuma reserva ativa.</p></div>`;
+    return;
+  }
+
+  const CLS = { 'Laboratório':'lab','Quadra/Ginásio':'quad','Auditório':'aud' };
+  list.innerHTML = mine.map(b => {
+    const hl = hoursUntil(b);
+    const canAct = hl >= 5;
+    const badge = canAct
+      ? `<span class="badge badge-ok">Editável</span>`
+      : `<span class="badge badge-lock">Bloqueado</span>`;
+    return `
+    <div class="bk-card ${CLS[b.space]||''}">
+      <div class="bk-info">
+        <h4>${b.space} ${badge}</h4>
+        <div class="meta">
+          <strong>${fmtDate(b.date)}</strong> · ${b.time_start}–${b.time_end}<br>
+          Prof. ${b.teacher} · Turma: ${b.turma}${b.lesson ? ' · ' + b.lesson : ''}<br>
+          ${b.notes ? `Recursos: ${b.notes}` : ''}
+        </div>
+      </div>
+      <div class="bk-acts">
+        ${canAct ? `<button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.78rem" onclick="startEdit('${b.id}')">Editar</button>` : ''}
+        ${canAct ? `<button class="btn btn-danger" style="padding:.4rem .8rem;font-size:.78rem" onclick="deleteBooking('${b.id}')">Cancelar</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   ADMIN
+══════════════════════════════════════════ */
+function renderAdmin() {
+  renderAdmBookings();
+  renderAdmUsers();
+}
+
+function renderAdmBookings() {
+  const tbody = document.getElementById('adm-tbody');
+  const sorted = [...BOOKINGS].sort((a,b) => (a.date+a.time_start) > (b.date+b.time_start) ? 1 : -1);
+  if (!sorted.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">Nenhuma reserva.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sorted.map(b => `
+    <tr>
+      <td><span class="space-tag st-${spaceKey(b.space)}">${b.space}</span></td>
+      <td>${fmtDate(b.date)}</td>
+      <td>${b.time_start}–${b.time_end}</td>
+      <td>${b.teacher}</td>
+      <td>${b.turma}</td>
+      <td>${b.lesson||'—'}</td>
+      <td>${b.booked_by_name}</td>
+      <td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking('${b.id}')">Cancelar</button></td>
+    </tr>
+  `).join('');
+}
+
+async function renderAdmUsers() {
+  let users = [];
+  if (isDemo()) {
+    users = gLS('enau_users', []);
+  } else {
+    users = await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc') || [];
+  }
+  const tbody = document.getElementById('adm-users');
+  tbody.innerHTML = users.map((u,i) => `
+    <tr>
+      <td>${u.username}</td>
+      <td>${u.fullname}</td>
+      <td>${u.role === 'admin' ? '🔑 Admin' : '👤 Usuário'}</td>
+      <td>${u.username !== 'admin'
+        ? `<button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="removeUser(${u.id||i},'${u.username}')">Remover</button>`
+        : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+async function addUser() {
+  const uname = document.getElementById('a-uname').value.trim();
+  const pass  = document.getElementById('a-pass').value;
+  const full  = document.getElementById('a-full').value.trim();
+  const role  = document.getElementById('a-role').value;
+
+  if (!uname || !pass || !full) { toast('Preencha todos os campos.', 'err'); return; }
+  if (pass.length < 6) { toast('Senha com mínimo 6 caracteres.', 'err'); return; }
+
+  try {
+    if (isDemo()) {
+      const users = gLS('enau_users', []);
+      if (users.find(u => u.username === uname)) { toast('Usuário já existe.', 'err'); return; }
+      users.push({ id: Date.now(), username:uname, password:pass, fullname:full, role });
+      sLS('enau_users', users);
+    } else {
+      await api.post('usuarios', { username:uname, password:pass, fullname:full, role });
+    }
+    toast('Usuário adicionado!', 'ok');
+    ['a-uname','a-pass','a-full'].forEach(id => document.getElementById(id).value = '');
+    renderAdmUsers();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+async function removeUser(id, uname) {
+  if (!confirm(`Remover usuário "${uname}"?`)) return;
+  try {
+    if (isDemo()) {
+      const users = gLS('enau_users', []).filter(u => u.username !== uname);
+      sLS('enau_users', users);
+    } else {
+      await api.delete(`usuarios?id=eq.${id}`);
+    }
+    toast('Usuário removido.', 'ok');
+    renderAdmUsers();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  btn.classList.add('on');
+  if (id === 'calendar') renderCal();
+  if (id === 'mine') renderMine();
+  if (id === 'admin') renderAdmin();
+}
+
+function fmtDate(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function spaceKey(s) {
+  if (s === 'Laboratório') return 'lab';
+  if (s === 'Quadra/Ginásio') return 'quad';
+  return 'aud';
+}
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = type || '';
+  t.style.display = 'block';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.display = 'none', 4000);
+}
+</script>
+</body>
+</html>
