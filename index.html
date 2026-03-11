@@ -6,365 +6,147 @@
 <title>ENAU · Reserva de Espaços</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  /* PALETA COLÉGIO ENAU */
-  --ink:     #1a0a22;
-  --ink2:    #4a2060;
-  --muted:   #8b6a90;
-  --border:  #e8d5e8;
-  --bg:      #fdf8f9;
-  --white:   #ffffff;
-  --accent:  #5c2d72;
-  --accent2: #7b2d52;
-  --gold:    #b45309;
-  --gold-bg: #fef3c7;
-  --red:     #dc2626;
-  --red-bg:  #fef2f2;
-  --green:   #15803d;
-  --green-bg:#dcfce7;
-  --lab:     #3d1a4f;
-  --lab-bg:  #f0e8f5;
-  --quad:    #1a5c3d;
-  --quad-bg: #e6f5ee;
-  --aud:     #b83255;
-  --aud-bg:  #fce8ee;
-  --plum:    #3d1a4f;
-  --wine:    #7b2d52;
-  --coral:   #d9506a;
-  --shadow:  0 1px 3px rgba(61,26,79,.08), 0 4px 16px rgba(61,26,79,.07);
-  --shadow-lg: 0 8px 48px rgba(61,26,79,.18);
-}
-
+:root{--plum:#3d1a4f;--plum-mid:#5c2d72;--wine:#7b2d52;--coral:#d9506a;--cream:#fdf8f9;--cream-d:#f5edf1;--white:#ffffff;--ink:#1a0a22;--ink2:#4a2060;--muted:#8b6a90;--border:#e8d5e8;--red:#dc2626;--red-bg:#fef2f2;--green:#15803d;--green-bg:#dcfce7;--shadow:0 1px 3px rgba(61,26,79,.08),0 4px 16px rgba(61,26,79,.07);--shadow-lg:0 8px 48px rgba(61,26,79,.18);}
 *{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;}
 
-body {
-  font-family:'Outfit',sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  min-height:100vh;
-  font-size:15px;
-}
+/* TOPBAR */
+#topbar{background:var(--plum);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:90;border-bottom:3px solid var(--coral);box-shadow:0 2px 12px rgba(61,26,79,.3);}
+.logo-bar{display:flex;align-items:center;gap:.7rem;}
+.topbar-logo{height:38px;width:auto;}
+.topbar-right{display:flex;align-items:center;gap:.8rem;}
+#topbar-user{color:rgba(255,255,255,.75);font-size:.82rem;font-weight:500;}
+.btn-sm{padding:.3rem .85rem;border-radius:5px;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.btn-ghost{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);}
+.btn-ghost:hover{background:rgba(255,255,255,.22);}
 
-/* ── TOPBAR ── */
-#topbar {
-  background:var(--plum);
-  height:60px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 1.5rem;
-  position:sticky;top:0;z-index:90;
-  border-bottom:3px solid var(--coral);
-}
-.logo {
-  font-family:'Playfair Display',serif;
-  color:#fff;font-size:1.25rem;letter-spacing:.02em;
-}
-.logo em { color:#93c5fd; font-style:normal; }
-.topbar-right { display:flex;align-items:center;gap:.8rem; }
-#topbar-user { color:#d1d5db;font-size:.82rem;font-weight:500; }
-.btn-sm {
-  padding:.3rem .85rem;border-radius:5px;font-family:'Outfit',sans-serif;
-  font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;
-}
-.btn-ghost { background:rgba(255,255,255,.1);color:#e5e7eb; }
-.btn-ghost:hover { background:rgba(255,255,255,.2); }
+/* LOGIN */
+#login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:linear-gradient(145deg,#2a0f38 0%,#5c1a38 50%,#3d1a4f 100%);}
+#app{display:none;}
+.wrap{max-width:1100px;margin:0 auto;padding:1.8rem 1.2rem;}
+.login-box{background:var(--white);border-radius:14px;box-shadow:var(--shadow-lg);width:100%;max-width:400px;overflow:hidden;animation:up .45s ease both;}
+.login-hero{background:linear-gradient(135deg,#3d1a4f 0%,#7b2d52 60%,#d9506a 100%);padding:2.2rem 2rem 1.8rem;text-align:center;}
+.login-hero .hero-logo{height:80px;width:auto;margin-bottom:.5rem;}
+.login-hero p{color:rgba(255,255,255,.9);font-size:.88rem;margin-top:.4rem;}
+.login-body{padding:1.8rem 2rem 2rem;}
 
-/* ── LAYOUT ── */
-#login-wrap {
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;
-}
-#app { display:none; }
+label.lbl{display:block;font-size:.73rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:.4rem;margin-top:1rem;}
+label.lbl:first-child{margin-top:0;}
+input[type=text],input[type=password],input[type=date],input[type=time],select,textarea{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);background:var(--cream);outline:none;transition:border-color .18s,box-shadow .18s;}
+input:focus,select:focus,textarea:focus{border-color:var(--plum-mid);box-shadow:0 0 0 3px rgba(92,45,114,.12);background:var(--white);}
+textarea{resize:vertical;min-height:72px;}
 
-.wrap { max-width:1100px;margin:0 auto;padding:1.8rem 1.2rem; }
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem 1.3rem;border-radius:7px;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--plum);color:#fff;}.btn-primary:hover{background:var(--wine);}
+.btn-primary:active{transform:scale(.98);}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1.5px solid #fecaca;}.btn-danger:hover{background:#fee2e2;}
+.btn-outline{background:var(--white);color:var(--ink2);border:1.5px solid var(--border);}.btn-outline:hover{border-color:var(--plum-mid);}
+.btn-full{width:100%;margin-top:.8rem;}
+.err-box{background:var(--red-bg);border:1px solid #fecaca;color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.83rem;margin-top:.8rem;display:none;}
 
-/* ── LOGIN ── */
-.login-box {
-  background:var(--white);border-radius:12px;
-  box-shadow:var(--shadow-lg);
-  width:100%;max-width:400px;
-  overflow:hidden;
-  animation:up .45s ease both;
-}
-.login-hero {
-  background:linear-gradient(135deg, #3d1a4f 0%, #7b2d52 60%, #d9506a 100%);
-  padding:2.2rem 2rem 1.8rem;
-  text-align:center;
-}
-.login-hero h1 {
-  font-family:'Playfair Display',serif;
-  color:#fff;font-size:1.9rem;margin-bottom:.2rem;letter-spacing:.02em;
-}
-.login-hero p { color:#9ca3af;font-size:.85rem; }
-.login-body { padding:1.8rem 2rem 2rem; }
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.8rem;overflow-x:auto;}
+.tab{padding:.65rem 1.3rem;background:none;border:none;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:500;color:var(--muted);cursor:pointer;position:relative;transition:color .15s;white-space:nowrap;}
+.tab::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--coral);transform:scaleX(0);transition:transform .2s;}
+.tab.on{color:var(--plum);font-weight:600;}.tab.on::after{transform:scaleX(1);}
+.tab-panel{display:none;}.tab-panel.on{display:block;animation:up .25s ease both;}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
-label.lbl {
-  display:block;font-size:.75rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:.07em;
-  color:var(--ink2);margin-bottom:.4rem;margin-top:1rem;
-}
-label.lbl:first-child { margin-top:0; }
+.ph{margin-bottom:1.5rem;}.ph h2{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--plum);}
+.ph p{font-size:.85rem;color:var(--muted);margin-top:.2rem;}
 
-input[type=text],input[type=password],input[type=date],
-input[type=time],input[type=email],select,textarea {
-  width:100%;padding:.65rem .9rem;
-  border:1.5px solid var(--border);border-radius:6px;
-  font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);
-  background:var(--bg);outline:none;
-  transition:border-color .18s,box-shadow .18s;
-}
-input:focus,select:focus,textarea:focus {
-  border-color:var(--accent2);
-  box-shadow:0 0 0 3px rgba(92,45,114,.12);
-  background:var(--white);
-}
-textarea { resize:vertical;min-height:72px; }
+/* CAL */
+.cal-bar{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap;}
+.nav-btn{width:34px;height:34px;border-radius:7px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--plum);}
+.nav-btn:hover{border-color:var(--wine);background:var(--cream-d);}
+.week-lbl{font-weight:600;font-size:.9rem;color:var(--ink);min-width:190px;text-align:center;}
+.cal-filter{margin-left:auto;padding:.4rem .8rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.83rem;background:var(--white);cursor:pointer;outline:none;color:var(--ink);}
+.cal-filter:focus{border-color:var(--wine);}
+.cal-table-wrap{overflow-x:auto;border-radius:10px;border:1.5px solid var(--border);background:var(--white);}
+table.cal{width:100%;border-collapse:collapse;min-width:640px;}
+table.cal thead tr th{background:var(--plum);color:#fff;padding:.65rem .6rem;font-size:.78rem;font-weight:600;text-align:center;letter-spacing:.04em;border-right:1px solid rgba(255,255,255,.1);}
+table.cal thead tr th:first-child{text-align:left;padding-left:1rem;width:95px;}
+table.cal thead tr th.today-h{background:var(--wine);}
+table.cal thead tr th:last-child{border-right:none;}
+table.cal tbody tr td{vertical-align:top;padding:4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:58px;cursor:pointer;transition:background .12s;position:relative;}
+table.cal tbody tr td:hover{background:#f8f0fa;}
+table.cal tbody tr td.today-c{background:#fdf0f4;}
+table.cal tbody tr td:first-child{background:var(--cream-d);cursor:default;padding:.5rem .6rem .5rem 1rem;font-size:.75rem;font-weight:600;color:var(--muted);white-space:nowrap;line-height:1.5;border-right:2px solid var(--border);}
+table.cal tbody tr td:last-child{border-right:none;}
+table.cal tbody tr:last-child td{border-bottom:none;}
+.chip{display:block;padding:.22rem .45rem;border-radius:4px;font-size:.71rem;font-weight:600;line-height:1.35;cursor:pointer;margin-bottom:2px;transition:filter .12s;}
+.chip:hover{filter:brightness(.92);}
+.ch-0{background:#f0e8f5;color:#3d1a4f;}.ch-1{background:#e8f0ff;color:#1a3d8f;}.ch-2{background:#e8f5ff;color:#1a5c8f;}
+.ch-3{background:#e6f5ee;color:#1a5c3d;}.ch-4{background:#fef9e6;color:#7a5a00;}.ch-5{background:#fff0e6;color:#8f3a00;}
+.ch-6{background:#fce8ee;color:#b83255;}.ch-7{background:#e8faf5;color:#0d6b50;}.ch-8{background:#f5e8fa;color:#6a1a8f;}.ch-9{background:#fce8f5;color:#8f1a6a;}
+.plus-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.3rem;color:#d8bfe0;pointer-events:none;opacity:0;transition:opacity .12s;}
+table.cal tbody tr td:hover .plus-hint{opacity:1;}
+.legend{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem;font-size:.78rem;color:var(--muted);}
+.legend span{display:flex;align-items:center;gap:.3rem;}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
 
-.btn {
-  display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
-  padding:.65rem 1.3rem;border-radius:7px;
-  font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;
-  cursor:pointer;border:none;transition:all .15s;
-}
-.btn-primary { background:var(--plum);color:#fff; }
-.btn-primary:hover { background:var(--wine); }
-.btn-primary:active { transform:scale(.98); }
-.btn-danger  { background:var(--red-bg);color:var(--red);border:1.5px solid #fecaca; }
-.btn-danger:hover  { background:#fee2e2; }
-.btn-outline { background:var(--white);color:var(--ink2);border:1.5px solid var(--border); }
-.btn-outline:hover { border-color:var(--ink2); }
-.btn-full { width:100%;margin-top:.8rem; }
+/* CARDS */
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.2rem;}
+.card h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--plum);margin-bottom:1.2rem;padding-bottom:.7rem;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-row.three{grid-template-columns:1fr 1fr 1fr;}
+.form-row .full{grid-column:1/-1;}
+@media(max-width:580px){.form-row,.form-row.three{grid-template-columns:1fr;}}
+.info-note{background:#f5edf8;border:1px solid #d8b8e8;border-radius:6px;padding:.6rem .9rem;font-size:.8rem;color:var(--ink2);margin-top:.8rem;}
 
-.err-box {
-  background:var(--red-bg);border:1px solid #fecaca;color:var(--red);
-  padding:.6rem .9rem;border-radius:6px;font-size:.83rem;
-  margin-top:.8rem;display:none;
-}
+/* BOOKING LIST */
+.bk-card{background:var(--white);border:1.5px solid var(--border);border-left:4px solid var(--plum);border-radius:8px;padding:1rem 1.2rem;margin-bottom:.8rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;animation:up .25s ease both;}
+.bk-info h4{font-size:.95rem;font-weight:600;color:var(--plum);margin-bottom:.25rem;}
+.bk-info .meta{font-size:.8rem;color:var(--muted);line-height:1.7;}
+.bk-info .meta strong{color:var(--ink2);}
+.bk-acts{display:flex;gap:.5rem;flex-shrink:0;flex-wrap:wrap;}
+.badge{display:inline-block;padding:.15rem .55rem;border-radius:20px;font-size:.7rem;font-weight:600;margin-left:.5rem;vertical-align:middle;}
+.badge-ok{background:var(--green-bg);color:var(--green);}.badge-lock{background:#f5edf8;color:var(--ink2);}
 
-/* ── TABS ── */
-.tabs { display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1.8rem; }
-.tab {
-  padding:.65rem 1.3rem;background:none;border:none;
-  font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:500;
-  color:var(--muted);cursor:pointer;position:relative;transition:color .15s;
-  white-space:nowrap;
-}
-.tab::after {
-  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
-  background:var(--coral);transform:scaleX(0);transition:transform .2s;
-}
-.tab.on { color:var(--plum);font-weight:600; }
-.tab.on::after { transform:scaleX(1); }
-.tab-panel { display:none; }
-.tab-panel.on { display:block;animation:up .25s ease both; }
+/* ADMIN TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:8px;border:1.5px solid var(--border);}
+table.data{width:100%;border-collapse:collapse;font-size:.83rem;min-width:600px;}
+table.data thead{background:var(--plum);color:#fff;}
+table.data th{padding:.7rem 1rem;text-align:left;font-weight:600;font-size:.76rem;letter-spacing:.05em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);}
+table.data th:last-child{border-right:none;}
+table.data td{padding:.65rem 1rem;border-bottom:1px solid var(--border);background:var(--white);color:var(--ink);vertical-align:middle;}
+table.data tr:last-child td{border-bottom:none;}
+table.data tr:hover td{background:var(--cream);}
 
-@keyframes up { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-
-/* ── PAGE HEADER ── */
-.ph { margin-bottom:1.5rem; }
-.ph h2 { font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--plum); }
-.ph p  { font-size:.85rem;color:var(--muted);margin-top:.2rem; }
-
-/* ── CALENDAR ── */
-.cal-bar {
-  display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap;
-}
-.nav-btn {
-  width:34px;height:34px;border-radius:6px;border:1.5px solid var(--border);
-  background:var(--white);cursor:pointer;font-size:1rem;
-  display:flex;align-items:center;justify-content:center;transition:all .15s;
-}
-.nav-btn:hover { border-color:var(--wine);color:var(--plum); }
-.week-lbl { font-weight:600;font-size:.9rem;color:var(--ink);min-width:190px;text-align:center; }
-.cal-filter {
-  margin-left:auto;padding:.4rem .8rem;border:1.5px solid var(--border);
-  border-radius:6px;font-family:'Outfit',sans-serif;font-size:.83rem;
-  background:var(--white);cursor:pointer;outline:none;
-}
-.cal-filter:focus { border-color:var(--wine); }
-
-/* TABLE CALENDAR */
-.cal-table-wrap { overflow-x:auto;border-radius:10px;border:1.5px solid var(--border);background:var(--white); }
-table.cal {
-  width:100%;border-collapse:collapse;min-width:640px;
-}
-table.cal thead tr th {
-  background:var(--plum);color:#fff;
-  padding:.65rem .6rem;font-size:.78rem;font-weight:600;
-  text-align:center;letter-spacing:.04em;
-  border-right:1px solid rgba(255,255,255,.08);
-}
-table.cal thead tr th:first-child { text-align:left;padding-left:1rem;width:90px; }
-table.cal thead tr th.today-h { background:var(--wine); }
-table.cal thead tr th:last-child { border-right:none; }
-
-table.cal tbody tr td {
-  vertical-align:top;padding:4px;
-  border-right:1px solid var(--border);border-bottom:1px solid var(--border);
-  min-height:58px;cursor:pointer;transition:background .12s;
-  position:relative;
-}
-table.cal tbody tr td:hover { background:#f8f0fa; }
-table.cal tbody tr td.today-c { background:#fdf0f4; }
-table.cal tbody tr td:first-child {
-  background:var(--bg);cursor:default;
-  padding:.5rem .6rem .5rem 1rem;
-  font-size:.75rem;font-weight:600;color:var(--muted);
-  white-space:nowrap;line-height:1.5;border-right:2px solid var(--border);
-}
-table.cal tbody tr td:last-child { border-right:none; }
-table.cal tbody tr:last-child td { border-bottom:none; }
-
-.chip {
-  display:block;padding:.22rem .45rem;border-radius:4px;
-  font-size:.71rem;font-weight:600;line-height:1.35;cursor:pointer;
-  margin-bottom:2px;transition:filter .12s;
-}
-.chip:hover { filter:brightness(.92); }
-.ch-lab  { background:var(--lab-bg);color:var(--lab); }
-.ch-quad { background:var(--quad-bg);color:var(--quad); }
-.ch-aud  { background:var(--aud-bg);color:var(--aud); }
-
-.plus-hint {
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-size:1.3rem;color:#d8bfe0;pointer-events:none;
-  opacity:0;transition:opacity .12s;
-}
-table.cal tbody tr td:hover .plus-hint { opacity:1; }
-
-/* LEGEND */
-.legend { display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;font-size:.8rem; }
-.legend span { display:flex;align-items:center;gap:.35rem;color:var(--muted); }
-.dot { width:10px;height:10px;border-radius:2px;display:inline-block; }
-
-/* ── CARD ── */
-.card {
-  background:var(--white);border:1.5px solid var(--border);
-  border-radius:10px;padding:1.5rem;margin-bottom:1.2rem;
-}
-.card h3 {
-  font-family:'Playfair Display',serif;font-size:1.2rem;
-  color:var(--plum);margin-bottom:1.2rem;padding-bottom:.7rem;
-  border-bottom:1px solid var(--border);
-}
-
-.form-row { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
-.form-row.three { grid-template-columns:1fr 1fr 1fr; }
-.form-row .full { grid-column:1/-1; }
-@media(max-width:580px){
-  .form-row,.form-row.three { grid-template-columns:1fr; }
-}
-
-.info-note {
-  background:#f5edf8;border:1px solid #d8b8e8;border-radius:6px;
-  padding:.6rem .9rem;font-size:.8rem;color:var(--ink2);margin-top:.8rem;
-}
-
-/* ── BOOKING LIST ── */
-.bk-card {
-  background:var(--white);border:1.5px solid var(--border);
-  border-left:4px solid var(--plum);border-radius:8px;
-  padding:1rem 1.2rem;margin-bottom:.8rem;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
-  animation:up .25s ease both;
-}
-.bk-card.lab  { border-left-color:var(--lab); }
-.bk-card.quad { border-left-color:var(--quad); }
-.bk-card.aud  { border-left-color:var(--aud); }
-
-.bk-info h4 { font-size:.95rem;font-weight:600;color:var(--plum);margin-bottom:.25rem; }
-.bk-info .meta { font-size:.8rem;color:var(--muted);line-height:1.7; }
-.bk-info .meta strong { color:var(--ink2); }
-.bk-acts { display:flex;gap:.5rem;flex-shrink:0;flex-wrap:wrap; }
-
-.badge {
-  display:inline-block;padding:.15rem .55rem;border-radius:20px;
-  font-size:.7rem;font-weight:600;margin-left:.5rem;vertical-align:middle;
-}
-.badge-ok  { background:var(--green-bg);color:var(--green); }
-.badge-lock{ background:#f5edf8;color:var(--ink2); }
-
-/* ── ADMIN TABLE ── */
-.tbl-wrap { overflow-x:auto;border-radius:8px;border:1.5px solid var(--border); }
-table.data { width:100%;border-collapse:collapse;font-size:.83rem;min-width:600px; }
-table.data thead { background:var(--plum);color:#fff; }
-table.data th {
-  padding:.7rem 1rem;text-align:left;font-weight:600;
-  font-size:.76rem;letter-spacing:.05em;white-space:nowrap;
-  border-right:1px solid rgba(255,255,255,.08);
-}
-table.data th:last-child { border-right:none; }
-table.data td {
-  padding:.65rem 1rem;border-bottom:1px solid var(--border);
-  background:var(--white);color:var(--ink);vertical-align:middle;
-}
-table.data tr:last-child td { border-bottom:none; }
-table.data tr:hover td { background:var(--bg); }
-
-/* ── MODAL ── */
-.overlay {
-  position:fixed;inset:0;background:rgba(26,10,34,.6);z-index:200;
-  display:flex;align-items:center;justify-content:center;padding:1rem;
-  animation:fadeIn .18s ease;
-}
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(26,10,34,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .18s ease;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal {
-  background:var(--white);border-radius:12px;padding:1.8rem;
-  max-width:500px;width:100%;
-  box-shadow:var(--shadow-lg);
-  border-top:4px solid var(--coral);
-  animation:up .22s ease both;
-}
-.modal h3 { font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--plum);margin-bottom:1.1rem; }
-.modal .row { display:flex;gap:.6rem;flex-direction:column;font-size:.88rem;color:var(--ink2);line-height:1.7; }
-.modal .row strong { color:var(--ink); }
-.modal-acts { display:flex;gap:.7rem;margin-top:1.4rem;flex-wrap:wrap; }
+.modal{background:var(--white);border-radius:12px;padding:1.8rem;max-width:520px;width:100%;box-shadow:var(--shadow-lg);border-top:4px solid var(--coral);animation:up .22s ease both;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--plum);margin-bottom:1.1rem;}
+.modal .row{font-size:.88rem;color:var(--ink2);line-height:1.8;}
+.modal .row p{margin-bottom:.2rem;}
+.modal .row strong{color:var(--ink);}
+.modal-acts{display:flex;gap:.7rem;margin-top:1.4rem;flex-wrap:wrap;}
+.modal .mlbl{display:block;font-size:.73rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin-bottom:.4rem;margin-top:.9rem;}
+.modal .mlbl:first-child{margin-top:0;}
+.modal input,.modal select{width:100%;padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.92rem;color:var(--ink);background:var(--cream);outline:none;transition:border-color .18s;}
+.modal input:focus,.modal select:focus{border-color:var(--plum-mid);background:var(--white);}
 
-/* ── TOAST ── */
-#toast {
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;
-  background:var(--plum);color:#fff;
-  padding:.75rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:500;
-  border-left:4px solid var(--coral);display:none;
-  max-width:300px;box-shadow:var(--shadow-lg);animation:up .25s ease;
-}
-#toast.ok  { border-left-color:#22c55e; }
-#toast.err { border-left-color:var(--red); }
-
-/* ── SPINNER ── */
-.spin {
-  display:inline-block;width:18px;height:18px;
-  border:2.5px solid rgba(255,255,255,.3);
-  border-top-color:#fff;border-radius:50%;
-  animation:spin .6s linear infinite;
-}
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;background:var(--plum);color:#fff;padding:.75rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:500;border-left:4px solid var(--coral);display:none;max-width:320px;box-shadow:var(--shadow-lg);animation:up .25s ease;}
+#toast.ok{border-left-color:#22c55e;}#toast.err{border-left-color:#ef4444;}
+.spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.empty {
-  text-align:center;padding:3rem 1rem;color:var(--muted);
-}
-.empty .ico { font-size:2.4rem;margin-bottom:.6rem; }
-
-/* ── SPACE BADGES in filter ── */
-.space-tag {
-  display:inline-block;padding:.15rem .6rem;border-radius:4px;
-  font-size:.75rem;font-weight:600;
-}
-.st-lab  { background:var(--lab-bg);color:var(--lab); }
-.st-quad { background:var(--quad-bg);color:var(--quad); }
-.st-aud  { background:var(--aud-bg);color:var(--aud); }
-
-/* ── CONFIG BANNER ── */
-#config-banner {
-  background:#fef3c7;border-bottom:2px solid #fbbf24;
-  padding:.8rem 1.5rem;font-size:.83rem;color:#92400e;
-  display:flex;align-items:center;gap:.5rem;
-}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty .ico{font-size:2.4rem;margin-bottom:.6rem;}
+.batch-hint{font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6;}
 </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
 <div id="topbar" style="display:none">
-  <div class="logo">ENAU <em>·</em> Reservas</div>
+  <div class="logo-bar">
+    <!-- Coloque logo.png no mesmo repositório para aparecer a imagem real -->
+    <img class="topbar-logo" src="logo.png" alt="Colégio ENAU"
+         style="filter:brightness(0) invert(1);"
+         onerror="this.outerHTML='<svg width=\'130\' height=\'38\' viewBox=\'0 0 260 76\' fill=\'none\'><path d=\'M22 68C19 61 12 54 10 46C7 38 9 31 15 27C19 25 22 27 25 31\' fill=\'#f2839a\'/><path d=\'M25 31C28 27 31 25 35 27C41 31 43 38 40 46C37 54 30 61 27 68\' fill=\'#d9506a\'/><path d=\'M25 31C20 24 13 18 11 11C9 5 13 2 17 4C21 6 23 13 25 20\' fill=\'#9b3568\'/><path d=\'M25 20C27 13 29 6 33 4C37 2 41 5 39 11C37 18 30 24 25 31\' fill=\'#6e2e8a\'/><path d=\'M25 20C24 13 23 7 24 4C24.5 2 25.5 2 26 4C27 7 26 13 25 20\' fill=\'#fff\'/><text x=\'52\' y=\'46\' font-family=\'Playfair Display,serif\' font-size=\'28\' font-weight=\'700\' fill=\'white\'>enau</text><text x=\'52\' y=\'62\' font-family=\'Outfit,sans-serif\' font-size=\'10\' font-weight=\'400\' fill=\'rgba(255,255,255,.55)\' letter-spacing=\'2\'>RESERVAS</text></svg>'">
+  </div>
   <div class="topbar-right">
     <span id="topbar-user"></span>
     <button class="btn-sm btn-ghost" onclick="logout()">Sair</button>
@@ -375,7 +157,10 @@ table.data tr:hover td { background:var(--bg); }
 <div id="login-wrap">
   <div class="login-box">
     <div class="login-hero">
-      <h1>Colégio ENAU</h1>
+      <!-- Imagem real: coloque logo.png no repositório -->
+      <img class="hero-logo" src="logo.png" alt="Colégio ENAU"
+           style="filter:brightness(0) invert(1);"
+           onerror="this.outerHTML='<svg width=\'160\' height=\'68\' viewBox=\'0 0 320 136\' fill=\'none\' style=\'margin:0 auto .6rem;display:block\'><path d=\'M52 126C47 115 36 104 31 90C26 76 29 63 39 57C45 54 50 57 56 64\' fill=\'rgba(255,255,255,.55)\'/><path d=\'M56 64C62 57 67 54 73 57C83 63 86 76 81 90C76 104 65 115 60 126\' fill=\'rgba(255,255,255,.72)\'/><path d=\'M56 64C49 54 40 45 38 34C35 24 40 20 46 23C52 26 54 38 56 50\' fill=\'rgba(255,255,255,.85)\'/><path d=\'M56 50C58 38 60 26 66 23C72 20 77 24 74 34C72 45 63 54 56 64\' fill=\'rgba(255,255,255,.94)\'/><path d=\'M56 50C54 38 53 28 54 23C54.5 20 55.5 20 56 23C57 28 58 38 56 50\' fill=\'#fff\'/><text x=\'100\' y=\'76\' font-family=\'Playfair Display,serif\' font-size=\'52\' font-weight=\'700\' fill=\'white\'>enau</text><text x=\'100\' y=\'102\' font-family=\'Outfit,sans-serif\' font-size=\'16\' font-weight=\'300\' fill=\'rgba(255,255,255,.65)\' letter-spacing=\'4\'>COLÉGIO</text></svg>'">
       <p>Sistema de Reserva de Espaços</p>
     </div>
     <div class="login-body">
@@ -392,8 +177,6 @@ table.data tr:hover td { background:var(--bg); }
 <!-- APP -->
 <div id="app">
   <div class="wrap">
-
-    <!-- TABS -->
     <div class="tabs">
       <button class="tab on" onclick="showTab('calendar',this)">📅 Calendário</button>
       <button class="tab" onclick="showTab('new',this)">＋ Nova Reserva</button>
@@ -403,79 +186,49 @@ table.data tr:hover td { background:var(--bg); }
 
     <!-- CALENDAR -->
     <div class="tab-panel on" id="tab-calendar">
-      <div class="ph">
-        <h2>Calendário de Reservas</h2>
-        <p id="ph-date"></p>
-      </div>
+      <div class="ph"><h2>Calendário de Reservas</h2><p id="ph-date"></p></div>
       <div class="cal-bar">
         <button class="nav-btn" onclick="weekNav(-1)">‹</button>
         <span class="week-lbl" id="wlbl"></span>
         <button class="nav-btn" onclick="weekNav(1)">›</button>
         <select class="cal-filter" id="cal-filter" onchange="renderCal()">
           <option value="">Todos os espaços</option>
-          <option>Laboratório</option>
-          <option>Quadra/Ginásio</option>
-          <option>Auditório</option>
+          <option>Auditório</option><option>Lab Informática</option><option>Lab Multi (Bio/Qui/Fis)</option>
+          <option>Área Verde</option><option>Biblioteca</option><option>Skill Lab</option>
+          <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
         </select>
       </div>
-      <div class="cal-table-wrap">
-        <table class="cal" id="cal-table"></table>
-      </div>
-      <div class="legend">
-        <span><span class="dot" style="background:var(--lab-bg);border:1.5px solid var(--lab)"></span>Laboratório</span>
-        <span><span class="dot" style="background:var(--quad-bg);border:1.5px solid var(--quad)"></span>Quadra/Ginásio</span>
-        <span><span class="dot" style="background:var(--aud-bg);border:1.5px solid var(--aud)"></span>Auditório</span>
-      </div>
+      <div class="cal-table-wrap"><table class="cal" id="cal-table"></table></div>
+      <div class="legend" id="cal-legend"></div>
     </div>
 
     <!-- NEW BOOKING -->
     <div class="tab-panel" id="tab-new">
       <div class="ph"><h2>Nova Reserva</h2></div>
       <div class="card">
-        <h3>Preencha os dados</h3>
+        <h3 id="form-card-title">Preencha os dados</h3>
         <div class="form-row">
           <div>
             <label class="lbl">Espaço *</label>
             <select id="f-space">
               <option value="">Selecione...</option>
-              <option>Laboratório</option>
-              <option>Quadra/Ginásio</option>
-              <option>Auditório</option>
+              <option>Auditório</option><option>Lab Informática</option><option>Lab Multi (Bio/Qui/Fis)</option>
+              <option>Área Verde</option><option>Biblioteca</option><option>Skill Lab</option>
+              <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
             </select>
           </div>
-          <div>
-            <label class="lbl">Data *</label>
-            <input type="date" id="f-date">
-          </div>
+          <div><label class="lbl">Data *</label><input type="date" id="f-date"></div>
         </div>
         <div class="form-row">
-          <div>
-            <label class="lbl">Horário Início *</label>
-            <input type="time" id="f-start" step="600">
-          </div>
-          <div>
-            <label class="lbl">Horário Fim *</label>
-            <input type="time" id="f-end" step="600">
-          </div>
+          <div><label class="lbl">Horário Início *</label><input type="time" id="f-start" step="600"></div>
+          <div><label class="lbl">Horário Fim *</label><input type="time" id="f-end" step="600"></div>
         </div>
         <div class="form-row three">
-          <div>
-            <label class="lbl">Professor Responsável *</label>
-            <input type="text" id="f-teacher" placeholder="Nome do professor">
-          </div>
-          <div>
-            <label class="lbl">Turma / Série *</label>
-            <input type="text" id="f-class" placeholder="Ex: 9º ano, EF, EM">
-          </div>
-          <div>
-            <label class="lbl">Aula / Período</label>
-            <input type="text" id="f-lesson" placeholder="Ex: 3ª aula, 1ª a 4ª">
-          </div>
+          <div><label class="lbl">Professor Responsável *</label><input type="text" id="f-teacher" placeholder="Nome do professor"></div>
+          <div><label class="lbl">Turma / Série *</label><input type="text" id="f-class" placeholder="Ex: 9º ano, EF, EM"></div>
+          <div><label class="lbl">Aula / Período</label><input type="text" id="f-lesson" placeholder="Ex: 3ª aula, 1ª a 4ª"></div>
         </div>
-        <div>
-          <label class="lbl">Observações / Recursos necessários</label>
-          <textarea id="f-notes" placeholder="Ex: Datashow, Internet, Powerpoint, Word, Excel..."></textarea>
-        </div>
+        <div><label class="lbl">Observações / Recursos necessários</label><textarea id="f-notes" placeholder="Ex: Datashow, Internet, Powerpoint, Word, Excel..."></textarea></div>
         <div class="info-note">ℹ️ A reserva pode ser editada ou cancelada com pelo menos <strong>5 horas</strong> de antecedência.</div>
         <div style="margin-top:1.2rem;display:flex;gap:.8rem;flex-wrap:wrap">
           <button class="btn btn-primary" id="btn-submit" onclick="submitBooking()">Confirmar Reserva</button>
@@ -492,614 +245,351 @@ table.data tr:hover td { background:var(--bg); }
 
     <!-- ADMIN -->
     <div class="tab-panel" id="tab-admin">
-      <!-- Add user -->
       <div class="card">
-        <h3>Adicionar Usuário</h3>
-        <div class="form-row">
-          <div>
-            <label class="lbl">Usuário</label>
-            <input type="text" id="a-uname" placeholder="Ex: prof.carlos">
-          </div>
-          <div>
-            <label class="lbl">Senha (mín. 6 chars)</label>
-            <input type="password" id="a-pass" placeholder="••••••">
-          </div>
+        <h3>Gerenciar Usuários</h3>
+        <div style="display:flex;gap:.6rem;margin-bottom:1.2rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showUserForm('single')">＋ Adicionar Usuário</button>
+          <button class="btn btn-outline" onclick="showUserForm('batch')">📋 Cadastro em Lote</button>
         </div>
-        <div class="form-row">
-          <div>
-            <label class="lbl">Nome completo</label>
-            <input type="text" id="a-full" placeholder="Carlos Mendes">
+        <div id="form-single">
+          <div class="form-row">
+            <div><label class="lbl">Usuário</label><input type="text" id="a-uname" placeholder="prof.carlos"></div>
+            <div><label class="lbl">Senha (mín. 6 chars)</label><input type="password" id="a-pass" placeholder="••••••"></div>
           </div>
-          <div>
-            <label class="lbl">Perfil</label>
-            <select id="a-role">
-              <option value="user">Usuário (Professor/Funcionário)</option>
-              <option value="admin">Administrador</option>
-            </select>
+          <div class="form-row">
+            <div><label class="lbl">Nome completo</label><input type="text" id="a-full" placeholder="Carlos Mendes"></div>
+            <div><label class="lbl">Perfil</label><select id="a-role"><option value="user">Usuário (Professor/Funcionário)</option><option value="admin">Administrador</option></select></div>
           </div>
+          <div style="margin-top:1rem"><button class="btn btn-primary" onclick="addUser()">Adicionar</button></div>
         </div>
-        <div style="margin-top:1rem">
-          <button class="btn btn-primary" onclick="addUser()">Adicionar</button>
+        <div id="form-batch" style="display:none">
+          <label class="lbl">Lista de usuários (um por linha)</label>
+          <textarea id="a-batch" style="min-height:130px;font-family:monospace;font-size:.83rem" placeholder="prof.ana;enau2024;Ana Paula;user&#10;prof.joao;enau2024;João Silva;user&#10;coordenador;coord123;Maria Souza;admin"></textarea>
+          <p class="batch-hint">📌 Formato: <strong>usuario;senha;Nome Completo;perfil</strong> — perfil: <code>user</code> ou <code>admin</code></p>
+          <div style="margin-top:.8rem;display:flex;gap:.7rem">
+            <button class="btn btn-primary" onclick="addBatchUsers()">Importar</button>
+            <button class="btn btn-outline" onclick="showUserForm('single')">Cancelar</button>
+          </div>
         </div>
       </div>
-
-      <!-- All bookings -->
       <div class="card">
         <h3>Todas as Reservas</h3>
-        <div class="tbl-wrap">
-          <table class="data">
-            <thead><tr>
-              <th>Espaço</th><th>Data</th><th>Horário</th>
-              <th>Professor</th><th>Turma</th><th>Aula</th><th>Feito por</th><th>Ação</th>
-            </tr></thead>
-            <tbody id="adm-tbody"></tbody>
-          </table>
-        </div>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Aula</th><th>Feito por</th><th>Ação</th></tr></thead><tbody id="adm-tbody"></tbody></table></div>
       </div>
-
-      <!-- Users -->
       <div class="card">
         <h3>Usuários Cadastrados</h3>
-        <div class="tbl-wrap">
-          <table class="data">
-            <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Ação</th></tr></thead>
-            <tbody id="adm-users"></tbody>
-          </table>
-        </div>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Ações</th></tr></thead><tbody id="adm-users"></tbody></table></div>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- MODAL -->
 <div class="overlay" id="overlay" style="display:none" onclick="overlayClick(event)">
-  <div class="modal" id="modal">
-    <h3 id="m-title"></h3>
-    <div class="row" id="m-body"></div>
-    <div class="modal-acts" id="m-acts"></div>
-  </div>
+  <div class="modal"><h3 id="m-title"></h3><div id="m-body"></div><div class="modal-acts" id="m-acts"></div></div>
 </div>
-
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
-/* ══════════════════════════════════════════
-   ▶ CONFIGURE AQUI
-══════════════════════════════════════════ */
-const SUPABASE_URL = 'https://uybjxwnjsiftudoymkat.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Ymp4d25qc2lmdHVkb3lta2F0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMTMzODksImV4cCI6MjA4ODc4OTM4OX0.FLbcu27bnLc9BkPFP5AMzJ-pxTdpA112FjS2iDx9JtQ';
+const SUPABASE_URL='https://uybjxwnjsiftudoymkat.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5Ymp4d25qc2lmdHVkb3lta2F0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMTMzODksImV4cCI6MjA4ODc4OTM4OX0.FLbcu27bnLc9BkPFP5AMzJ-pxTdpA112FjS2iDx9JtQ';
 
-/* ══════════════════════════════════════════
-   API HELPER
-══════════════════════════════════════════ */
-async function sb(method, path, body) {
-  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-    method,
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || res.statusText);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+const SPACES=['Auditório','Lab Informática','Lab Multi (Bio/Qui/Fis)','Área Verde','Biblioteca','Skill Lab','Lab Anatomia','Sala de Artes','Brinquedoteca','Lab Enfermagem'];
+const SPACE_CLS={};SPACES.forEach((s,i)=>SPACE_CLS[s]='ch-'+i);
+
+async function sb(method,path,body){
+  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{method,headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':'return=minimal'},body:body?JSON.stringify(body):undefined});
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.message||res.statusText);}
+  const t=await res.text();return t?JSON.parse(t):null;
+}
+const api={get:p=>sb('GET',p),post:(p,b)=>sb('POST',p,b),patch:(p,b)=>sb('PATCH',p,b),delete:p=>sb('DELETE',p)};
+
+function isDemo(){return SUPABASE_URL.includes('SEU_PROJETO');}
+function gLS(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
+function sLS(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function initDemo(){
+  if(!gLS('eu',null))sLS('eu',[{id:1,username:'admin',password:'admin123',fullname:'Administrador',role:'admin'},{id:2,username:'prof.lucas',password:'enau2024',fullname:'Lucas Oliveira',role:'user'}]);
+  if(!gLS('eb',null))sLS('eb',[]);
 }
 
-const api = {
-  get:    (path)       => sb('GET',    path),
-  post:   (path, body) => sb('POST',   path, body),
-  patch:  (path, body) => sb('PATCH',  path, body),
-  delete: (path)       => sb('DELETE', path),
-};
+let ME=null,editId=null,BOOKINGS=[];
+let weekStart=monday(new Date());
+function monday(d){const dt=new Date(d),day=dt.getDay();dt.setDate(dt.getDate()-(day===0?6:day-1));dt.setHours(0,0,0,0);return dt;}
 
-/* ══════════════════════════════════════════
-   DEMO MODE (localStorage) — usado se Supabase não configurado
-══════════════════════════════════════════ */
-function isDemo() {
-  return SUPABASE_URL.includes('SEU_PROJETO');
+async function doLogin(){
+  const u=document.getElementById('l-user').value.trim(),p=document.getElementById('l-pass').value;
+  const btn=document.getElementById('btn-login');btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
+  try{
+    let user=null;
+    if(isDemo()){initDemo();user=gLS('eu',[]).find(x=>x.username===u&&x.password===p)||null;}
+    else{const r=await api.get(`usuarios?username=eq.${encodeURIComponent(u)}&password=eq.${encodeURIComponent(p)}&select=*`);user=r&&r[0]?r[0]:null;}
+    if(!user)throw new Error('invalid');
+    ME=user;
+    document.getElementById('l-err').style.display='none';
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('topbar').style.display='flex';
+    document.getElementById('app').style.display='block';
+    document.getElementById('topbar-user').textContent=user.fullname;
+    // Admin tab: strictly admin only
+    document.querySelector('.admin-tab').style.display=user.role==='admin'?'inline-block':'none';
+    const now=new Date();
+    document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('f-date').value=now.toISOString().split('T')[0];
+    await loadBookings();renderCal();renderMine();renderLegend();
+    if(ME.role==='admin')renderAdmin();
+  }catch{document.getElementById('l-err').style.display='block';}
+  btn.innerHTML='Entrar';btn.disabled=false;
+}
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function logout(){
+  ME=null;BOOKINGS=[];editId=null;
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('app').style.display='none';
+  ['l-user','l-pass'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-calendar').classList.add('on');
+  document.querySelectorAll('.tab')[0].classList.add('on');
 }
 
-function gLS(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } }
-function sLS(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
-
-function initDemo() {
-  if (!gLS('enau_users', null)) {
-    sLS('enau_users', [
-      { id:1, username:'admin',      password:'admin123', fullname:'Administrador', role:'admin' },
-      { id:2, username:'prof.lucas', password:'enau2024', fullname:'Lucas Oliveira', role:'user' },
-      { id:3, username:'prof.ana',   password:'enau2024', fullname:'Ana Paula',     role:'user' },
-    ]);
-  }
-  if (!gLS('enau_bookings', null)) sLS('enau_bookings', []);
+async function loadBookings(){
+  if(isDemo())BOOKINGS=gLS('eb',[]);
+  else BOOKINGS=await api.get('reservas?select=*&order=date.asc,time_start.asc')||[];
 }
 
-/* ══════════════════════════════════════════
-   STATE
-══════════════════════════════════════════ */
-let ME = null;
-let editId = null;
-let weekStart = monday(new Date());
-let BOOKINGS = []; // cache
+const DAYS=['Seg','Ter','Qua','Qui','Sex','Sáb'];
+function weekNav(d){weekStart.setDate(weekStart.getDate()+d*7);renderCal();}
+function renderLegend(){document.getElementById('cal-legend').innerHTML=SPACES.map((s,i)=>`<span><span class="dot ch-${i}" style="border:1.5px solid currentColor;width:11px;height:11px"></span>${s}</span>`).join('');}
 
-function monday(d) {
-  const dt = new Date(d);
-  const day = dt.getDay();
-  dt.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));
-  dt.setHours(0,0,0,0);
-  return dt;
-}
-
-/* ══════════════════════════════════════════
-   AUTH
-══════════════════════════════════════════ */
-async function doLogin() {
-  const u = document.getElementById('l-user').value.trim();
-  const p = document.getElementById('l-pass').value;
-  const btn = document.getElementById('btn-login');
-  btn.innerHTML = '<span class="spin"></span>';
-  btn.disabled = true;
-
-  try {
-    let user = null;
-
-    if (isDemo()) {
-      initDemo();
-      const users = gLS('enau_users', []);
-      user = users.find(x => x.username === u && x.password === p) || null;
-    } else {
-      const rows = await api.get(`usuarios?username=eq.${encodeURIComponent(u)}&password=eq.${encodeURIComponent(p)}&select=*`);
-      user = rows && rows[0] ? rows[0] : null;
-    }
-
-    if (!user) throw new Error('invalid');
-
-    ME = user;
-    document.getElementById('l-err').style.display = 'none';
-    document.getElementById('login-wrap').style.display = 'none';
-    document.getElementById('topbar').style.display = 'flex';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('topbar-user').textContent = user.fullname;
-    if (user.role === 'admin') document.querySelector('.admin-tab').style.display = 'inline-block';
-
-    const now = new Date();
-    document.getElementById('ph-date').textContent =
-      now.toLocaleDateString('pt-BR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    document.getElementById('f-date').value = now.toISOString().split('T')[0];
-
-    if (isDemo()) document.getElementById('config-banner').style.display = 'flex';
-    else document.getElementById('config-banner').style.display = 'none';
-
-    await loadBookings();
-    renderCal();
-    renderMine();
-    if (ME.role === 'admin') renderAdmin();
-
-  } catch {
-    document.getElementById('l-err').style.display = 'block';
-  }
-
-  btn.innerHTML = 'Entrar';
-  btn.disabled = false;
-}
-
-document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-function logout() {
-  ME = null; BOOKINGS = [];
-  document.getElementById('login-wrap').style.display = 'flex';
-  document.getElementById('topbar').style.display = 'none';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('l-user').value = '';
-  document.getElementById('l-pass').value = '';
-}
-
-/* ══════════════════════════════════════════
-   LOAD BOOKINGS
-══════════════════════════════════════════ */
-async function loadBookings() {
-  if (isDemo()) {
-    BOOKINGS = gLS('enau_bookings', []);
-  } else {
-    BOOKINGS = await api.get('reservas?select=*&order=date.asc,time_start.asc') || [];
-  }
-}
-
-/* ══════════════════════════════════════════
-   CALENDAR
-══════════════════════════════════════════ */
-const DAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb'];
-
-function weekNav(d) { weekStart.setDate(weekStart.getDate() + d*7); renderCal(); }
-
-function renderCal() {
-  const filter = document.getElementById('cal-filter').value;
-  const days = Array.from({length:6}, (_,i) => {
-    const d = new Date(weekStart);
-    d.setDate(d.getDate() + i);
-    return d;
-  });
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  const fmt = d => d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
-  document.getElementById('wlbl').textContent = `${fmt(days[0])} – ${fmt(days[5])}`;
-
-  const CHIP_CLS = { 'Laboratório':'ch-lab','Quadra/Ginásio':'ch-quad','Auditório':'ch-aud' };
-
-  // Collect unique time slots from bookings this week
-  const weekDates = days.map(d => d.toISOString().split('T')[0]);
-  const slots = [...new Set(
-    BOOKINGS
-      .filter(b => weekDates.includes(b.date) && (!filter || b.space === filter))
-      .map(b => b.time_start + '–' + b.time_end)
-  )].sort();
-
-  if (!slots.length) {
-    // Empty week — show generic rows
-    slots.push('07:00–07:50','07:50–08:40','08:40–09:30','09:50–10:40','10:40–11:30','13:00–13:50','13:50–14:40','15:50–16:40');
-  }
-
-  let html = '<thead><tr><th>Horário</th>';
-  days.forEach((d, i) => {
-    const isT = d.getTime() === today.getTime();
-    html += `<th class="${isT ? 'today-h' : ''}">${DAYS[i]}<br><span style="font-weight:400;font-size:.75rem">${d.getDate()}/${d.getMonth()+1}</span></th>`;
-  });
-  html += '</tr></thead><tbody>';
-
-  slots.forEach(slot => {
-    html += `<tr><td>${slot.replace('–','<br>')}</td>`;
-    days.forEach(d => {
-      const ds = d.toISOString().split('T')[0];
-      const isT = d.getTime() === today.getTime();
-      const cell = BOOKINGS.filter(b =>
-        b.date === ds &&
-        (b.time_start + '–' + b.time_end) === slot &&
-        (!filter || b.space === filter)
-      );
-      let chips = cell.map(b =>
-        `<span class="chip ${CHIP_CLS[b.space]||''}" onclick="openModal('${b.id}')" title="${b.purpose||''}">${b.space.split('/')[0]} · ${b.teacher}</span>`
-      ).join('');
-      html += `<td class="${isT ? 'today-c' : ''}" onclick="prefillNew('${ds}')">
-        ${chips}<span class="plus-hint">+</span></td>`;
+function renderCal(){
+  const filter=document.getElementById('cal-filter').value;
+  const days=Array.from({length:6},(_,i)=>{const d=new Date(weekStart);d.setDate(d.getDate()+i);return d;});
+  const today=new Date();today.setHours(0,0,0,0);
+  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+  document.getElementById('wlbl').textContent=`${fmt(days[0])} – ${fmt(days[5])}`;
+  const weekDates=days.map(d=>d.toISOString().split('T')[0]);
+  let slots=[...new Set(BOOKINGS.filter(b=>weekDates.includes(b.date)&&(!filter||b.space===filter)).map(b=>b.time_start+'–'+b.time_end))].sort();
+  if(!slots.length)slots=['07:00–07:50','07:50–08:40','09:50–10:40','10:40–11:30','13:00–13:50','13:50–14:40'];
+  let html='<thead><tr><th>Horário</th>';
+  days.forEach((d,i)=>{const isT=d.getTime()===today.getTime();html+=`<th class="${isT?'today-h':''}">${DAYS[i]}<br><span style="font-weight:400;font-size:.75rem">${d.getDate()}/${d.getMonth()+1}</span></th>`;});
+  html+='</tr></thead><tbody>';
+  slots.forEach(slot=>{
+    html+=`<tr><td>${slot.replace('–','<br>')}</td>`;
+    days.forEach(d=>{
+      const ds=d.toISOString().split('T')[0],isT=d.getTime()===today.getTime();
+      const cell=BOOKINGS.filter(b=>b.date===ds&&(b.time_start+'–'+b.time_end)===slot&&(!filter||b.space===filter));
+      const chips=cell.map(b=>`<span class="chip ${SPACE_CLS[b.space]||'ch-0'}" onclick="openModal('${b.id}')">${b.space} · ${b.teacher}</span>`).join('');
+      html+=`<td class="${isT?'today-c':''}" onclick="prefillNew('${ds}')">${chips}<span class="plus-hint">+</span></td>`;
     });
-    html += '</tr>';
+    html+='</tr>';
   });
-
-  html += '</tbody>';
-  document.getElementById('cal-table').innerHTML = html;
+  document.getElementById('cal-table').innerHTML=html+'</tbody>';
 }
 
-/* ══════════════════════════════════════════
-   BOOKING CRUD
-══════════════════════════════════════════ */
-function hoursUntil(b) {
-  const dt = new Date(b.date + 'T' + b.time_start);
-  return (dt - new Date()) / 3600000;
-}
+function hoursUntil(b){return(new Date(b.date+'T'+b.time_start)-new Date())/3600000;}
 
-async function submitBooking() {
-  const space   = document.getElementById('f-space').value;
-  const date    = document.getElementById('f-date').value;
-  const start   = document.getElementById('f-start').value;
-  const end     = document.getElementById('f-end').value;
-  const teacher = document.getElementById('f-teacher').value.trim();
-  const cls     = document.getElementById('f-class').value.trim();
-  const lesson  = document.getElementById('f-lesson').value.trim();
-  const notes   = document.getElementById('f-notes').value.trim();
-
-  if (!space || !date || !start || !end || !teacher || !cls) {
-    toast('Preencha todos os campos obrigatórios (*).', 'err'); return;
+async function submitBooking(){
+  const space=document.getElementById('f-space').value,date=document.getElementById('f-date').value;
+  const start=document.getElementById('f-start').value,end=document.getElementById('f-end').value;
+  const teacher=document.getElementById('f-teacher').value.trim(),cls=document.getElementById('f-class').value.trim();
+  const lesson=document.getElementById('f-lesson').value.trim(),notes=document.getElementById('f-notes').value.trim();
+  if(!space||!date||!start||!end||!teacher||!cls){toast('Preencha todos os campos obrigatórios (*).','err');return;}
+  if(start>=end){toast('Horário fim deve ser após o início.','err');return;}
+  const conflict=BOOKINGS.find(b=>b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId));
+  if(conflict){toast(`Conflito! "${space}" já reservado das ${conflict.time_start}–${conflict.time_end} por ${conflict.teacher}.`,'err');return;}
+  if(editId){
+    const orig=BOOKINGS.find(b=>b.id===editId);
+    if(orig&&orig.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão para editar esta reserva.','err');return;}
   }
-  if (start >= end) { toast('Horário fim deve ser após o início.', 'err'); return; }
-
-  // Conflict check
-  const conflict = BOOKINGS.find(b =>
-    b.space === space && b.date === date &&
-    b.time_start < end && b.time_end > start &&
-    (!editId || b.id !== editId)
-  );
-  if (conflict) {
-    toast(`Conflito! ${space} já reservado das ${conflict.time_start}–${conflict.time_end} por ${conflict.teacher}.`, 'err');
-    return;
-  }
-
-  const payload = { space, date, time_start:start, time_end:end, teacher, turma:cls, lesson, notes,
-                    booked_by:ME.username, booked_by_name:ME.fullname };
-
-  const btn = document.getElementById('btn-submit');
-  btn.innerHTML = '<span class="spin"></span> Salvando...';
-  btn.disabled = true;
-
-  try {
-    if (editId) {
-      if (isDemo()) {
-        const idx = BOOKINGS.findIndex(b => b.id === editId);
-        if (idx > -1) BOOKINGS[idx] = { ...BOOKINGS[idx], ...payload };
-        sLS('enau_bookings', BOOKINGS);
-      } else {
-        await api.patch(`reservas?id=eq.${editId}`, payload);
-        await loadBookings();
-      }
-      toast('Reserva atualizada!', 'ok');
-      editId = null;
-      document.getElementById('btn-cancel-edit').style.display = 'none';
-    } else {
-      if (isDemo()) {
-        const newB = { ...payload, id:'bk_'+Date.now(), created_at:new Date().toISOString() };
-        BOOKINGS.push(newB);
-        sLS('enau_bookings', BOOKINGS);
-      } else {
-        const rows = await api.post('reservas', payload);
-        BOOKINGS.push(rows[0]);
-      }
-      toast('Reserva confirmada!', 'ok');
+  const payload={space,date,time_start:start,time_end:end,teacher,turma:cls,lesson,notes,booked_by:ME.username,booked_by_name:ME.fullname};
+  const btn=document.getElementById('btn-submit');btn.innerHTML='<span class="spin"></span> Salvando...';btn.disabled=true;
+  try{
+    if(editId){
+      if(isDemo()){const idx=BOOKINGS.findIndex(b=>b.id===editId);if(idx>-1)BOOKINGS[idx]={...BOOKINGS[idx],...payload};sLS('eb',BOOKINGS);}
+      else{await api.patch(`reservas?id=eq.${editId}`,payload);await loadBookings();}
+      toast('Reserva atualizada!','ok');editId=null;
+      document.getElementById('btn-cancel-edit').style.display='none';
+      document.getElementById('btn-submit').textContent='Confirmar Reserva';
+      document.getElementById('form-card-title').textContent='Preencha os dados';
+    }else{
+      if(isDemo()){BOOKINGS.push({...payload,id:'bk_'+Date.now(),created_at:new Date().toISOString()});sLS('eb',BOOKINGS);}
+      else{const rows=await api.post('reservas',payload);BOOKINGS.push(rows[0]);}
+      toast('Reserva confirmada!','ok');
     }
-
-    clearForm();
-    renderCal();
-    renderMine();
-    if (ME.role === 'admin') renderAdmin();
-
-  } catch(e) { toast('Erro ao salvar: ' + e.message, 'err'); }
-
-  btn.innerHTML = 'Confirmar Reserva';
-  btn.disabled = false;
+    clearForm();renderCal();renderMine();if(ME.role==='admin')renderAdmin();
+  }catch(e){toast('Erro: '+e.message,'err');}
+  btn.innerHTML='Confirmar Reserva';btn.disabled=false;
 }
 
-function clearForm() {
-  ['f-space','f-start','f-end','f-teacher','f-class','f-lesson','f-notes']
-    .forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-}
+function clearForm(){['f-space','f-start','f-end','f-teacher','f-class','f-lesson','f-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-date').value=new Date().toISOString().split('T')[0];}
+function cancelEdit(){editId=null;clearForm();document.getElementById('btn-cancel-edit').style.display='none';document.getElementById('btn-submit').textContent='Confirmar Reserva';document.getElementById('form-card-title').textContent='Preencha os dados';}
+function prefillNew(ds){showTab('new',document.querySelectorAll('.tab')[1]);document.getElementById('f-date').value=ds;}
 
-function cancelEdit() {
-  editId = null;
-  clearForm();
-  document.getElementById('btn-cancel-edit').style.display = 'none';
-  document.getElementById('btn-submit').textContent = 'Confirmar Reserva';
-}
-
-function prefillNew(dateStr) {
-  showTab('new', document.querySelectorAll('.tab')[1]);
-  document.getElementById('f-date').value = dateStr;
-}
-
-/* ══════════════════════════════════════════
-   MODAL
-══════════════════════════════════════════ */
-function openModal(id) {
-  const b = BOOKINGS.find(x => x.id == id || x.id === id);
-  if (!b) return;
-
-  const hl = hoursUntil(b);
-  const canAct = ME.role === 'admin' || (b.booked_by === ME.username && hl >= 5);
-
-  document.getElementById('m-title').textContent = b.space;
-  document.getElementById('m-body').innerHTML = `
+function openModal(id){
+  const b=BOOKINGS.find(x=>x.id==id);if(!b)return;
+  const hl=hoursUntil(b),isOwner=b.booked_by===ME.username,isAdmin=ME.role==='admin';
+  const canAct=isAdmin||(isOwner&&hl>=5);
+  document.getElementById('m-title').textContent=b.space;
+  document.getElementById('m-body').innerHTML=`<div class="row">
     <p><strong>Data:</strong> ${fmtDate(b.date)}</p>
     <p><strong>Horário:</strong> ${b.time_start} – ${b.time_end}</p>
     <p><strong>Professor:</strong> ${b.teacher}</p>
     <p><strong>Turma:</strong> ${b.turma}</p>
-    ${b.lesson ? `<p><strong>Aula/Período:</strong> ${b.lesson}</p>` : ''}
-    ${b.notes   ? `<p><strong>Obs/Recursos:</strong> ${b.notes}</p>` : ''}
+    ${b.lesson?`<p><strong>Aula/Período:</strong> ${b.lesson}</p>`:''}
+    ${b.notes?`<p><strong>Obs/Recursos:</strong> ${b.notes}</p>`:''}
     <p><strong>Agendado por:</strong> ${b.booked_by_name}</p>
-    ${!canAct && b.booked_by === ME.username
-      ? `<div class="info-note" style="margin-top:.6rem">⏰ Menos de 5h para o início. Edição bloqueada.</div>` : ''}
-  `;
-
-  const acts = document.getElementById('m-acts');
-  acts.innerHTML = `<button class="btn btn-outline" onclick="closeModal()">Fechar</button>`;
-  if (canAct) {
-    acts.innerHTML += `<button class="btn btn-primary" onclick="startEdit('${b.id}')">✏️ Editar</button>`;
-    acts.innerHTML += `<button class="btn btn-danger" onclick="deleteBooking('${b.id}')">🗑 Cancelar</button>`;
-  }
-
-  document.getElementById('overlay').style.display = 'flex';
+    ${isOwner&&!canAct?`<div class="info-note" style="margin-top:.6rem">⏰ Menos de 5h para o início. Edição bloqueada.</div>`:''}
+    ${!isOwner&&!isAdmin?`<div class="info-note" style="margin-top:.6rem">ℹ️ Esta reserva pertence a outro usuário — somente visualização.</div>`:''}
+  </div>`;
+  const acts=document.getElementById('m-acts');
+  acts.innerHTML=`<button class="btn btn-outline" onclick="closeModal()">Fechar</button>`;
+  if(canAct){acts.innerHTML+=`<button class="btn btn-primary" onclick="startEdit('${b.id}')">✏️ Editar</button><button class="btn btn-danger" onclick="deleteBooking('${b.id}')">🗑 Cancelar</button>`;}
+  document.getElementById('overlay').style.display='flex';
 }
 
-function startEdit(id) {
-  closeModal();
-  const b = BOOKINGS.find(x => x.id == id || x.id === id);
-  if (!b) return;
-  showTab('new', document.querySelectorAll('.tab')[1]);
-  document.getElementById('f-space').value   = b.space;
-  document.getElementById('f-date').value    = b.date;
-  document.getElementById('f-start').value   = b.time_start;
-  document.getElementById('f-end').value     = b.time_end;
-  document.getElementById('f-teacher').value = b.teacher;
-  document.getElementById('f-class').value   = b.turma;
-  document.getElementById('f-lesson').value  = b.lesson || '';
-  document.getElementById('f-notes').value   = b.notes || '';
-  editId = id;
-  document.getElementById('btn-submit').textContent = 'Salvar Alterações';
-  document.getElementById('btn-cancel-edit').style.display = 'inline-flex';
+function startEdit(id){
+  closeModal();const b=BOOKINGS.find(x=>x.id==id);if(!b)return;
+  if(b.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');return;}
+  showTab('new',document.querySelectorAll('.tab')[1]);
+  ['f-space','f-date','f-start','f-end','f-teacher','f-class','f-lesson','f-notes'].forEach((fid,i)=>{
+    const vals=[b.space,b.date,b.time_start,b.time_end,b.teacher,b.turma,b.lesson||'',b.notes||''];
+    document.getElementById(fid).value=vals[i];
+  });
+  editId=id;document.getElementById('btn-submit').textContent='Salvar Alterações';document.getElementById('btn-cancel-edit').style.display='inline-flex';document.getElementById('form-card-title').textContent='Editando Reserva';
 }
 
-async function deleteBooking(id) {
-  if (!confirm('Cancelar esta reserva?')) return;
-  try {
-    if (isDemo()) {
-      BOOKINGS = BOOKINGS.filter(b => b.id != id);
-      sLS('enau_bookings', BOOKINGS);
-    } else {
-      await api.delete(`reservas?id=eq.${id}`);
-      BOOKINGS = BOOKINGS.filter(b => b.id != id);
-    }
-    toast('Reserva cancelada.', 'ok');
-    closeModal();
-    renderCal(); renderMine();
-    if (ME.role === 'admin') renderAdmin();
-  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+async function deleteBooking(id){
+  const b=BOOKINGS.find(x=>x.id==id);
+  if(b&&b.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');return;}
+  if(!confirm('Cancelar esta reserva?'))return;
+  try{
+    if(isDemo()){BOOKINGS=BOOKINGS.filter(x=>x.id!=id);sLS('eb',BOOKINGS);}
+    else{await api.delete(`reservas?id=eq.${id}`);BOOKINGS=BOOKINGS.filter(x=>x.id!=id);}
+    toast('Reserva cancelada.','ok');closeModal();renderCal();renderMine();if(ME.role==='admin')renderAdmin();
+  }catch(e){toast('Erro: '+e.message,'err');}
 }
 
-function closeModal() { document.getElementById('overlay').style.display = 'none'; }
-function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+function closeModal(){document.getElementById('overlay').style.display='none';}
+function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
 
-/* ══════════════════════════════════════════
-   MY BOOKINGS
-══════════════════════════════════════════ */
-function renderMine() {
-  const list = document.getElementById('mine-list');
-  const mine = BOOKINGS
-    .filter(b => b.booked_by === ME.username)
-    .sort((a,b) => (a.date+a.time_start) > (b.date+b.time_start) ? 1 : -1);
-
-  if (!mine.length) {
-    list.innerHTML = `<div class="empty"><div class="ico">📭</div><p>Nenhuma reserva ativa.</p></div>`;
-    return;
-  }
-
-  const CLS = { 'Laboratório':'lab','Quadra/Ginásio':'quad','Auditório':'aud' };
-  list.innerHTML = mine.map(b => {
-    const hl = hoursUntil(b);
-    const canAct = hl >= 5;
-    const badge = canAct
-      ? `<span class="badge badge-ok">Editável</span>`
-      : `<span class="badge badge-lock">Bloqueado</span>`;
-    return `
-    <div class="bk-card ${CLS[b.space]||''}">
-      <div class="bk-info">
-        <h4>${b.space} ${badge}</h4>
-        <div class="meta">
-          <strong>${fmtDate(b.date)}</strong> · ${b.time_start}–${b.time_end}<br>
-          Prof. ${b.teacher} · Turma: ${b.turma}${b.lesson ? ' · ' + b.lesson : ''}<br>
-          ${b.notes ? `Recursos: ${b.notes}` : ''}
-        </div>
-      </div>
-      <div class="bk-acts">
-        ${canAct ? `<button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.78rem" onclick="startEdit('${b.id}')">Editar</button>` : ''}
-        ${canAct ? `<button class="btn btn-danger" style="padding:.4rem .8rem;font-size:.78rem" onclick="deleteBooking('${b.id}')">Cancelar</button>` : ''}
-      </div>
-    </div>`;
+function renderMine(){
+  const list=document.getElementById('mine-list');
+  const mine=BOOKINGS.filter(b=>b.booked_by===ME.username).sort((a,b)=>(a.date+a.time_start)>(b.date+b.time_start)?1:-1);
+  if(!mine.length){list.innerHTML=`<div class="empty"><div class="ico">📭</div><p>Nenhuma reserva ativa.</p></div>`;return;}
+  list.innerHTML=mine.map(b=>{
+    const hl=hoursUntil(b),canAct=hl>=5;
+    const badge=canAct?`<span class="badge badge-ok">Editável</span>`:`<span class="badge badge-lock">Bloqueado</span>`;
+    return `<div class="bk-card"><div class="bk-info"><h4>${b.space} ${badge}</h4><div class="meta"><strong>${fmtDate(b.date)}</strong> · ${b.time_start}–${b.time_end}<br>Prof. ${b.teacher} · Turma: ${b.turma}${b.lesson?' · '+b.lesson:''}<br>${b.notes?'Recursos: '+b.notes:''}</div></div><div class="bk-acts">${canAct?`<button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.78rem" onclick="startEdit('${b.id}')">Editar</button><button class="btn btn-danger" style="padding:.4rem .8rem;font-size:.78rem" onclick="deleteBooking('${b.id}')">Cancelar</button>`:''}</div></div>`;
   }).join('');
 }
 
-/* ══════════════════════════════════════════
-   ADMIN
-══════════════════════════════════════════ */
-function renderAdmin() {
-  renderAdmBookings();
-  renderAdmUsers();
+function showUserForm(m){document.getElementById('form-single').style.display=m==='single'?'block':'none';document.getElementById('form-batch').style.display=m==='batch'?'block':'none';}
+function renderAdmin(){if(ME.role!=='admin')return;renderAdmBookings();renderAdmUsers();}
+
+function renderAdmBookings(){
+  const tbody=document.getElementById('adm-tbody');
+  const sorted=[...BOOKINGS].sort((a,b)=>(a.date+a.time_start)>(b.date+b.time_start)?1:-1);
+  if(!sorted.length){tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">Nenhuma reserva.</td></tr>`;return;}
+  tbody.innerHTML=sorted.map(b=>`<tr><td><span class="chip ${SPACE_CLS[b.space]||'ch-0'}" style="display:inline-block">${b.space}</span></td><td>${fmtDate(b.date)}</td><td>${b.time_start}–${b.time_end}</td><td>${b.teacher}</td><td>${b.turma}</td><td>${b.lesson||'—'}</td><td>${b.booked_by_name}</td><td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking('${b.id}')">Cancelar</button></td></tr>`).join('');
 }
 
-function renderAdmBookings() {
-  const tbody = document.getElementById('adm-tbody');
-  const sorted = [...BOOKINGS].sort((a,b) => (a.date+a.time_start) > (b.date+b.time_start) ? 1 : -1);
-  if (!sorted.length) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">Nenhuma reserva.</td></tr>`;
-    return;
+async function renderAdmUsers(){
+  let users=[];
+  if(isDemo())users=gLS('eu',[]);
+  else users=await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc')||[];
+  document.getElementById('adm-users').innerHTML=users.map((u,i)=>`<tr>
+    <td>${u.username}</td><td>${u.fullname}</td><td>${u.role==='admin'?'🔑 Admin':'👤 Usuário'}</td>
+    <td><div style="display:flex;gap:.4rem;flex-wrap:wrap">
+      <button class="btn btn-outline" style="padding:.3rem .6rem;font-size:.74rem" onclick='openEditUser(${JSON.stringify({id:u.id||i,username:u.username,fullname:u.fullname,role:u.role})})'>✏️ Editar</button>
+      ${u.username!=='admin'?`<button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.74rem" onclick="removeUser(${u.id||i},'${u.username}')">🗑 Remover</button>`:''}
+    </div></td>
+  </tr>`).join('');
+}
+
+function openEditUser(u){
+  if(typeof u==='string')u=JSON.parse(u);
+  document.getElementById('m-title').textContent='Editar Usuário: '+u.username;
+  document.getElementById('m-body').innerHTML=`
+    <label class="mlbl">Nome completo</label>
+    <input type="text" id="eu-full" value="${u.fullname}">
+    <label class="mlbl">Nova senha <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.8rem">(deixe em branco para não alterar)</span></label>
+    <input type="password" id="eu-pass" placeholder="Nova senha (mín. 6 chars)">
+    <label class="mlbl">Perfil</label>
+    <select id="eu-role"><option value="user" ${u.role==='user'?'selected':''}>Usuário (Professor/Funcionário)</option><option value="admin" ${u.role==='admin'?'selected':''}>Administrador</option></select>
+  `;
+  document.getElementById('m-acts').innerHTML=`
+    <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveEditUser(${u.id},'${u.username}')">Salvar</button>
+  `;
+  document.getElementById('overlay').style.display='flex';
+}
+
+async function saveEditUser(id,username){
+  const full=document.getElementById('eu-full').value.trim(),pass=document.getElementById('eu-pass').value,role=document.getElementById('eu-role').value;
+  if(!full){toast('Nome não pode ser vazio.','err');return;}
+  if(pass&&pass.length<6){toast('Senha mínimo 6 caracteres.','err');return;}
+  const payload={fullname:full,role};if(pass)payload.password=pass;
+  try{
+    if(isDemo()){const us=gLS('eu',[]);const idx=us.findIndex(u=>u.username===username);if(idx>-1)us[idx]={...us[idx],...payload};sLS('eu',us);}
+    else await api.patch(`usuarios?id=eq.${id}`,payload);
+    toast('Usuário atualizado!','ok');closeModal();renderAdmUsers();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+
+async function addUser(){
+  const uname=document.getElementById('a-uname').value.trim(),pass=document.getElementById('a-pass').value;
+  const full=document.getElementById('a-full').value.trim(),role=document.getElementById('a-role').value;
+  if(!uname||!pass||!full){toast('Preencha todos os campos.','err');return;}
+  if(pass.length<6){toast('Senha mínimo 6 caracteres.','err');return;}
+  try{
+    if(isDemo()){const us=gLS('eu',[]);if(us.find(u=>u.username===uname)){toast('Usuário já existe.','err');return;}us.push({id:Date.now(),username:uname,password:pass,fullname:full,role});sLS('eu',us);}
+    else await api.post('usuarios',{username:uname,password:pass,fullname:full,role});
+    toast('Usuário adicionado!','ok');['a-uname','a-pass','a-full'].forEach(id=>document.getElementById(id).value='');renderAdmUsers();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+
+async function addBatchUsers(){
+  const raw=document.getElementById('a-batch').value.trim();
+  if(!raw){toast('Cole a lista de usuários.','err');return;}
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
+  let added=0,errors=[];
+  for(const line of lines){
+    const[username,password,fullname,role]=(line.split(';')).map(p=>p.trim());
+    if(!username||!password||password.length<6||!fullname){errors.push(username||line);continue;}
+    const r=role==='admin'?'admin':'user';
+    try{
+      if(isDemo()){const us=gLS('eu',[]);if(!us.find(u=>u.username===username)){us.push({id:Date.now()+Math.random(),username,password,fullname,role:r});sLS('eu',us);}}
+      else await api.post('usuarios',{username,password,fullname,role:r});
+      added++;
+    }catch(e){errors.push(username+': '+e.message);}
   }
-  tbody.innerHTML = sorted.map(b => `
-    <tr>
-      <td><span class="space-tag st-${spaceKey(b.space)}">${b.space}</span></td>
-      <td>${fmtDate(b.date)}</td>
-      <td>${b.time_start}–${b.time_end}</td>
-      <td>${b.teacher}</td>
-      <td>${b.turma}</td>
-      <td>${b.lesson||'—'}</td>
-      <td>${b.booked_by_name}</td>
-      <td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking('${b.id}')">Cancelar</button></td>
-    </tr>
-  `).join('');
+  if(errors.length)toast(`${added} adicionados. Erros: ${errors.slice(0,2).join(', ')}...`,'err');
+  else toast(`✅ ${added} usuários adicionados!`,'ok');
+  document.getElementById('a-batch').value='';renderAdmUsers();
 }
 
-async function renderAdmUsers() {
-  let users = [];
-  if (isDemo()) {
-    users = gLS('enau_users', []);
-  } else {
-    users = await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc') || [];
-  }
-  const tbody = document.getElementById('adm-users');
-  tbody.innerHTML = users.map((u,i) => `
-    <tr>
-      <td>${u.username}</td>
-      <td>${u.fullname}</td>
-      <td>${u.role === 'admin' ? '🔑 Admin' : '👤 Usuário'}</td>
-      <td>${u.username !== 'admin'
-        ? `<button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="removeUser(${u.id||i},'${u.username}')">Remover</button>`
-        : '—'}</td>
-    </tr>
-  `).join('');
+async function removeUser(id,uname){
+  if(!confirm(`Remover "${uname}"?`))return;
+  try{
+    if(isDemo())sLS('eu',gLS('eu',[]).filter(u=>u.username!==uname));
+    else await api.delete(`usuarios?id=eq.${id}`);
+    toast('Usuário removido.','ok');renderAdmUsers();
+  }catch(e){toast('Erro: '+e.message,'err');}
 }
 
-async function addUser() {
-  const uname = document.getElementById('a-uname').value.trim();
-  const pass  = document.getElementById('a-pass').value;
-  const full  = document.getElementById('a-full').value.trim();
-  const role  = document.getElementById('a-role').value;
-
-  if (!uname || !pass || !full) { toast('Preencha todos os campos.', 'err'); return; }
-  if (pass.length < 6) { toast('Senha com mínimo 6 caracteres.', 'err'); return; }
-
-  try {
-    if (isDemo()) {
-      const users = gLS('enau_users', []);
-      if (users.find(u => u.username === uname)) { toast('Usuário já existe.', 'err'); return; }
-      users.push({ id: Date.now(), username:uname, password:pass, fullname:full, role });
-      sLS('enau_users', users);
-    } else {
-      await api.post('usuarios', { username:uname, password:pass, fullname:full, role });
-    }
-    toast('Usuário adicionado!', 'ok');
-    ['a-uname','a-pass','a-full'].forEach(id => document.getElementById(id).value = '');
-    renderAdmUsers();
-  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+function showTab(id,btn){
+  if(id==='admin'&&(!ME||ME.role!=='admin'))return;
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
+  if(id==='calendar')renderCal();
+  if(id==='mine')renderMine();
+  if(id==='admin')renderAdmin();
 }
-
-async function removeUser(id, uname) {
-  if (!confirm(`Remover usuário "${uname}"?`)) return;
-  try {
-    if (isDemo()) {
-      const users = gLS('enau_users', []).filter(u => u.username !== uname);
-      sLS('enau_users', users);
-    } else {
-      await api.delete(`usuarios?id=eq.${id}`);
-    }
-    toast('Usuário removido.', 'ok');
-    renderAdmUsers();
-  } catch(e) { toast('Erro: ' + e.message, 'err'); }
-}
-
-/* ══════════════════════════════════════════
-   UTILS
-══════════════════════════════════════════ */
-function showTab(id, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
-  document.getElementById('tab-'+id).classList.add('on');
-  btn.classList.add('on');
-  if (id === 'calendar') renderCal();
-  if (id === 'mine') renderMine();
-  if (id === 'admin') renderAdmin();
-}
-
-function fmtDate(s) {
-  if (!s) return '';
-  const [y,m,d] = s.split('-');
-  return `${d}/${m}/${y}`;
-}
-
-function spaceKey(s) {
-  if (s === 'Laboratório') return 'lab';
-  if (s === 'Quadra/Ginásio') return 'quad';
-  return 'aud';
-}
-
-function toast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = type || '';
-  t.style.display = 'block';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.style.display = 'none', 4000);
-}
+function fmtDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className=type||'';t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',4500);}
 </script>
 </body>
 </html>
