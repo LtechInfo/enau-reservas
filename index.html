@@ -533,6 +533,23 @@ body.dark #btn-bug:hover{background:rgba(217,80,106,.28);}
 .bug-stars{display:flex;gap:.4rem;margin:.5rem 0 1rem;}
 .bug-star{font-size:1.5rem;cursor:pointer;color:#d1d5db;transition:color .15s;line-height:1;}
 .bug-star.on,.bug-star:hover{color:#f5c842;}
+
+/* Seção bugs admin */
+.bug-report-card{border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.7rem;position:relative;transition:opacity .2s;}
+.bug-report-card.resolved{opacity:.5;}
+.bug-report-card .bug-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;flex-wrap:wrap;}
+.bug-badge{font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:10px;}
+.bug-b1{background:#dcfce7;color:#15803d;}
+.bug-b2{background:#fef9c3;color:#854d0e;}
+.bug-b3{background:#fff0e6;color:#b85000;}
+.bug-b4{background:#fef2f2;color:#b91c1c;}
+.bug-resolved-badge{background:#dcfce7;color:#15803d;font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:10px;}
+.bug-report-card h5{font-size:.88rem;font-weight:700;color:var(--ink);flex:1;}
+.bug-report-card .bug-meta{font-size:.75rem;color:var(--muted);margin-bottom:.5rem;}
+.bug-report-card .bug-desc{font-size:.82rem;color:var(--ink2);line-height:1.5;background:var(--cream-d);padding:.5rem .7rem;border-radius:6px;}
+.bug-report-card .bug-actions{display:flex;gap:.5rem;margin-top:.7rem;}
+body.dark .bug-report-card{background:var(--white);}
+body.dark .bug-report-card .bug-desc{background:var(--cream);}
 </style>
 </head>
 <body>
@@ -768,6 +785,25 @@ body.dark #btn-bug:hover{background:rgba(217,80,106,.28);}
         <div class="log-wrap" id="activity-log"></div>
       </div>
       <div class="card">
+        <h3>&#x1F41B; Bugs Reportados</h3>
+        <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;flex-wrap:wrap;">
+          <select id="bug-filter-status" onchange="renderBugReports()" style="width:auto;min-width:160px;">
+            <option value="">Todos</option>
+            <option value="open">Em aberto</option>
+            <option value="resolved">Resolvidos</option>
+          </select>
+          <select id="bug-filter-grav" onchange="renderBugReports()" style="width:auto;min-width:160px;">
+            <option value="">Todas as gravidades</option>
+            <option value="4">&#x1F534; Crítica</option>
+            <option value="3">&#x1F7E0; Alta</option>
+            <option value="2">&#x1F7E1; Média</option>
+            <option value="1">&#x1F7E2; Baixa</option>
+          </select>
+          <span id="bug-count" style="font-size:.8rem;color:var(--muted);margin-left:auto"></span>
+        </div>
+        <div id="bug-list"></div>
+      </div>
+      <div class="card">
         <h3>&#x1F465; Histórico de Acessos</h3>
         <div class="log-wrap" id="access-log" style="max-height:280px;overflow-y:auto"><div style="padding:1rem;text-align:center;color:var(--muted)">Sem registros.</div></div>
       </div>
@@ -932,6 +968,9 @@ async function doLogin(){
     document.getElementById('topbar-user').textContent=user.fullname;
     document.getElementById('f-teacher-name').textContent=user.fullname;
     document.querySelector('.admin-tab').style.display=user.role==='admin'?'inline-block':'none';
+    document.querySelector('.coord-tab').style.display=(user.role==='coord'||user.role==='admin')?'inline-block':'none';
+    showProxyRow();
+    loadUsersList();
     const now=new Date();
     document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
@@ -1192,7 +1231,7 @@ function openModal(id){
   body+='<p><strong>Agendado por:</strong> '+b.booked_by_name+'</p>';
   if(b.recur_group)body+='<div class="info-note" style="margin-top:.5rem">&#x21BB; Reserva recorrente</div>';
   if(isOwner&&!canAct)body+='<div class="info-note" style="margin-top:.5rem">&#x23F0; Menos de 5h. Edição bloqueada.</div>';
-  if(!isOwner&&!isAdmin)body+='<div class="info-note" style="margin-top:.5rem">&#x2139;&#xFE0F; Somente visualização.</div>';
+  if(!isOwner&&!isAdminOrCoord)body+='<div class="info-note" style="margin-top:.5rem">&#x2139;&#xFE0F; Somente visualização.</div>';
   body+='</div>';
   document.getElementById('m-body').innerHTML=body;
   var acts=document.getElementById('m-acts');
@@ -1213,7 +1252,7 @@ function openModal(id){
 function startEdit(id){
   closeModal();
   var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
-  if(b.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');return;}
+  if(b.booked_by!==ME.username&&!isAdmin()&&!isCoord()){toast('Sem permissão.','err');return;}
   showTab('new',document.querySelectorAll('.tab')[1]);
   document.getElementById('f-space').value=b.space;
   document.getElementById('f-date').value=b.date;
@@ -1238,7 +1277,7 @@ function startEdit(id){
 
 async function deleteBooking(id,andFuture){
   var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
-  if(b.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');return;}
+  if(b.booked_by!==ME.username&&!isAdmin()&&!isCoord()){toast('Sem permissão.','err');return;}
   if(!confirm('Cancelar esta reserva?'))return;
   var toDelete=andFuture&&b.recur_group?BOOKINGS.filter(function(x){return x.recur_group===b.recur_group&&x.date>=b.date;}).map(function(x){return x.id;}):[id];
   var now=new Date().toISOString();
@@ -1253,7 +1292,7 @@ async function deleteBooking(id,andFuture){
   BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});
   addLog('&#x1F5D1;',ME.fullname+' cancelou '+toDelete.length+' reserva(s) em '+b.space+' ('+fmtDate(b.date)+')');
   toast('Reserva(s) cancelada(s).','ok');
-  closeModal();renderCal();renderMine();if(ME.role==='admin')renderAdmin();
+  closeModal();renderCal();renderMine();if(isAdmin())renderAdmin();if(isCoord()&&!isAdmin())renderCoord();
 }
 
 function closeModal(){document.getElementById('overlay').style.display='none';}
@@ -1280,6 +1319,7 @@ function showUserForm(m){
 function renderAdmin(){
   if(!isAdmin())return;
   renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();renderAccessLog();renderMuralAdmin();renderEspacosList();
+  loadBugs().then(renderBugReports);
 }
 
 function renderAdmBookings(){
@@ -2103,7 +2143,7 @@ function renderCoordBookings(){
       '<td>'+b.teacher+'</td>'+
       '<td>'+b.turma+'</td>'+
       '<td>'+(b.lesson||'—')+'</td>'+
-      '<td>'+(canCancel?'<button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.75rem" onclick="cancelBooking(\''+b.id+'\')">Cancelar</button>':'<span style="color:var(--muted);font-size:.78rem">—</span>')+'</td>'+
+      '<td>'+(canCancel?'<button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.75rem" onclick="openModal(\''+b.id+'\')">Cancelar</button>':'<span style="color:var(--muted);font-size:.78rem">—</span>')+'</td>'+
     '</tr>';
   }).join('');
 }
@@ -2227,6 +2267,20 @@ function setBugRating(v){
   document.getElementById('bug-rating-lbl').textContent=labels[v]||'';
 }
 
+// Telegram config
+var TG_TOKEN='7948367084:AAEQsXeBpemZGA14qBLzkCGtnKaD6hWDGYE';
+var TG_CHAT='79424548';
+
+async function sendTelegram(msg){
+  try{
+    await fetch('https://api.telegram.org/bot'+TG_TOKEN+'/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:TG_CHAT,text:msg,parse_mode:'HTML'})
+    });
+  } catch(e){}
+}
+
 async function submitBugReport(){
   var type=document.getElementById('bug-type').value;
   var desc=document.getElementById('bug-desc').value.trim();
@@ -2234,26 +2288,147 @@ async function submitBugReport(){
   if(!desc){toast('Descreva o problema.','err');return;}
   if(!bugRating){toast('Selecione a gravidade.','err');return;}
   var gravidades=['','Baixa','Média','Alta','Crítica'];
+  var gravidadeEmoji=['','&#x1F7E2;','&#x1F7E1;','&#x1F7E0;','&#x1F534;'];
   var report={
     usuario:ME?ME.fullname:'—',
     username:ME?ME.username:'—',
     tipo:type,
     descricao:desc,
     gravidade:gravidades[bugRating],
-    pagina:window.location.href,
-    navegador:navigator.userAgent.slice(0,120),
+    gravidade_num:bugRating,
+    dispositivo:/Mobi|Android/i.test(navigator.userAgent)?'Mobile':'Desktop',
+    navegador:navigator.userAgent.slice(0,100),
     data:new Date().toLocaleString('pt-BR'),
-    ts:new Date().toISOString()
+    ts:new Date().toISOString(),
+    resolvido:false
   };
-  // Save to localStorage log
+  // Salvar no localStorage
   var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
   bugs.unshift(report);
   localStorage.setItem('enau_bugs',JSON.stringify(bugs.slice(0,50)));
-  // Save to Supabase activity_log so admin sees it
-  var msg='[BUG '+gravidades[bugRating].toUpperCase()+'] '+report.usuario+': '+type+' — '+desc.slice(0,120);
-  addLog('&#x1F41B;',msg);
+  // Salvar no Supabase (activity_log)
+  var logMsg='[BUG '+gravidades[bugRating].toUpperCase()+'] '+report.usuario+': '+type+' — '+desc.slice(0,100);
+  addLog('&#x1F41B;',logMsg);
+  // Salvar na tabela bugs do Supabase (se nao demo)
+  if(!isDemo()){
+    api.post('bugs',{
+      usuario:report.usuario,
+      username:report.username,
+      tipo:type,
+      descricao:desc,
+      gravidade:gravidades[bugRating],
+      gravidade_num:bugRating,
+      dispositivo:report.dispositivo,
+      navegador:report.navegador,
+      resolvido:false
+    }).catch(function(){});
+  }
+  // Enviar Telegram
+  var tgMsg=
+    '<b>&#x1F41B; Bug Reportado — ENAU Reservas</b>
+
+'+
+    gravidadeEmoji[bugRating]+' <b>Gravidade:</b> '+gravidades[bugRating]+'
+'+
+    '&#x1F4CB; <b>Tipo:</b> '+type+'
+'+
+    '&#x1F464; <b>Usuário:</b> '+report.usuario+' (@'+report.username+')
+'+
+    '&#x1F4F1; <b>Dispositivo:</b> '+report.dispositivo+'
+'+
+    '&#x1F550; <b>Data/Hora:</b> '+report.data+'
+
+'+
+    '&#x1F4DD; <b>Descrição:</b>
+'+desc;
+  await sendTelegram(tgMsg);
   closeModal();
   toast('Relatório enviado! Obrigado.','ok');
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// BUGS ADMIN
+// ══════════════════════════════════════════════════════════════
+var BUGS=[];
+
+async function loadBugs(){
+  if(isDemo()){
+    BUGS=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
+  } else {
+    var r=await api.get('bugs?select=*&order=ts.desc').catch(function(){return[];});
+    BUGS=r||[];
+  }
+}
+
+function renderBugReports(){
+  var el=document.getElementById('bug-list');if(!el)return;
+  var statusF=document.getElementById('bug-filter-status').value;
+  var gravF=document.getElementById('bug-filter-grav').value;
+  var gravidadeEmoji=['','&#x1F7E2;','&#x1F7E1;','&#x1F7E0;','&#x1F534;'];
+  var gravClasses=['','bug-b1','bug-b2','bug-b3','bug-b4'];
+
+  var filtered=BUGS.filter(function(b){
+    if(statusF==='open'&&b.resolvido)return false;
+    if(statusF==='resolved'&&!b.resolvido)return false;
+    if(gravF&&String(b.gravidade_num)!==gravF)return false;
+    return true;
+  });
+
+  var countEl=document.getElementById('bug-count');
+  if(countEl)countEl.textContent=filtered.length+' registro'+(filtered.length!==1?'s':'');
+
+  if(!filtered.length){
+    el.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--muted)">Nenhum bug encontrado.</div>';
+    return;
+  }
+  el.innerHTML=filtered.map(function(b,i){
+    var gn=b.gravidade_num||0;
+    var dt=b.data||new Date(b.ts).toLocaleString('pt-BR');
+    return '<div class="bug-report-card'+(b.resolvido?' resolved':'')+'">'+
+      '<div class="bug-header">'+
+        '<span class="bug-badge '+gravClasses[gn]+'">'+gravidadeEmoji[gn]+' '+b.gravidade+'</span>'+
+        '<h5>'+b.tipo+'</h5>'+
+        (b.resolvido?'<span class="bug-resolved-badge">&#x2705; Resolvido</span>':'')+
+      '</div>'+
+      '<div class="bug-meta">'+
+        '&#x1F464; <strong>'+b.usuario+'</strong> (@'+b.username+')'+
+        ' &nbsp;&#x1F4F1; '+( b.dispositivo||'—')+
+        ' &nbsp;&#x1F550; '+dt+
+      '</div>'+
+      '<div class="bug-desc">'+b.descricao+'</div>'+
+      '<div class="bug-actions">'+
+        (!b.resolvido?'<button class="btn btn-primary" style="font-size:.76rem;padding:.3rem .7rem" onclick="markBugResolved('+i+','+JSON.stringify(b.ts)+')">&#x2705; Marcar como resolvido</button>':'')+
+        '<button class="btn btn-danger" style="font-size:.76rem;padding:.3rem .7rem" onclick="deleteBug('+i+','+JSON.stringify(b.ts)+')">&#x1F5D1; Remover</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function markBugResolved(idx,ts){
+  if(isDemo()){
+    var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
+    var i=bugs.findIndex(function(b){return b.ts===ts;});
+    if(i>=0){bugs[i].resolvido=true;localStorage.setItem('enau_bugs',JSON.stringify(bugs));}
+    BUGS=bugs;
+  } else {
+    await api.patch('bugs?ts=eq.'+encodeURIComponent(ts),{resolvido:true}).catch(function(){});
+    await loadBugs();
+  }
+  addLog('&#x2705;','Admin marcou bug como resolvido');
+  renderBugReports();toast('Bug marcado como resolvido!','ok');
+}
+
+async function deleteBug(idx,ts){
+  if(!confirm('Remover este relatório de bug?'))return;
+  if(isDemo()){
+    var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]').filter(function(b){return b.ts!==ts;});
+    localStorage.setItem('enau_bugs',JSON.stringify(bugs));BUGS=bugs;
+  } else {
+    await api.delete('bugs?ts=eq.'+encodeURIComponent(ts)).catch(function(){});
+    await loadBugs();
+  }
+  renderBugReports();toast('Relatório removido.','ok');
 }
 
 // ── Inatividade ────────────────────────────────────────────────
