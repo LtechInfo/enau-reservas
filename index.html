@@ -2310,5 +2310,8 @@ if(window.innerWidth < 640){
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
+
+<button id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Voltar ao topo">&#x2191;</button>
+<button id="btn-bug" onclick="openBugReport()" title="Reportar um problema">&#x1F41B; Reportar bug</button>
 </body>
 </html>
