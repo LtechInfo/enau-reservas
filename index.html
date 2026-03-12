@@ -565,6 +565,7 @@ async function doLogin(){
     }
     if(!user)throw new Error('invalid');
     ME=user;
+    sLS('enau_session', user);
     document.getElementById('l-err').style.display='none';
     document.getElementById('login-wrap').style.display='none';
     document.getElementById('topbar').style.display='flex';
@@ -577,6 +578,7 @@ async function doLogin(){
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
     await loadAll();
     renderCal();renderMine();renderLegend();
+    resetInactivityTimer(false);
     if(ME.role==='admin'){addLog('🔑',ME.fullname+' fez login');renderAdmin();}
   } catch(err){
     const errEl=document.getElementById('l-err');
@@ -588,8 +590,13 @@ async function doLogin(){
 }
 document.getElementById('l-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
-function logout(){
+function logout(msg){
   ME=null;BOOKINGS=[];editId=null;
+  localStorage.removeItem('enau_session');
+  resetInactivityTimer(true);
+  if(msg){
+    setTimeout(function(){var e=document.getElementById('l-err');e.style.display='block';e.style.color='#b87a00';e.style.background='#fffbe6';e.style.borderColor='#f5d000';e.textContent=msg;},120);
+  }
   document.getElementById('login-wrap').style.display='flex';
   document.getElementById('topbar').style.display='none';
   document.getElementById('app').style.display='none';
@@ -647,8 +654,12 @@ function renderWeek(){
   var html='<div class="cal-table-wrap"><table class="cal"><thead><tr><th>Horário</th>';
   days.forEach(function(d,i){
     var isT=d.getTime()===today.getTime();
-    html+='<th class="'+(isT?'today-h':'')+'">';
-    html+=DAYS_W[i]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span></th>';
+    var ds_w=d.toISOString().split('T')[0];
+    var blkW=BLOCKED_DATES.find(function(bd){return bd.date===ds_w;});
+    html+='<th class="'+(isT?'today-h':'')+(blkW?' blocked-h':'')+'" style="'+(blkW?'background:#fce8ee;color:#b83255':'')+'">';
+    html+=DAYS_W[i]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span>';
+    if(blkW)html+='<br><span style="font-size:.65rem;font-weight:600">&#x1F6AB; '+blkW.reason+'</span>';
+    html+='</th>';
   });
   html+='</tr></thead><tbody>';
   slots.forEach(function(slot){
@@ -660,7 +671,12 @@ function renderWeek(){
       var chips=cell.map(function(b){
         return '<span class="chip '+(SPACE_CLS[b.space]||'ch-0')+(b.recur_group?' chip-recur':'')+'" onclick="openModal(\''+b.id+'\')">'+b.space+' · '+b.teacher+'</span>';
       }).join('');
-      html+='<td class="'+(isT?'today-c':'')+'" onclick="prefillNew(\''+ds+'\')">'+chips+'<span class="plus-hint">+</span></td>';
+      var isBlkW=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
+      if(isBlkW){
+        html+='<td class="'+(isT?'today-c':'')+' blocked-day" style="cursor:not-allowed;background:#fce8ee">'+chips+'<span style="font-size:.68rem;font-weight:700;color:#b83255;display:block;margin-top:2px">&#x1F6AB; '+isBlkW.reason+'</span></td>';
+      } else {
+        html+='<td class="'+(isT?'today-c':'')+'" onclick="prefillNew(\''+ds+'\')">'+chips+'<span class="plus-hint">+</span></td>';
+      }
     });
     html+='</tr>';
   });
@@ -679,13 +695,17 @@ function renderMonth(){
   for(var day=1;day<=last.getDate();day++){
     var dt=new Date(y,m,day);var ds=dt.toISOString().split('T')[0];
     var isT=dt.getTime()===today.getTime();
+    var blk=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
     var dayBks=BOOKINGS.filter(function(b){return b.date===ds&&(!filter||b.space===filter);});
     var shown=dayBks.slice(0,3);var more=dayBks.length-3;
-    html+='<div class="month-day'+(isT?' today-day':'')+'" onclick="prefillNew(\''+ds+'\')"><div class="month-day-num'+(isT?' today-num':'')+'">'+day+(isT?' <span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>';
+    var dayCls='month-day'+(isT?' today-day':'')+(blk?' blocked-day':'');
+    html+='<div class="'+dayCls+'"'+(blk?' style="cursor:not-allowed"':' onclick="prefillNew(\''+ds+'\')"')+'>';
+    html+='<div class="month-day-num'+(isT?' today-num':'')+'">'+day+(isT?' <span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>';
+    if(blk)html+='<span class="blocked-chip">&#x1F6AB; '+blk.reason+'</span>';
     html+=shown.map(function(b){return '<span class="month-chip '+(SPACE_CLS[b.space]||'ch-0')+'" onclick="event.stopPropagation();openModal(\''+b.id+'\')">'+b.space+'</span>';}).join('');
     html+=(more>0?'<div class="month-more">+'+more+' mais</div>':'')+'</div>';
   }
-  var total=startDay+last.getDate();var rem=(7-total%7)%7;
+    var total=startDay+last.getDate();var rem=(7-total%7)%7;
   for(var j=1;j<=rem;j++)html+='<div class="month-day other-month"><div class="month-day-num">'+j+'</div></div>';
   document.getElementById('cal-content').innerHTML=html+'</div>';
 }
@@ -1140,6 +1160,39 @@ window.addEventListener('beforeunload',function(e){
     e.preventDefault();e.returnValue='';
   }
 });
+
+// ── Inatividade ────────────────────────────────────────────────
+var _inactTimer=null;
+function resetInactivityTimer(clear){
+  if(_inactTimer)clearTimeout(_inactTimer);
+  if(clear)return;
+  _inactTimer=setTimeout(function(){
+    if(ME){logout('Você foi deslogado por inatividade (10 minutos).');}
+  },10*60*1000);
+}
+['mousemove','keydown','click','touchstart','scroll'].forEach(function(ev){
+  document.addEventListener(ev,function(){if(ME)resetInactivityTimer(false);},true);
+});
+
+// ── Restaurar sessão do localStorage ───────────────────────────
+(function restoreSession(){
+  var saved=gLS('enau_session',null);
+  if(!saved||!saved.username)return;
+  ME=saved;
+  document.getElementById('l-err').style.display='none';
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('app').style.display='block';
+  document.getElementById('topbar-user').textContent=ME.fullname;
+  document.getElementById('f-teacher-name').textContent=ME.fullname;
+  document.querySelector('.admin-tab').style.display=ME.role==='admin'?'inline-block':'none';
+  var now=new Date();
+  document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('f-date').value=now.toISOString().split('T')[0];
+  BLOCKED_DATES=gLS('ebl',[]);
+  loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();if(ME&&ME.role==='admin')renderAdmin();});
+  resetInactivityTimer(false);
+})();
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
