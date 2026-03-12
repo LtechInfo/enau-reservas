@@ -2324,23 +2324,7 @@ async function submitBugReport(){
     }).catch(function(){});
   }
   // Enviar Telegram
-  var tgMsg=
-    '<b>&#x1F41B; Bug Reportado — ENAU Reservas</b>
-
-'+
-    gravidadeEmoji[bugRating]+' <b>Gravidade:</b> '+gravidades[bugRating]+'
-'+
-    '&#x1F4CB; <b>Tipo:</b> '+type+'
-'+
-    '&#x1F464; <b>Usuário:</b> '+report.usuario+' (@'+report.username+')
-'+
-    '&#x1F4F1; <b>Dispositivo:</b> '+report.dispositivo+'
-'+
-    '&#x1F550; <b>Data/Hora:</b> '+report.data+'
-
-'+
-    '&#x1F4DD; <b>Descrição:</b>
-'+desc;
+  var tgMsg='<b>&#x1F41B; Bug Reportado — ENAU Reservas</b>\n\n'+gravidadeEmoji[bugRating]+' <b>Gravidade:</b> '+gravidades[bugRating]+'\n'+'&#x1F4CB; <b>Tipo:</b> '+type+'\n'+'&#x1F464; <b>Usuário:</b> '+report.usuario+' (@'+report.username+')\n'+'&#x1F4F1; <b>Dispositivo:</b> '+report.dispositivo+'\n'+'&#x1F550; <b>Data/Hora:</b> '+report.data+'\n\n'+'&#x1F4DD; <b>Descrição:</b>\n'+desc;
   await sendTelegram(tgMsg);
   closeModal();
   toast('Relatório enviado! Obrigado.','ok');
