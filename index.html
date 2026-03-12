@@ -934,6 +934,7 @@ function initDemo(){
 }
 
 let ME=null,editId=null,BOOKINGS=[],CANCELLED=[],ACTIVITY_LOG=[],BLOCKED_DATES=[];
+var _inactTimer=null;
 let calView='week',weekStart=monday(new Date()),monthCursor=new Date();
 function monday(d){const dt=new Date(d),day=dt.getDay();dt.setDate(dt.getDate()-(day===0?6:day-1));dt.setHours(0,0,0,0);return dt;}
 
@@ -982,6 +983,7 @@ async function doLogin(){
     if(ME.avatar){sLS('enau_avatar_'+ME.username,ME.avatar);}
     else{var lsAvatar=gLS('enau_avatar_'+ME.username,null);if(lsAvatar)ME.avatar=lsAvatar;}
     refreshTopbarAvatar();
+    buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
     renderMuralBanner();
     checkFirstAccess();
     if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
@@ -996,9 +998,10 @@ async function doLogin(){
 document.getElementById('l-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 function logout(msg){
-  ME=null;BOOKINGS=[];editId=null;
+  ME=null;BOOKINGS=[];CANCELLED=[];ACTIVITY_LOG=[];BLOCKED_DATES=[];BUGS=[];editId=null;
   localStorage.removeItem('enau_session');
   resetInactivityTimer(true);
+  var ta=document.getElementById('topbar-avatar');if(ta){ta.innerHTML='';ta.className='avatar';}
   if(msg){
     setTimeout(function(){var e=document.getElementById('l-err');e.style.display='block';e.style.color='#b87a00';e.style.background='#fffbe6';e.style.borderColor='#f5d000';e.textContent=msg;},120);
   }
@@ -1896,7 +1899,7 @@ function renderAccessLog(){
 // ══════════════════════════════════════════════════════════════
 // MINHA CONTA / TROCA DE SENHA / PRIMEIRO ACESSO
 // ══════════════════════════════════════════════════════════════
-function openMinhaConta(){
+function openMinhaConta(){if(!ME)return;
   document.getElementById('m-title').textContent='Minha Conta';
   var avatarHtml='<div class="avatar-upload"><div class="avatar avatar-large" id="modal-avatar"></div><div><p style="font-size:.82rem;color:var(--muted)">'+ME.fullname+'</p><label class="btn btn-outline avatar-upload-btn" style="cursor:pointer;margin-top:.4rem">Trocar foto<input type="file" accept="image/*" style="display:none" onchange="uploadAvatar(this)"></label></div></div>';
   document.getElementById('m-body').innerHTML=
@@ -2464,6 +2467,7 @@ function resetInactivityTimer(clear){
   document.getElementById('f-date').value=now.toISOString().split('T')[0];
   BLOCKED_DATES=gLS('ebl',[]);
   refreshTopbarAvatar();
+  buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
   loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
   resetInactivityTimer(false);
 })();
