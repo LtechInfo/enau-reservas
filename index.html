@@ -778,8 +778,8 @@ function logout(msg){
 }
 
 async function loadAll(){
-  BLOCKED_DATES=gLS('ebl',[]);
   if(isDemo()){
+    BLOCKED_DATES=gLS('ebl',[]);
     BOOKINGS=gLS('eb',[]);CANCELLED=gLS('ec',[]);ACTIVITY_LOG=gLS('el',[]);
   } else {
     const results=await Promise.all([
@@ -788,6 +788,8 @@ async function loadAll(){
       api.get('activity_log?select=*&order=ts.desc&limit=200').catch(()=>[]),
     ]);
     BOOKINGS=results[0]||[];CANCELLED=results[1]||[];ACTIVITY_LOG=results[2]||[];
+    var blkR=await api.get('blocked_dates?select=date,reason&order=date.asc').catch(function(){return[];});
+    BLOCKED_DATES=(blkR||[]).map(function(r){return{date:r.date,reason:r.reason};});
   }
 }
 
@@ -1313,36 +1315,30 @@ function renderFeriadosList(){
   el.innerHTML=rows;
 }
 
-function addFeriado(date,reason){
-  if(!BLOCKED_DATES.find(function(d){return d.date===date;})){
-    BLOCKED_DATES.push({date:date,reason:reason});
-    BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
-    sLS('ebl',BLOCKED_DATES);
-    addLog('&#x1F6AB;','Feriado bloqueado: '+fmtDate(date)+' ('+reason+')');
-  }
+async function addFeriado(date,reason){
+  await dbBlockSave(date,reason);
+  addLog('&#x1F6AB;','Feriado bloqueado: '+fmtDate(date)+' ('+reason+')');
   renderFeriadosList();renderBlockedDates();renderCal();
   toast('Feriado bloqueado!','ok');
 }
 
-function removeFeriado(date){
-  BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
-  sLS('ebl',BLOCKED_DATES);
+async function removeFeriado(date){
+  await dbBlockRemove(date);
   renderFeriadosList();renderBlockedDates();renderCal();
   toast('Bloqueio removido.','ok');
 }
 
-function bloquearTodosFeriados(){
+async function bloquearTodosFeriados(){
   var added=0;
-  FERIADOS_2026.forEach(function(f){
+  for(var i=0;i<FERIADOS_2026.length;i++){
+    var f=FERIADOS_2026[i];
     if(!BLOCKED_DATES.find(function(d){return d.date===f.date;})){
-      BLOCKED_DATES.push({date:f.date,reason:f.reason});added++;
+      await dbBlockSave(f.date,f.reason);added++;
     }
-  });
-  BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
-  sLS('ebl',BLOCKED_DATES);
+  }
   addLog('&#x1F6AB;','Admin bloqueou todos os feriados nacionais 2026 ('+added+' datas)');
   renderFeriadosList();renderBlockedDates();renderCal();
-  toast('&#x2705; '+added+' feriados bloqueados!','ok');
+  toast(added+' feriados bloqueados!','ok');
 }
 
 function addBatchBlockedDates(){
@@ -1394,15 +1390,39 @@ function renderHoje(){
 }
 
 // ── Bloqueio de Datas ──────────────────────────────────────────
-function addBlockedDate(){
+async function dbBlockSave(date,reason){
+  if(isDemo()){
+    if(!BLOCKED_DATES.find(function(d){return d.date===date;})){
+      BLOCKED_DATES.push({date:date,reason:reason});
+      BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
+      sLS('ebl',BLOCKED_DATES);
+    }
+  } else {
+    await api.post('blocked_dates',{date:date,reason:reason,created_by:ME.username}).catch(function(e){
+      // ignore duplicate key
+    });
+    if(!BLOCKED_DATES.find(function(d){return d.date===date;})){
+      BLOCKED_DATES.push({date:date,reason:reason});
+      BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
+    }
+  }
+}
+async function dbBlockRemove(date){
+  if(isDemo()){
+    BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
+    sLS('ebl',BLOCKED_DATES);
+  } else {
+    await api.delete('blocked_dates?date=eq.'+date).catch(function(){});
+    BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
+  }
+}
+
+async function addBlockedDate(){
   var date=document.getElementById('block-date').value;
   var reason=document.getElementById('block-reason').value.trim();
   if(!date||!reason){toast('Preencha data e motivo.','err');return;}
   if(BLOCKED_DATES.find(function(d){return d.date===date;})){toast('Data já bloqueada.','err');return;}
-  var entry={date:date,reason:reason};
-  BLOCKED_DATES.push(entry);
-  BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
-  sLS('ebl',BLOCKED_DATES);
+  await dbBlockSave(date,reason);
   addLog('&#x1F6AB;','Admin bloqueou '+fmtDate(date)+': '+reason);
   toast('Data bloqueada!','ok');
   document.getElementById('block-date').value='';
@@ -1410,10 +1430,9 @@ function addBlockedDate(){
   renderBlockedDates();renderCal();
 }
 
-function removeBlockedDate(date){
+async function removeBlockedDate(date){
   if(!confirm('Desbloquear '+fmtDate(date)+'?'))return;
-  BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
-  sLS('ebl',BLOCKED_DATES);
+  await dbBlockRemove(date);
   addLog('&#x2705;','Admin desbloqueou '+fmtDate(date));
   toast('Data desbloqueada.','ok');
   renderBlockedDates();renderCal();
