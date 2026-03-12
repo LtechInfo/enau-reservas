@@ -374,7 +374,7 @@ body.compact .btn{padding:.5rem 1rem;font-size:.83rem;}
   <div class="topbar-right">
     <div class="avatar" id="topbar-avatar" onclick="openMinhaConta()" title="Minha conta"></div>
     <span id="topbar-user"></span>
-    <button class="compact-toggle" id="btn-compact" onclick="toggleCompact()" title="Modo compacto">&#x25A6;</button>
+    <button class="compact-toggle" id="btn-compact" onclick="toggleCompact()" title="Modo compacto" style="font-size:1.1rem;letter-spacing:0">&#x2630;</button>
     <button class="btn-dark-toggle" id="btn-dark" onclick="toggleDark()" title="Modo escuro">&#x1F319;</button>
     <button class="btn-sm btn-ghost" onclick="logout()">Sair</button>
   </div>
@@ -1252,14 +1252,14 @@ function toast(msg,type){var t=document.getElementById('toast');t.textContent=ms
 function toggleDark(){
   var dark=document.body.classList.toggle('dark');
   var icon=dark?'&#x2600;&#xFE0F;':'&#x1F319;';
-  document.getElementById('btn-dark').textContent=icon;
-  document.getElementById('btn-dark-login').textContent=icon;
+  document.getElementById('btn-dark').innerHTML=icon;
+  document.getElementById('btn-dark-login').innerHTML=icon;
   localStorage.setItem('enau_dark',dark?'1':'');
 }
 if(localStorage.getItem('enau_dark')){
   document.body.classList.add('dark');
-  document.getElementById('btn-dark').textContent='&#x2600;&#xFE0F;';
-  document.getElementById('btn-dark-login').textContent='&#x2600;&#xFE0F;';
+  document.getElementById('btn-dark').innerHTML='&#x2600;&#xFE0F;';
+  document.getElementById('btn-dark-login').innerHTML='&#x2600;&#xFE0F;';
 }
 
 // ── Feriados Nacionais 2026 ────────────────────────────────────
