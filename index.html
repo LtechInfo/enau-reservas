@@ -723,7 +723,7 @@ async function doLogin(){
       initDemo();
       user=gLS('eu',[]).find(x=>x.username===u&&x.password===p)||null;
     } else {
-      const r=await api.get('usuarios?username=eq.'+encodeURIComponent(u)+'&password=eq.'+encodeURIComponent(p)+'&select=*,avatar');
+      const r=await api.get('usuarios?username=eq.'+encodeURIComponent(u)+'&password=eq.'+encodeURIComponent(p)+'&select=*');
       user=(r&&r[0])?r[0]:null;
     }
     if(!user)throw new Error('invalid');
@@ -743,9 +743,6 @@ async function doLogin(){
     renderCal();renderMine();renderLegend();
     logAccess(ME.username,ME.fullname);
     resetInactivityTimer(false);
-    // Sync avatar from Supabase into localStorage for offline use
-    if(ME.avatar){sLS('enau_avatar_'+ME.username,ME.avatar);}
-    else{var lsAvatar=gLS('enau_avatar_'+ME.username,null);if(lsAvatar)ME.avatar=lsAvatar;}
     refreshTopbarAvatar();
     renderMuralBanner();
     checkFirstAccess();
@@ -778,7 +775,6 @@ function logout(msg){
 }
 
 async function loadAll(){
-  BLOCKED_DATES=gLS('ebl',[]);
   if(isDemo()){
     BOOKINGS=gLS('eb',[]);CANCELLED=gLS('ec',[]);ACTIVITY_LOG=gLS('el',[]);
   } else {
@@ -788,6 +784,7 @@ async function loadAll(){
       api.get('activity_log?select=*&order=ts.desc&limit=200').catch(()=>[]),
     ]);
     BOOKINGS=results[0]||[];CANCELLED=results[1]||[];ACTIVITY_LOG=results[2]||[];
+    BLOCKED_DATES=gLS('ebl',[]);
   }
 }
 
@@ -1760,32 +1757,14 @@ function getAvatarColor(name){
   var sum=0;for(var i=0;i<name.length;i++)sum+=name.charCodeAt(i);
   return AVATAR_COLORS[sum%AVATAR_COLORS.length];
 }
-function getAvatarData(){
-  // Priority: ME.avatar (from Supabase/session) > localStorage fallback
-  if(ME&&ME.avatar)return ME.avatar;
-  return gLS('enau_avatar_'+(ME?ME.username:''),null);
-}
-function setAvatarData(data){
-  // Save to localStorage always (fast/offline)
-  sLS('enau_avatar_'+(ME?ME.username:''),data);
-  // Save to ME object and session
-  if(ME){ME.avatar=data;sLS('enau_session',ME);}
-  // Save to Supabase async (sync across devices)
-  if(ME&&!isDemo()){
-    api.patch('usuarios?id=eq.'+ME.id,{avatar:data}).catch(function(){});
-  }
-  if(isDemo()&&ME){
-    var us=gLS('eu',[]);
-    var idx=us.findIndex(function(u){return u.username===ME.username;});
-    if(idx>-1){us[idx].avatar=data;sLS('eu',us);}
-  }
-}
+function getAvatarData(){return gLS('enau_avatar_'+( ME?ME.username:''),null);}
+function setAvatarData(data){sLS('enau_avatar_'+(ME?ME.username:''),data);}
 
 function buildAvatar(el, name, size){
   if(!el)return;
   var saved=getAvatarData();
   if(saved){
-    el.innerHTML='<img src="'+saved+'" alt="'+name+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    el.innerHTML='<img src="'+saved+'" alt="'+name+'">';
     el.style.background='transparent';
   } else {
     el.innerHTML=getInitials(name);
@@ -1880,15 +1859,6 @@ function resetInactivityTimer(clear){
   loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
   resetInactivityTimer(false);
 })();
-
-// Mobile: default to month view
-if(window.innerWidth < 640){
-  calView='month';
-  var weekBtn=document.querySelector('.cvt-btn.on');
-  var monthBtn=document.querySelectorAll('.cvt-btn')[1];
-  if(weekBtn)weekBtn.classList.remove('on');
-  if(monthBtn)monthBtn.classList.add('on');
-}
 
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
