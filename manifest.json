@@ -8,7 +8,9 @@
   "theme_color": "#3d1a4f",
   "orientation": "portrait-primary",
   "icons": [
-    {"src": "logo.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "logo.png", "sizes": "512x512", "type": "image/png"}
+    {"src": "MOBILEICON.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "MOBILEICON.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "MOBILEICON.png", "sizes": "1024x1024", "type": "image/png"},
+    {"src": "MOBILEICON.png", "sizes": "any", "type": "image/png", "purpose": "any maskable"}
   ]
 }
