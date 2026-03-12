@@ -2302,30 +2302,34 @@ async function submitBugReport(){
     ts:new Date().toISOString(),
     resolvido:false
   };
-  // Salvar no localStorage
-  var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
-  bugs.unshift(report);
-  localStorage.setItem('enau_bugs',JSON.stringify(bugs.slice(0,50)));
-  // Salvar no Supabase (activity_log)
-  var logMsg='[BUG '+gravidades[bugRating].toUpperCase()+'] '+report.usuario+': '+type+' — '+desc.slice(0,100);
-  addLog('&#x1F41B;',logMsg);
-  // Salvar na tabela bugs do Supabase (se nao demo)
-  if(!isDemo()){
-    api.post('bugs',{
-      usuario:report.usuario,
-      username:report.username,
-      tipo:type,
-      descricao:desc,
-      gravidade:gravidades[bugRating],
-      gravidade_num:bugRating,
-      dispositivo:report.dispositivo,
-      navegador:report.navegador,
-      resolvido:false
-    }).catch(function(){});
-  }
-  // Enviar Telegram
-  var tgMsg='<b>&#x1F41B; Bug Reportado — ENAU Reservas</b>\n\n'+gravidadeEmoji[bugRating]+' <b>Gravidade:</b> '+gravidades[bugRating]+'\n'+'&#x1F4CB; <b>Tipo:</b> '+type+'\n'+'&#x1F464; <b>Usuário:</b> '+report.usuario+' (@'+report.username+')\n'+'&#x1F4F1; <b>Dispositivo:</b> '+report.dispositivo+'\n'+'&#x1F550; <b>Data/Hora:</b> '+report.data+'\n\n'+'&#x1F4DD; <b>Descrição:</b>\n'+desc;
-  await sendTelegram(tgMsg);
+  try{
+    // Salvar no localStorage (sempre funciona)
+    var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
+    bugs.unshift(report);
+    localStorage.setItem('enau_bugs',JSON.stringify(bugs.slice(0,50)));
+    // Salvar no activity_log
+    var logMsg='[BUG '+gravidades[bugRating].toUpperCase()+'] '+report.usuario+': '+type+' — '+desc.slice(0,100);
+    addLog('&#x1F41B;',logMsg);
+    // Tentar salvar na tabela bugs (ignora erro se tabela não existir)
+    if(!isDemo()){
+      await api.post('bugs',{
+        usuario:report.usuario,
+        username:report.username,
+        tipo:type,
+        descricao:desc,
+        gravidade:gravidades[bugRating],
+        gravidade_num:bugRating,
+        dispositivo:report.dispositivo,
+        navegador:report.navegador,
+        resolvido:false
+      }).catch(function(){});
+    }
+  } catch(e){}
+  // Enviar Telegram (separado do try acima para garantir envio)
+  try{
+    var tgMsg='<b>&#x1F41B; Bug Reportado — ENAU Reservas</b>\n\n'+gravidadeEmoji[bugRating]+' <b>Gravidade:</b> '+gravidades[bugRating]+'\n'+'&#x1F4CB; <b>Tipo:</b> '+type+'\n'+'&#x1F464; <b>Usuário:</b> '+report.usuario+' (@'+report.username+')\n'+'&#x1F4F1; <b>Dispositivo:</b> '+report.dispositivo+'\n'+'&#x1F550; <b>Data/Hora:</b> '+report.data+'\n\n'+'&#x1F4DD; <b>Descrição:</b>\n'+desc;
+    await sendTelegram(tgMsg);
+  } catch(e){}
   closeModal();
   toast('Relatório enviado! Obrigado.','ok');
 }
