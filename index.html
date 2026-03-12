@@ -1097,7 +1097,7 @@ async function submitBooking(){
   } else {
     var conflict=BOOKINGS.find(function(b){return b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId);});
     if(conflict){toast('Conflito! "'+space+'" já reservado das '+conflict.time_start+'–'+conflict.time_end+' por '+conflict.teacher+'.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
-    if(editId){var orig=BOOKINGS.find(function(b){return b.id===editId;});if(orig&&orig.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
+    if(editId){var orig=BOOKINGS.find(function(b){return b.id===editId;});if(orig&&orig.booked_by!==ME.username&&!isAdmin()){toast('Sem permissão.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
     var pl={space:space,date:date,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:bookedBy,booked_by_name:bookedByName};
     try{
       if(editId){
@@ -1141,8 +1141,8 @@ function openModal(id){
   var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
   var hl=hoursUntil(b);
   var isOwner=b.booked_by===ME.username;
-  var isAdmin=ME.role==='admin';
-  var canAct=isAdmin||(isOwner&&hl>=5);
+  var isAdminOrCoord=isAdmin()||isCoord();
+  var canAct=isAdminOrCoord||(isOwner&&hl>=5);
   document.getElementById('m-title').textContent=b.space+(b.recur_group?' &#x21BB;':'');
   var body='<div class="row">';
   body+='<p><strong>Data:</strong> '+fmtDate(b.date)+'</p>';
@@ -1278,14 +1278,14 @@ async function renderAdmUsers(){
   document.getElementById('adm-users').innerHTML=users.map(function(u,i){
     var editBtn='<button class="btn btn-outline" style="padding:.3rem .6rem;font-size:.74rem" onclick=\'openEditUser('+JSON.stringify({id:u.id||i,username:u.username,fullname:u.fullname,role:u.role})+')\'>&#x270F;&#xFE0F; Editar</button>';
     var delBtn=u.username!=='admin'?'<button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.74rem" onclick="removeUser('+(u.id||i)+',\''+u.username+'\')">&#x1F5D1; Remover</button>':'';
-    return '<tr><td>'+u.username+'</td><td>'+u.fullname+'</td><td>'+(u.email||'—')+'</td><td>'+(u.role==='admin'?'&#x1F511; Admin':'&#x1F464; Usuário')+'</td><td><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+editBtn+delBtn+'</div></td></tr>';
+    return '<tr><td>'+u.username+'</td><td>'+u.fullname+'</td><td>'+(u.email||'—')+'</td><td>'+(u.role==='admin'?'&#x1F511; Admin':(u.role==='coord'?'&#x1F4CB; Coord':'&#x1F464; Usuário'))+'</td><td><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+editBtn+delBtn+'</div></td></tr>';
   }).join('');
 }
 
 function openEditUser(u){
   if(typeof u==='string')u=JSON.parse(u);
   document.getElementById('m-title').textContent='Editar Usuário: '+u.username;
-  document.getElementById('m-body').innerHTML='<label class="mlbl">Nome completo</label><input type="text" id="eu-full" value="'+u.fullname+'"><label class="mlbl">E-mail</label><input type="email" id="eu-email" value="'+(u.email||'')+'" placeholder="email@colegioENAU.com.br"><label class="mlbl">Nova senha <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.8rem">(deixe em branco para não alterar)</span></label><input type="password" id="eu-pass" placeholder="Nova senha (mín. 6 chars)"><label class="mlbl">Perfil</label><select id="eu-role"><option value="user"'+(u.role==='user'?' selected':'')+'>Usuário</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Administrador</option></select>';
+  document.getElementById('m-body').innerHTML='<label class="mlbl">Nome completo</label><input type="text" id="eu-full" value="'+u.fullname+'"><label class="mlbl">E-mail</label><input type="email" id="eu-email" value="'+(u.email||'')+'" placeholder="email@colegioENAU.com.br"><label class="mlbl">Nova senha <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.8rem">(deixe em branco para não alterar)</span></label><input type="password" id="eu-pass" placeholder="Nova senha (mín. 6 chars)"><label class="mlbl">Perfil</label><select id="eu-role"><option value="user"'+(u.role==='user'?' selected':'')+'>Usuário</option><option value="coord"'+(u.role==='coord'?' selected':'')+'>Coordenador / Diretor</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Administrador</option></select>';
   document.getElementById('m-acts').innerHTML='<button class="btn btn-outline" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveEditUser('+u.id+',\''+u.username+'\')">Salvar</button>';
   document.getElementById('overlay').style.display='flex';
 }
@@ -1333,7 +1333,7 @@ async function addBatchUsers(){
     var parts=lines[i].split(';').map(function(p){return p.trim();});
     var username=parts[0],password=parts[1],fullname=parts[2],role=parts[3];
     if(!username||!password||password.length<6||!fullname){errors.push(username||lines[i]);continue;}
-    var r=role==='admin'?'admin':'user';
+    var r=role==='admin'?'admin':(role==='coord'?'coord':'user');
     try{
       if(isDemo()){var us=gLS('eu',[]);if(!us.find(function(u){return u.username===username;})){us.push({id:Date.now()+Math.random(),username:username,password:password,fullname:fullname,role:r});sLS('eu',us);}}
       else await api.post('usuarios',{username:username,password:password,fullname:fullname,role:r});
