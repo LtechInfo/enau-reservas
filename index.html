@@ -478,6 +478,16 @@ body.compact .btn{padding:.5rem 1rem;font-size:.83rem;}
   /* Garante botão sair sempre visível */
   #topbar .btn-ghost{padding:.25rem .5rem;}
 }
+
+/* Créditos */
+.credits{text-align:center;padding:.8rem 1rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem;}
+.credits a{color:var(--muted);text-decoration:none;font-weight:600;transition:color .15s;}
+.credits a:hover{color:var(--coral);}
+.credits-login{text-align:center;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);}
+.credits-login a{color:var(--muted);text-decoration:none;font-weight:600;}
+.credits-login a:hover{color:var(--coral);}
+body.dark .credits{border-color:var(--border);color:var(--muted);}
+body.dark .credits-login{border-color:var(--border);color:var(--muted);}
 </style>
 </head>
 <body>
@@ -517,6 +527,7 @@ body.compact .btn{padding:.5rem 1rem;font-size:.83rem;}
       <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
       <button class="btn btn-primary btn-full" id="btn-login" onclick="doLogin()">Entrar</button>
       <div class="err-box" id="l-err">Usuário ou senha incorretos.</div>
+      <div class="credits-login">Idealizado e desenvolvido por <a href="https://wa.me/5511999999999" target="_blank">Lucas Martins</a> &middot; <a href="#" target="_blank">LTech Inform&aacute;tica</a></div>
     </div>
   </div>
 </div>
