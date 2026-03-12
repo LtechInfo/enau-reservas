@@ -1655,13 +1655,26 @@ function openMinhaConta(){
 function uploadAvatar(input){
   if(!input.files||!input.files[0])return;
   var file=input.files[0];
-  if(file.size>500000){toast('Imagem muito grande. Máx 500KB.','err');return;}
+  if(file.size>3000000){toast('Imagem muito grande. Máx 3MB.','err');return;}
   var reader=new FileReader();
   reader.onload=function(e){
-    setAvatarData(e.target.result);
-    buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
-    refreshTopbarAvatar();
-    toast('Foto atualizada!','ok');
+    // Compress image to max 200x200 before saving
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement('canvas');
+      var max=200;
+      var w=img.width,h=img.height;
+      if(w>h){if(w>max){h=Math.round(h*max/w);w=max;}}
+      else{if(h>max){w=Math.round(w*max/h);h=max;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var data=canvas.toDataURL('image/jpeg',0.82);
+      setAvatarData(data);
+      buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
+      refreshTopbarAvatar();
+      toast('Foto atualizada!','ok');
+    };
+    img.src=e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -1865,6 +1878,12 @@ function resetInactivityTimer(clear){
   var saved=gLS('enau_session',null);
   if(!saved||!saved.username){loadingProgress(100);setTimeout(hideLoading,400);return;}
   ME=saved;
+  // Re-fetch from Supabase to get fresh avatar and other fields
+  if(!isDemo()){
+    api.get('usuarios?username=eq.'+encodeURIComponent(ME.username)+'&select=*').then(function(r){
+      if(r&&r[0]){ME=r[0];sLS('enau_session',ME);refreshTopbarAvatar();}
+    }).catch(function(){});
+  }
   document.getElementById('l-err').style.display='none';
   document.getElementById('login-wrap').style.display='none';
   document.getElementById('topbar').style.display='flex';
