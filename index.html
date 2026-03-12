@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ENAU Reservas">
 <link rel="icon" type="image/png" href="favicon.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -301,18 +302,80 @@ body.dark .conflict-preview{background:#1a0a0a;border-color:#7a2020;color:#fca5a
 body.dark .access-user{color:#c4a8d8;}
 /* Troca de senha */
 .pwd-wrap{display:flex;align-items:center;gap:.5rem;}
+
+/* ── Loading screen ─────────────────────────────────────────── */
+#loading-screen{position:fixed;inset:0;background:linear-gradient(145deg,#2a0f38 0%,#5c1a38 50%,#3d1a4f 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .5s ease;}
+#loading-screen.fade-out{opacity:0;pointer-events:none;}
+.loading-logo{height:110px;width:auto;filter:brightness(0) invert(1);animation:pulse 1.6s ease-in-out infinite;}
+.loading-bar-wrap{width:180px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}
+.loading-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--coral),#f07a90);border-radius:2px;transition:width .4s ease;}
+.loading-txt{color:rgba(255,255,255,.6);font-size:.8rem;letter-spacing:.08em;}
+@keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+
+/* ── Avatar / Foto de perfil ─────────────────────────────────── */
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#fff;flex-shrink:0;cursor:pointer;border:2px solid rgba(255,255,255,.3);overflow:hidden;transition:border-color .15s;}
+.avatar:hover{border-color:rgba(255,255,255,.7);}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.avatar-large{width:72px;height:72px;font-size:1.5rem;border:3px solid var(--border);cursor:default;}
+.avatar-large:hover{border-color:var(--border);}
+.avatar-upload{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;}
+.avatar-upload-btn{font-size:.78rem;padding:.35rem .8rem;}
+.chip-avatar{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:#fff;vertical-align:middle;margin-right:2px;flex-shrink:0;}
+
+/* ── Animação cards ──────────────────────────────────────────── */
+@keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardInLeft{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.bk-card{animation:cardIn .28s ease both;}
+.bk-card:nth-child(1){animation-delay:.03s}
+.bk-card:nth-child(2){animation-delay:.07s}
+.bk-card:nth-child(3){animation-delay:.11s}
+.bk-card:nth-child(4){animation-delay:.15s}
+.bk-card:nth-child(5){animation-delay:.19s}
+.bk-card:nth-child(n+6){animation-delay:.22s}
+.today-card{animation:cardIn .25s ease both;}
+.today-card:nth-child(2){animation-delay:.06s}
+.today-card:nth-child(3){animation-delay:.12s}
+.today-card:nth-child(4){animation-delay:.18s}
+
+/* ── Modo compacto ───────────────────────────────────────────── */
+body.compact .wrap{padding:1rem .8rem;}
+body.compact .bk-card{padding:.65rem .9rem;margin-bottom:.5rem;}
+body.compact .bk-info h4{font-size:.85rem;}
+body.compact .bk-info .meta{font-size:.74rem;line-height:1.5;}
+body.compact .card{padding:1rem;}
+body.compact .card h3{font-size:1rem;margin-bottom:.8rem;padding-bottom:.5rem;}
+body.compact .ph h2{font-size:1.3rem;}
+body.compact .tabs{margin-bottom:1.2rem;}
+body.compact .tab{padding:.5rem 1rem;font-size:.82rem;}
+body.compact table.cal thead tr th{padding:.4rem .4rem;font-size:.72rem;}
+body.compact table.cal tbody tr td{min-height:40px;padding:2px;}
+body.compact .chip{font-size:.65rem;padding:.15rem .35rem;}
+body.compact .month-day{min-height:66px;}
+body.compact .form-row{gap:.8rem;margin-bottom:.7rem;}
+body.compact input,body.compact select,body.compact textarea{padding:.5rem .75rem;font-size:.85rem;}
+body.compact .btn{padding:.5rem 1rem;font-size:.83rem;}
+.compact-toggle{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,.1);border:none;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:background .15s;color:rgba(255,255,255,.8);font-weight:700;}
+.compact-toggle:hover{background:rgba(255,255,255,.22);}
+.compact-toggle.on{background:rgba(255,255,255,.28);color:#fff;}
 </style>
 </head>
 <body>
+<div id="loading-screen">
+  <img class="loading-logo" src="logo.png" alt="ENAU"
+       onerror="this.outerHTML='<div style=\'font-size:2.5rem;font-weight:700;color:#fff;letter-spacing:.1em\'>enau</div>'">
+  <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+  <div class="loading-txt" id="loading-txt">Carregando...</div>
+</div>
 <div id="topbar" style="display:none">
   <div class="logo-bar">
     <img class="topbar-logo" src="logo.png" alt="Colégio ENAU" style="filter:brightness(0) invert(1);"
          onerror="this.outerHTML='<svg width=\'140\' height=\'80\' viewBox=\'0 0 280 160\' fill=\'none\'><path d=\'M44 136C38 122 24 110 18 92C12 74 16 58 30 52C38 48 44 52 50 60\' fill=\'#f2839a\'/><path d=\'M50 60C56 52 62 48 70 52C84 58 88 74 82 92C76 110 62 122 56 136\' fill=\'#d9506a\'/><path d=\'M50 60C42 48 32 38 28 24C24 12 30 6 38 10C46 14 48 30 50 46\' fill=\'#9b3568\'/><path d=\'M50 46C52 30 54 14 62 10C70 6 76 12 72 24C68 38 58 48 50 60\' fill=\'#6e2e8a\'/><path d=\'M50 46C48 30 47 16 48 10C48.5 6 49.5 6 50 10C51 16 52 30 50 46\' fill=\'#fff\'/><text x=\'90\' y=\'90\' font-family=\'Playfair Display,serif\' font-size=\'50\' font-weight=\'700\' fill=\'white\'>enau</text><text x=\'90\' y=\'116\' font-family=\'Outfit,sans-serif\' font-size=\'17\' font-weight=\'400\' fill=\'rgba(255,255,255,.55)\' letter-spacing=\'2\'>RESERVAS</text></svg>'">
   </div>
   <div class="topbar-right">
+    <div class="avatar" id="topbar-avatar" onclick="openMinhaConta()" title="Minha conta"></div>
     <span id="topbar-user"></span>
+    <button class="compact-toggle" id="btn-compact" onclick="toggleCompact()" title="Modo compacto">&#x25A6;</button>
     <button class="btn-dark-toggle" id="btn-dark" onclick="toggleDark()" title="Modo escuro">&#x1F319;</button>
-    <button class="btn-sm btn-ghost" onclick="openMinhaConta()">&#x1F464; Conta</button>
     <button class="btn-sm btn-ghost" onclick="logout()">Sair</button>
   </div>
 </div>
@@ -653,6 +716,7 @@ async function doLogin(){
   const p=document.getElementById('l-pass').value;
   const btn=document.getElementById('btn-login');
   btn.innerHTML='<span class="spin"></span>';btn.disabled=true;
+  loadingProgress(30,'Verificando credenciais...');
   try{
     let user=null;
     if(isDemo()){
@@ -679,6 +743,7 @@ async function doLogin(){
     renderCal();renderMine();renderLegend();
     logAccess(ME.username,ME.fullname);
     resetInactivityTimer(false);
+    refreshTopbarAvatar();
     renderMuralBanner();
     checkFirstAccess();
     if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
@@ -928,6 +993,7 @@ function openModal(id){
   document.getElementById('m-body').innerHTML=body;
   var acts=document.getElementById('m-acts');
   acts.innerHTML='<button class="btn btn-outline" onclick="closeModal()">Fechar</button>';
+  acts.innerHTML+='<button class="btn btn-outline" onclick="copyBooking(\''+b.id+'\')" title="Copiar para outra data">&#x2398; Copiar</button>';
   if(canAct){
     acts.innerHTML+='<button class="btn btn-primary" onclick="startEdit(\''+b.id+'\')">&#x270F;&#xFE0F; Editar</button>';
     if(b.recur_group){
@@ -1569,17 +1635,39 @@ function renderAccessLog(){
 // ══════════════════════════════════════════════════════════════
 function openMinhaConta(){
   document.getElementById('m-title').textContent='Minha Conta';
+  var avatarHtml='<div class="avatar-upload"><div class="avatar avatar-large" id="modal-avatar"></div><div><p style="font-size:.82rem;color:var(--muted)">'+ME.fullname+'</p><label class="btn btn-outline avatar-upload-btn" style="cursor:pointer;margin-top:.4rem">Trocar foto<input type="file" accept="image/*" style="display:none" onchange="uploadAvatar(this)"></label></div></div>';
   document.getElementById('m-body').innerHTML=
-    '<p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Usuário: <strong>'+ME.username+'</strong></p>'+
+    avatarHtml+
     '<label class="mlbl">Senha atual</label><input type="password" id="pwd-cur" placeholder="Senha atual">'+
     '<label class="mlbl">Nova senha</label><input type="password" id="pwd-new" placeholder="Mínimo 6 caracteres">'+
     '<label class="mlbl">Confirmar nova senha</label><input type="password" id="pwd-confirm" placeholder="Repita a nova senha">';
+  buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
   document.getElementById('m-acts').innerHTML=
     '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>'+
     '<button class="btn btn-primary" onclick="trocarSenha()">Salvar senha</button>';
   document.getElementById('overlay').style.display='flex';
 }
 
+
+function uploadAvatar(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  if(file.size>500000){toast('Imagem muito grande. Máx 500KB.','err');return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    setAvatarData(e.target.result);
+    buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
+    refreshTopbarAvatar();
+    toast('Foto atualizada!','ok');
+  };
+  reader.readAsDataURL(file);
+}
+function removeAvatar(){
+  setAvatarData(null);
+  refreshTopbarAvatar();
+  buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
+  toast('Foto removida.','ok');
+}
 async function trocarSenha(){
   var cur=document.getElementById('pwd-cur').value;
   var nw=document.getElementById('pwd-new').value;
@@ -1636,6 +1724,108 @@ async function trocarSenhaFirstAccess(){
   } catch(e){toast('Erro: '+e.message,'err');}
 }
 
+
+// ══════════════════════════════════════════════════════════════
+// TELA DE LOADING
+// ══════════════════════════════════════════════════════════════
+function loadingProgress(pct, txt){
+  var bar=document.getElementById('loading-bar');
+  var label=document.getElementById('loading-txt');
+  if(bar)bar.style.width=pct+'%';
+  if(label&&txt)label.textContent=txt;
+}
+function hideLoading(){
+  var el=document.getElementById('loading-screen');
+  if(!el)return;
+  loadingProgress(100,'Pronto!');
+  setTimeout(function(){el.classList.add('fade-out');setTimeout(function(){el.style.display='none';},500);},300);
+}
+// Show loading immediately
+loadingProgress(15,'Iniciando...');
+
+// ══════════════════════════════════════════════════════════════
+// AVATAR / FOTO DE PERFIL
+// ══════════════════════════════════════════════════════════════
+var AVATAR_COLORS=['#3d1a4f','#7b2d52','#d9506a','#1a5c8f','#1a5c3d','#8f3a00','#6a1a8f','#0d6b50','#b83255','#5c2d72'];
+
+function getInitials(name){
+  var parts=name.trim().split(' ');
+  if(parts.length>=2)return (parts[0][0]+(parts[parts.length-1][0])).toUpperCase();
+  return name.slice(0,2).toUpperCase();
+}
+function getAvatarColor(name){
+  var sum=0;for(var i=0;i<name.length;i++)sum+=name.charCodeAt(i);
+  return AVATAR_COLORS[sum%AVATAR_COLORS.length];
+}
+function getAvatarData(){return gLS('enau_avatar_'+( ME?ME.username:''),null);}
+function setAvatarData(data){sLS('enau_avatar_'+(ME?ME.username:''),data);}
+
+function buildAvatar(el, name, size){
+  if(!el)return;
+  var saved=getAvatarData();
+  if(saved){
+    el.innerHTML='<img src="'+saved+'" alt="'+name+'">';
+    el.style.background='transparent';
+  } else {
+    el.innerHTML=getInitials(name);
+    el.style.background=getAvatarColor(name);
+    el.style.color='#fff';
+  }
+  if(size){el.style.width=size+'px';el.style.height=size+'px';el.style.fontSize=(size/2.6).toFixed(0)+'px';}
+}
+function refreshTopbarAvatar(){
+  if(!ME)return;
+  buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODO COMPACTO
+// ══════════════════════════════════════════════════════════════
+function toggleCompact(){
+  var on=document.body.classList.toggle('compact');
+  var btn=document.getElementById('btn-compact');
+  if(btn)btn.classList.toggle('on',on);
+  localStorage.setItem('enau_compact',on?'1':'');
+}
+if(localStorage.getItem('enau_compact')){
+  document.body.classList.add('compact');
+  var cb=document.getElementById('btn-compact');
+  if(cb)cb.classList.add('on');
+}
+
+// ══════════════════════════════════════════════════════════════
+// COPIAR RESERVA
+// ══════════════════════════════════════════════════════════════
+function copyBooking(id){
+  closeModal();
+  var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
+  showTab('new',document.querySelectorAll('.tab')[2]);
+  // pre-fill everything except date
+  document.getElementById('f-space').value=b.space;
+  document.getElementById('f-start').value=b.time_start;
+  document.getElementById('f-end').value=b.time_end;
+  document.getElementById('f-notes').value=b.notes||'';
+  if(b.lesson){
+    var parts=b.lesson.split(' · ');
+    document.getElementById('f-periodo').value=parts[0]||'';
+    msClear('aula');
+    if(parts[1])parts[1].split(', ').forEach(function(a){msSetValue('aula',a.trim());});
+    msRender('aula');
+  } else {
+    document.getElementById('f-periodo').value='';msClear('aula');
+  }
+  msClear('turma');
+  if(b.turma)b.turma.split(', ').forEach(function(t){msSetValue('turma',t.trim());});
+  msRender('turma');
+  // clear date so user picks a new one
+  document.getElementById('f-date').value='';
+  editId=null;
+  document.getElementById('btn-submit').textContent='Confirmar Reserva';
+  document.getElementById('btn-cancel-edit').style.display='none';
+  document.getElementById('form-card-title').textContent='Cópia de Reserva — escolha a data';
+  toast('Dados copiados! Selecione a nova data.','ok');
+}
+
 // ── Inatividade ────────────────────────────────────────────────
 var _inactTimer=null;
 function resetInactivityTimer(clear){
@@ -1652,7 +1842,7 @@ function resetInactivityTimer(clear){
 // ── Restaurar sessão do localStorage ───────────────────────────
 (function restoreSession(){
   var saved=gLS('enau_session',null);
-  if(!saved||!saved.username)return;
+  if(!saved||!saved.username){loadingProgress(100);setTimeout(hideLoading,400);return;}
   ME=saved;
   document.getElementById('l-err').style.display='none';
   document.getElementById('login-wrap').style.display='none';
@@ -1665,7 +1855,8 @@ function resetInactivityTimer(clear){
   document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('f-date').value=now.toISOString().split('T')[0];
   BLOCKED_DATES=gLS('ebl',[]);
-  loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();});
+  refreshTopbarAvatar();
+  loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
   resetInactivityTimer(false);
 })();
 
