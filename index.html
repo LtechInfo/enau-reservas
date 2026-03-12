@@ -488,6 +488,13 @@ body.compact .btn{padding:.5rem 1rem;font-size:.83rem;}
 .credits-login a:hover{color:var(--coral);}
 body.dark .credits{border-color:var(--border);color:var(--muted);}
 body.dark .credits-login{border-color:var(--border);color:var(--muted);}
+
+/* Perfil coordenador */
+.coord-tab{display:none;}
+/* Agendar por outro usuário */
+.proxy-row{background:linear-gradient(135deg,#f5edf1,#fdf8f9);border:1.5px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin-bottom:1rem;display:none;}
+.proxy-row label.lbl{margin-top:0;}
+body.dark .proxy-row{background:linear-gradient(135deg,#1a1030,#1e1428);border-color:var(--border);}
 </style>
 </head>
 <body>
@@ -539,6 +546,7 @@ body.dark .credits-login{border-color:var(--border);color:var(--muted);}
       <button class="tab" id="tab-btn-hoje" onclick="showTab('hoje',this)">&#x1F4CC; Hoje</button>
       <button class="tab" onclick="showTab('new',this)">＋ Nova Reserva</button>
       <button class="tab" onclick="showTab('mine',this)">&#x1F4CB; Minhas Reservas</button>
+      <button class="tab coord-tab" id="tab-btn-coord" onclick="showTab('coord',this)" style="display:none">&#x1F4CB; Painel</button>
       <button class="tab admin-tab" onclick="showTab('admin',this)" style="display:none">&#x2699;&#xFE0F; Admin</button>
     </div>
 
@@ -573,6 +581,12 @@ body.dark .credits-login{border-color:var(--border);color:var(--muted);}
       <div class="ph"><h2>Nova Reserva</h2></div>
       <div class="card">
         <h3 id="form-card-title">Preencha os dados</h3>
+        <div class="proxy-row" id="proxy-row">
+          <label class="lbl">&#x1F464; Agendar em nome de</label>
+          <select id="f-proxy" onchange="updateProxyTeacher()">
+            <option value="">— Selecione um professor —</option>
+          </select>
+        </div>
         <div class="form-row">
           <div><label class="lbl">Espaço *</label>
             <select id="f-space" onchange="checkConflictPreview()">
@@ -689,6 +703,18 @@ body.dark .credits-login{border-color:var(--border);color:var(--muted);}
       <div id="mine-list"></div>
     </div>
 
+    <div class="tab-panel" id="tab-coord">
+      <div class="ph"><h2>Painel do Coordenador</h2></div>
+      <div class="card">
+        <h3>&#x1F50D; Todas as Reservas</h3>
+        <div class="search-bar"><input type="text" id="coord-search" placeholder="Buscar por professor, turma, espaço..." oninput="renderCoordBookings()"></div>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Período/Aula</th><th>Ação</th></tr></thead><tbody id="coord-tbody"></tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>&#x1F5C2; Histórico de Cancelamentos</h3>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Cancelado por</th><th>Cancelado em</th></tr></thead><tbody id="coord-cancelled"></tbody></table></div>
+      </div>
+    </div>
     <div class="tab-panel" id="tab-admin">
       <div class="card">
         <h3>&#x1F50D; Busca Rápida</h3>
@@ -776,7 +802,7 @@ body.dark .credits-login{border-color:var(--border);color:var(--muted);}
           </div>
           <div class="form-row">
             <div><label class="lbl">Nome completo</label><input type="text" id="a-full" placeholder="Carlos Mendes"></div>
-            <div><label class="lbl">Perfil</label><select id="a-role"><option value="user">Usuário (Professor/Funcionário)</option><option value="admin">Administrador</option></select></div>
+            <div><label class="lbl">Perfil</label><select id="a-role"><option value="user">Usuário (Professor/Funcionário)</option><option value="coord">Coordenador / Diretor</option><option value="admin">Administrador</option></select></div>
           </div>
           <div class="form-row" style="margin-top:.2rem">
             <div><label class="lbl">E-mail <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label><input type="email" id="a-email" placeholder="carlos@colegioENAU.com.br"></div>
@@ -1028,7 +1054,10 @@ async function submitBooking(){
   var date=document.getElementById('f-date').value;
   var start=document.getElementById('f-start').value;
   var end=document.getElementById('f-end').value;
-  var teacher=ME.fullname;
+  var proxyUser=getProxyUser();
+  var teacher=proxyUser?proxyUser.fullname:ME.fullname;
+  var bookedBy=proxyUser?proxyUser.username:ME.username;
+  var bookedByName=proxyUser?proxyUser.fullname+' (via '+ME.fullname+')':ME.fullname;
   var periodo=document.getElementById('f-periodo').value;
   var turmas=msGetValues('turma');
   var aulas=msGetValues('aula');
@@ -1054,7 +1083,7 @@ async function submitBooking(){
         var ds=cur.toISOString().split('T')[0];
         var hasConflict=BOOKINGS.some(function(b){return b.space===space&&b.date===ds&&b.time_start<end&&b.time_end>start;});
         if(!hasConflict){
-          var payload={space:space,date:ds,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:ME.username,booked_by_name:ME.fullname,recur_group:rg};
+          var payload={space:space,date:ds,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:bookedBy,booked_by_name:bookedByName,recur_group:rg};
           if(isDemo()){BOOKINGS.push(Object.assign({},payload,{id:'bk_'+Date.now()+'_'+count,created_at:new Date().toISOString()}));}
           else{try{var r=await api.post('reservas',payload);BOOKINGS.push(r[0]);}catch(e){}}
           count++;
@@ -1069,7 +1098,7 @@ async function submitBooking(){
     var conflict=BOOKINGS.find(function(b){return b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId);});
     if(conflict){toast('Conflito! "'+space+'" já reservado das '+conflict.time_start+'–'+conflict.time_end+' por '+conflict.teacher+'.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
     if(editId){var orig=BOOKINGS.find(function(b){return b.id===editId;});if(orig&&orig.booked_by!==ME.username&&ME.role!=='admin'){toast('Sem permissão.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
-    var pl={space:space,date:date,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:ME.username,booked_by_name:ME.fullname};
+    var pl={space:space,date:date,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:bookedBy,booked_by_name:bookedByName};
     try{
       if(editId){
         if(isDemo()){var idx=BOOKINGS.findIndex(function(b){return b.id===editId;});if(idx>-1)BOOKINGS[idx]=Object.assign({},BOOKINGS[idx],pl);sLS('eb',BOOKINGS);}
@@ -1194,7 +1223,7 @@ function overlayClick(e){if(e.target===document.getElementById('overlay'))closeM
 
 function renderMine(){
   var list=document.getElementById('mine-list');
-  var mine=BOOKINGS.filter(function(b){return b.booked_by===ME.username;}).sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
+  var mine=(isCoord()?BOOKINGS:BOOKINGS.filter(function(b){return b.booked_by===ME.username;})).sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
   if(!mine.length){list.innerHTML='<div class="empty"><div class="ico">&#x1F4ED;</div><p>Nenhuma reserva ativa.</p></div>';return;}
   list.innerHTML=mine.map(function(b){
     var hl=hoursUntil(b),canAct=hl>=5;
@@ -1211,7 +1240,7 @@ function showUserForm(m){
 }
 
 function renderAdmin(){
-  if(ME.role!=='admin')return;
+  if(!isAdmin())return;
   renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();renderAccessLog();renderMuralAdmin();renderEspacosList();
 }
 
@@ -1375,6 +1404,7 @@ document.addEventListener('click',function(e){
 
 function showTab(id,btn){
   if(id==='admin'&&(!ME||ME.role!=='admin'))return;
+  if(id==='coord'&&(!ME||!isCoord()))return;
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
   document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
@@ -1382,6 +1412,7 @@ function showTab(id,btn){
   if(id==='hoje')renderHoje();
   if(id==='mine')renderMine();
   if(id==='admin')renderAdmin();
+  if(id==='coord')renderCoord();
 }
 
 function fmtDate(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
@@ -2011,6 +2042,96 @@ function copyBooking(id){
   toast('Dados copiados! Selecione a nova data.','ok');
 }
 
+
+// ══════════════════════════════════════════════════════════════
+// PERFIL COORDENADOR / DIRETOR
+// ══════════════════════════════════════════════════════════════
+function isAdmin(){ return ME && ME.role === 'admin'; }
+function isCoord(){ return ME && (ME.role === 'coord' || ME.role === 'admin'); }
+
+function renderCoordBookings(){
+  var q=(document.getElementById('coord-search')||{value:''}).value.toLowerCase();
+  var tbody=document.getElementById('coord-tbody');if(!tbody)return;
+  var bks=BOOKINGS.filter(function(b){
+    return !q||(b.space+b.teacher+b.turma+(b.lesson||'')+(b.notes||'')).toLowerCase().indexOf(q)>=0;
+  }).sort(function(a,b){return (a.date+a.time_start)<(b.date+b.time_start)?-1:1;});
+  if(!bks.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Nenhuma reserva encontrada.</td></tr>';return;}
+  tbody.innerHTML=bks.map(function(b){
+    var canCancel=new Date(b.date+'T'+b.time_start)-new Date()>5*3600000;
+    return '<tr>'+
+      '<td>'+b.space+'</td>'+
+      '<td>'+fmtDate(b.date)+'</td>'+
+      '<td>'+b.time_start.slice(0,5)+' – '+b.time_end.slice(0,5)+'</td>'+
+      '<td>'+b.teacher+'</td>'+
+      '<td>'+b.turma+'</td>'+
+      '<td>'+(b.lesson||'—')+'</td>'+
+      '<td>'+(canCancel?'<button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.75rem" onclick="cancelBooking(\''+b.id+'\')">Cancelar</button>':'<span style="color:var(--muted);font-size:.78rem">—</span>')+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function renderCoordCancelled(){
+  var tbody=document.getElementById('coord-cancelled');if(!tbody)return;
+  if(!CANCELLED.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1rem">Nenhum cancelamento.</td></tr>';return;}
+  tbody.innerHTML=CANCELLED.slice(0,50).map(function(c){
+    return '<tr><td>'+c.space+'</td><td>'+fmtDate(c.date)+'</td><td>'+c.time_start.slice(0,5)+' – '+c.time_end.slice(0,5)+'</td><td>'+c.teacher+'</td><td>'+c.turma+'</td><td>'+c.cancelled_by_name+'</td><td>'+new Date(c.cancelled_at).toLocaleString('pt-BR')+'</td></tr>';
+  }).join('');
+}
+
+function renderCoord(){
+  if(!isCoord())return;
+  renderCoordBookings();
+  renderCoordCancelled();
+}
+
+// ══════════════════════════════════════════════════════════════
+// AGENDAR EM NOME DE (PROXY)
+// ══════════════════════════════════════════════════════════════
+var USERS_LIST = [];
+
+async function loadUsersList(){
+  if(!isCoord())return;
+  if(isDemo()){
+    USERS_LIST=gLS('eu',[]).filter(function(u){return u.role==='user'||u.role==='coord';});
+  } else {
+    var r=await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc').catch(function(){return[];});
+    USERS_LIST=(r||[]).filter(function(u){return u.username!==ME.username;});
+  }
+  buildProxySelect();
+}
+
+function buildProxySelect(){
+  var el=document.getElementById('f-proxy');if(!el)return;
+  var opts='<option value="">— Selecione um professor —</option>';
+  USERS_LIST.forEach(function(u){
+    opts+='<option value="'+u.username+'|'+u.fullname+'">'+u.fullname+'</option>';
+  });
+  el.innerHTML=opts;
+}
+
+function updateProxyTeacher(){
+  var val=document.getElementById('f-proxy').value;
+  var nameEl=document.getElementById('f-teacher-name');
+  if(val){
+    var fullname=val.split('|')[1];
+    nameEl.textContent=fullname;
+  } else {
+    nameEl.textContent=ME.fullname;
+  }
+}
+
+function showProxyRow(){
+  var row=document.getElementById('proxy-row');
+  if(row)row.style.display=isCoord()?'block':'none';
+}
+
+function getProxyUser(){
+  var el=document.getElementById('f-proxy');
+  if(!el||!el.value)return null;
+  var parts=el.value.split('|');
+  return {username:parts[0],fullname:parts[1]};
+}
+
 // ── Inatividade ────────────────────────────────────────────────
 var _inactTimer=null;
 function resetInactivityTimer(clear){
@@ -2042,6 +2163,9 @@ function resetInactivityTimer(clear){
   document.getElementById('topbar-user').textContent=ME.fullname;
   document.getElementById('f-teacher-name').textContent=ME.fullname;
   document.querySelector('.admin-tab').style.display=ME.role==='admin'?'inline-block':'none';
+  document.querySelector('.coord-tab').style.display=isCoord()?'inline-block':'none';
+  showProxyRow();
+  loadUsersList();
   var now=new Date();
   document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('f-date').value=now.toISOString().split('T')[0];
