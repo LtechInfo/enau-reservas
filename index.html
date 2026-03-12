@@ -256,6 +256,15 @@ body.dark .mine-filter select{background:var(--white);border-color:var(--border)
 .block-reason{flex:1;color:var(--muted);}
 body.dark .block-list{background:var(--white);border-color:var(--border);}
 body.dark .block-row{color:var(--ink);}
+
+.feriado-tag{display:inline-block;background:#f0e8f5;color:var(--plum);font-size:.7rem;font-weight:700;padding:.1rem .45rem;border-radius:4px;margin-left:.4rem;vertical-align:middle;}
+.block-source{font-size:.7rem;color:var(--muted);margin-left:.4rem;}
+.batch-block-area{font-family:monospace;font-size:.82rem;min-height:100px;}
+.blk-tabs{display:flex;gap:0;margin-bottom:1.2rem;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.blk-tab{flex:1;padding:.55rem 1rem;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;border:none;cursor:pointer;background:var(--white);color:var(--muted);transition:all .15s;}
+.blk-tab.on{background:var(--plum);color:#fff;}
+body.dark .blk-tab{background:var(--white);color:var(--muted);}
+body.dark .blk-tab.on{background:var(--plum);color:#fff;}
 </style>
 </head>
 <body>
@@ -462,12 +471,35 @@ body.dark .block-row{color:var(--ink);}
       </div>
       <div class="card">
         <h3>&#x1F6AB; Bloqueio de Datas</h3>
-        <div class="form-row" style="margin-bottom:.8rem">
-          <div><label class="lbl">Data</label><input type="date" id="block-date"></div>
-          <div><label class="lbl">Motivo</label><input type="text" id="block-reason" placeholder="Ex: Feriado, Recesso, Evento..."></div>
+        <div class="blk-tabs">
+          <button class="blk-tab on" onclick="blkTab('single',this)">&#x2795; Data Individual</button>
+          <button class="blk-tab" onclick="blkTab('batch',this)">&#x1F4CB; Em Lote</button>
+          <button class="blk-tab" onclick="blkTab('feriados',this)">&#x1F1E7;&#x1F1F7; Feriados Nacionais 2026</button>
         </div>
-        <button class="btn btn-primary" onclick="addBlockedDate()" style="margin-bottom:1.2rem">Bloquear Data</button>
-        <div class="block-list" id="block-list"><div style="padding:1rem;text-align:center;color:var(--muted)">Nenhuma data bloqueada.</div></div>
+        <div id="blk-panel-single">
+          <div class="form-row" style="margin-bottom:.8rem">
+            <div><label class="lbl">Data</label><input type="date" id="block-date"></div>
+            <div><label class="lbl">Motivo</label><input type="text" id="block-reason" placeholder="Ex: Recesso, Evento escolar..."></div>
+          </div>
+          <button class="btn btn-primary" onclick="addBlockedDate()">Bloquear Data</button>
+        </div>
+        <div id="blk-panel-batch" style="display:none">
+          <label class="lbl">Uma data por linha (formato: DD/MM/AAAA; Motivo)</label>
+          <textarea class="batch-block-area" id="block-batch" placeholder="19/03/2026; Feriado Municipal&#10;20/03/2026; Emenda de Feriado&#10;08/06/2026; Recesso Escolar"></textarea>
+          <p class="batch-hint" style="margin-top:.4rem">&#x1F4CC; Formato: <strong>DD/MM/AAAA; Motivo</strong> — uma por linha</p>
+          <button class="btn btn-primary" style="margin-top:.8rem" onclick="addBatchBlockedDates()">Bloquear Datas</button>
+        </div>
+        <div id="blk-panel-feriados" style="display:none">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Feriados nacionais oficiais de 2026 (Portaria MGI nº 11.460). Clique para bloquear ou desbloquear individualmente.</p>
+          <div id="feriados-list"></div>
+        </div>
+        <div style="margin-top:1.4rem;border-top:1px solid var(--border);padding-top:1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+            <label class="lbl" style="margin:0">Datas Bloqueadas <span id="blk-count" style="font-weight:400;text-transform:none;letter-spacing:0"></span></label>
+            <button class="btn btn-outline" style="padding:.3rem .7rem;font-size:.76rem" onclick="if(confirm('Remover todos os bloqueios?')){BLOCKED_DATES=[];sLS('ebl',[]);renderBlockedDates();renderCal();toast('Todos os bloqueios removidos.','ok');}">Limpar tudo</button>
+          </div>
+          <div class="block-list" id="block-list"><div style="padding:1rem;text-align:center;color:var(--muted)">Nenhuma data bloqueada.</div></div>
+        </div>
       </div>
       <div class="card">
         <h3>Gerenciar Usuários</h3>
@@ -1092,6 +1124,110 @@ if(localStorage.getItem('enau_dark')){
   document.body.classList.add('dark');
   document.getElementById('btn-dark').textContent='☀️';
   document.getElementById('btn-dark-login').textContent='☀️';
+}
+
+// ── Feriados Nacionais 2026 ────────────────────────────────────
+var FERIADOS_2026=[
+  {date:'2026-01-01',reason:'Confraternização Universal'},
+  {date:'2026-02-16',reason:'Carnaval (Ponto Facultativo)'},
+  {date:'2026-02-17',reason:'Carnaval (Ponto Facultativo)'},
+  {date:'2026-02-18',reason:'Quarta-Feira de Cinzas (Ponto Facultativo)'},
+  {date:'2026-04-03',reason:'Paixão de Cristo'},
+  {date:'2026-04-21',reason:'Tiradentes'},
+  {date:'2026-05-01',reason:'Dia do Trabalho'},
+  {date:'2026-06-04',reason:'Corpus Christi (Ponto Facultativo)'},
+  {date:'2026-06-05',reason:'Emenda Corpus Christi (Ponto Facultativo)'},
+  {date:'2026-09-07',reason:'Independência do Brasil'},
+  {date:'2026-10-12',reason:'Nossa Senhora Aparecida'},
+  {date:'2026-11-02',reason:'Finados'},
+  {date:'2026-11-15',reason:'Proclamação da República'},
+  {date:'2026-11-20',reason:'Consciência Negra'},
+  {date:'2026-12-25',reason:'Natal'}
+];
+
+function blkTab(tab,btn){
+  ['single','batch','feriados'].forEach(function(t){
+    document.getElementById('blk-panel-'+t).style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('.blk-tab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  if(tab==='feriados')renderFeriadosList();
+}
+
+function renderFeriadosList(){
+  var el=document.getElementById('feriados-list');
+  el.innerHTML=FERIADOS_2026.map(function(f){
+    var isBlk=BLOCKED_DATES.some(function(d){return d.date===f.date;});
+    var isFacult=f.reason.indexOf('Ponto Facultativo')>=0;
+    var tag=isFacult?'<span class="feriado-tag">Fac.</span>':'<span class="feriado-tag" style="background:#e8f5e8;color:#1a6b2a">Feriado</span>';
+    return '<div class="block-row">'+
+      '<span class="block-date">'+fmtDate(f.date)+'</span>'+
+      '<span class="block-reason">'+f.reason+tag+'</span>'+
+      (isBlk
+        ?'<button class="btn btn-outline" style="padding:.25rem .6rem;font-size:.75rem;color:var(--green)" onclick="removeFeriado(''+f.date+'')">✅ Bloqueado</button>'
+        :'<button class="btn btn-primary" style="padding:.25rem .6rem;font-size:.75rem" onclick="addFeriado(''+f.date+'',''+f.reason.replace(/'/g,"\'")+'')"  >Bloquear</button>'
+      )+'</div>';
+  }).join('');
+}
+
+function addFeriado(date,reason){
+  if(!BLOCKED_DATES.find(function(d){return d.date===date;})){
+    BLOCKED_DATES.push({date:date,reason:reason});
+    BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
+    sLS('ebl',BLOCKED_DATES);
+    addLog('🚫','Feriado bloqueado: '+fmtDate(date)+' ('+reason+')');
+  }
+  renderFeriadosList();renderBlockedDates();renderCal();
+  toast('Feriado bloqueado!','ok');
+}
+
+function removeFeriado(date){
+  BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
+  sLS('ebl',BLOCKED_DATES);
+  renderFeriadosList();renderBlockedDates();renderCal();
+  toast('Bloqueio removido.','ok');
+}
+
+function bloquearTodosFeriados(){
+  var added=0;
+  FERIADOS_2026.forEach(function(f){
+    if(!BLOCKED_DATES.find(function(d){return d.date===f.date;})){
+      BLOCKED_DATES.push({date:f.date,reason:f.reason});added++;
+    }
+  });
+  BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
+  sLS('ebl',BLOCKED_DATES);
+  addLog('🚫','Admin bloqueou todos os feriados nacionais 2026 ('+added+' datas)');
+  renderFeriadosList();renderBlockedDates();renderCal();
+  toast('✅ '+added+' feriados bloqueados!','ok');
+}
+
+function addBatchBlockedDates(){
+  var raw=document.getElementById('block-batch').value.trim();
+  if(!raw){toast('Cole a lista de datas.','err');return;}
+  var lines=raw.split('\n').map(function(l){return l.trim();}).filter(function(l){return l&&l[0]!=='#';});
+  var added=0,errors=[];
+  lines.forEach(function(line){
+    var parts=line.split(';').map(function(p){return p.trim();});
+    var raw_date=parts[0],reason=parts[1]||'Bloqueio';
+    // accept DD/MM/YYYY or YYYY-MM-DD
+    var date='';
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(raw_date)){
+      var p=raw_date.split('/');date=p[2]+'-'+p[1]+'-'+p[0];
+    } else if(/^\d{4}-\d{2}-\d{2}$/.test(raw_date)){
+      date=raw_date;
+    } else {errors.push(raw_date);return;}
+    if(!BLOCKED_DATES.find(function(d){return d.date===date;})){
+      BLOCKED_DATES.push({date:date,reason:reason});added++;
+    }
+  });
+  BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
+  sLS('ebl',BLOCKED_DATES);
+  addLog('🚫','Admin bloqueou '+added+' datas em lote');
+  if(errors.length)toast(added+' bloqueadas. Formato inválido: '+errors.slice(0,3).join(', '),'err');
+  else toast('✅ '+added+' datas bloqueadas!','ok');
+  document.getElementById('block-batch').value='';
+  renderBlockedDates();renderCal();
 }
 
 // ── Tela Hoje ──────────────────────────────────────────────────
