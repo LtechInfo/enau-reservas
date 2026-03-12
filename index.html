@@ -611,7 +611,7 @@ async function doLogin(){
     await loadAll();
     renderCal();renderMine();renderLegend();
     resetInactivityTimer(false);
-    if(ME.role==='admin'){addLog('🔑',ME.fullname+' fez login');renderAdmin();}
+    if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
   } catch(err){
     const errEl=document.getElementById('l-err');
     errEl.style.display='block';
@@ -791,8 +791,8 @@ async function submitBooking(){
       cur.setDate(cur.getDate()+1);
     }
     if(isDemo())sLS('eb',BOOKINGS);
-    addLog('🔁',ME.fullname+' criou '+count+' reservas recorrentes em '+space);
-    toast('✅ '+count+' reservas recorrentes criadas!','ok');
+    addLog('&#x1F501;',ME.fullname+' criou '+count+' reservas recorrentes em '+space);
+    toast('&#x2705; '+count+' reservas recorrentes criadas!','ok');
   } else {
     var conflict=BOOKINGS.find(function(b){return b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId);});
     if(conflict){toast('Conflito! "'+space+'" já reservado das '+conflict.time_start+'–'+conflict.time_end+' por '+conflict.teacher+'.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
@@ -802,7 +802,7 @@ async function submitBooking(){
       if(editId){
         if(isDemo()){var idx=BOOKINGS.findIndex(function(b){return b.id===editId;});if(idx>-1)BOOKINGS[idx]=Object.assign({},BOOKINGS[idx],pl);sLS('eb',BOOKINGS);}
         else{await api.patch('reservas?id=eq.'+editId,pl);await loadAll();}
-        addLog('✏️',ME.fullname+' editou reserva em '+space+' ('+fmtDate(date)+')');
+        addLog('&#x270F;&#xFE0F;',ME.fullname+' editou reserva em '+space+' ('+fmtDate(date)+')');
         toast('Reserva atualizada!','ok');
         editId=null;
         document.getElementById('btn-cancel-edit').style.display='none';
@@ -811,7 +811,7 @@ async function submitBooking(){
       } else {
         if(isDemo()){BOOKINGS.push(Object.assign({},pl,{id:'bk_'+Date.now(),created_at:new Date().toISOString()}));sLS('eb',BOOKINGS);}
         else{var rows=await api.post('reservas',pl);BOOKINGS.push(rows[0]);}
-        addLog('✅',ME.fullname+' criou reserva em '+space+' ('+fmtDate(date)+' '+start+'–'+end+')');
+        addLog('&#x2705;',ME.fullname+' criou reserva em '+space+' ('+fmtDate(date)+' '+start+'–'+end+')');
         toast('Reserva confirmada!','ok');
       }
     } catch(e){toast('Erro: '+e.message,'err');}
@@ -842,7 +842,7 @@ function openModal(id){
   var isOwner=b.booked_by===ME.username;
   var isAdmin=ME.role==='admin';
   var canAct=isAdmin||(isOwner&&hl>=5);
-  document.getElementById('m-title').textContent=b.space+(b.recur_group?' ↻':'');
+  document.getElementById('m-title').textContent=b.space+(b.recur_group?' &#x21BB;':'');
   var body='<div class="row">';
   body+='<p><strong>Data:</strong> '+fmtDate(b.date)+'</p>';
   body+='<p><strong>Horário:</strong> '+b.time_start+' – '+b.time_end+'</p>';
@@ -851,20 +851,20 @@ function openModal(id){
   if(b.lesson)body+='<p><strong>Período/Aula:</strong> '+b.lesson+'</p>';
   if(b.notes)body+='<p><strong>Obs/Recursos:</strong> '+b.notes+'</p>';
   body+='<p><strong>Agendado por:</strong> '+b.booked_by_name+'</p>';
-  if(b.recur_group)body+='<div class="info-note" style="margin-top:.5rem">↻ Reserva recorrente</div>';
-  if(isOwner&&!canAct)body+='<div class="info-note" style="margin-top:.5rem">⏰ Menos de 5h. Edição bloqueada.</div>';
-  if(!isOwner&&!isAdmin)body+='<div class="info-note" style="margin-top:.5rem">ℹ️ Somente visualização.</div>';
+  if(b.recur_group)body+='<div class="info-note" style="margin-top:.5rem">&#x21BB; Reserva recorrente</div>';
+  if(isOwner&&!canAct)body+='<div class="info-note" style="margin-top:.5rem">&#x23F0; Menos de 5h. Edição bloqueada.</div>';
+  if(!isOwner&&!isAdmin)body+='<div class="info-note" style="margin-top:.5rem">&#x2139;&#xFE0F; Somente visualização.</div>';
   body+='</div>';
   document.getElementById('m-body').innerHTML=body;
   var acts=document.getElementById('m-acts');
   acts.innerHTML='<button class="btn btn-outline" onclick="closeModal()">Fechar</button>';
   if(canAct){
-    acts.innerHTML+='<button class="btn btn-primary" onclick="startEdit(\''+b.id+'\')">✏️ Editar</button>';
+    acts.innerHTML+='<button class="btn btn-primary" onclick="startEdit(\''+b.id+'\')">&#x270F;&#xFE0F; Editar</button>';
     if(b.recur_group){
-      acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',false)">🗑 Só esta</button>';
-      acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',true)">🗑 Esta e futuras</button>';
+      acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',false)">&#x1F5D1; Só esta</button>';
+      acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',true)">&#x1F5D1; Esta e futuras</button>';
     } else {
-      acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',false)">🗑 Cancelar</button>';
+      acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',false)">&#x1F5D1; Cancelar</button>';
     }
   }
   document.getElementById('overlay').style.display='flex';
@@ -911,7 +911,7 @@ async function deleteBooking(id,andFuture){
   if(isDemo()){BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});sLS('eb',BOOKINGS);}
   else{for(var i=0;i<toDelete.length;i++)await api.delete('reservas?id=eq.'+toDelete[i]);}
   BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});
-  addLog('🗑',ME.fullname+' cancelou '+toDelete.length+' reserva(s) em '+b.space+' ('+fmtDate(b.date)+')');
+  addLog('&#x1F5D1;',ME.fullname+' cancelou '+toDelete.length+' reserva(s) em '+b.space+' ('+fmtDate(b.date)+')');
   toast('Reserva(s) cancelada(s).','ok');
   closeModal();renderCal();renderMine();if(ME.role==='admin')renderAdmin();
 }
@@ -922,11 +922,11 @@ function overlayClick(e){if(e.target===document.getElementById('overlay'))closeM
 function renderMine(){
   var list=document.getElementById('mine-list');
   var mine=BOOKINGS.filter(function(b){return b.booked_by===ME.username;}).sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
-  if(!mine.length){list.innerHTML='<div class="empty"><div class="ico">📭</div><p>Nenhuma reserva ativa.</p></div>';return;}
+  if(!mine.length){list.innerHTML='<div class="empty"><div class="ico">&#x1F4ED;</div><p>Nenhuma reserva ativa.</p></div>';return;}
   list.innerHTML=mine.map(function(b){
     var hl=hoursUntil(b),canAct=hl>=5;
     var badge=canAct?'<span class="badge badge-ok">Editável</span>':'<span class="badge badge-lock">Bloqueado</span>';
-    var rb=b.recur_group?'<span class="badge badge-recur">↻ Recorrente</span>':'';
+    var rb=b.recur_group?'<span class="badge badge-recur">&#x21BB; Recorrente</span>':'';
     var acts=canAct?'<button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.78rem" onclick="startEdit(\''+b.id+'\')">Editar</button><button class="btn btn-danger" style="padding:.4rem .8rem;font-size:.78rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button>':'';
     return '<div class="bk-card"><div class="bk-info"><h4>'+b.space+' '+badge+rb+'</h4><div class="meta"><strong>'+fmtDate(b.date)+'</strong> · '+b.time_start+'–'+b.time_end+'<br>Turma: '+b.turma+(b.lesson?' · '+b.lesson:'')+'<br>'+(b.notes?'Recursos: '+b.notes:'')+'</div></div><div class="bk-acts">'+acts+'</div></div>';
   }).join('');
@@ -949,7 +949,7 @@ function renderAdmBookings(){
   if(q)list=list.filter(function(b){return [b.space,b.teacher,b.turma,b.lesson,b.notes,b.booked_by_name].join(' ').toLowerCase().indexOf(q)>=0;});
   if(!list.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">'+(q?'Nenhum resultado.':'Nenhuma reserva.')+'</td></tr>';return;}
   tbody.innerHTML=list.map(function(b){
-    return '<tr><td><span class="chip '+(SPACE_CLS[b.space]||'ch-0')+'" style="display:inline-block">'+b.space+(b.recur_group?' ↻':'')+'</span></td><td>'+fmtDate(b.date)+'</td><td>'+b.time_start+'–'+b.time_end+'</td><td>'+b.teacher+'</td><td>'+b.turma+'</td><td>'+(b.lesson||'—')+'</td><td>'+b.booked_by_name+'</td><td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button></td></tr>';
+    return '<tr><td><span class="chip '+(SPACE_CLS[b.space]||'ch-0')+'" style="display:inline-block">'+b.space+(b.recur_group?' &#x21BB;':'')+'</span></td><td>'+fmtDate(b.date)+'</td><td>'+b.time_start+'–'+b.time_end+'</td><td>'+b.teacher+'</td><td>'+b.turma+'</td><td>'+(b.lesson||'—')+'</td><td>'+b.booked_by_name+'</td><td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button></td></tr>';
   }).join('');
 }
 
@@ -974,9 +974,9 @@ async function renderAdmUsers(){
   if(isDemo())users=gLS('eu',[]);
   else users=await api.get('usuarios?select=id,username,fullname,role,email&order=fullname.asc').catch(function(){return [];});
   document.getElementById('adm-users').innerHTML=users.map(function(u,i){
-    var editBtn='<button class="btn btn-outline" style="padding:.3rem .6rem;font-size:.74rem" onclick=\'openEditUser('+JSON.stringify({id:u.id||i,username:u.username,fullname:u.fullname,role:u.role})+')\'>✏️ Editar</button>';
-    var delBtn=u.username!=='admin'?'<button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.74rem" onclick="removeUser('+(u.id||i)+',\''+u.username+'\')">🗑 Remover</button>':'';
-    return '<tr><td>'+u.username+'</td><td>'+u.fullname+'</td><td>'+(u.email||'—')+'</td><td>'+(u.role==='admin'?'🔑 Admin':'👤 Usuário')+'</td><td><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+editBtn+delBtn+'</div></td></tr>';
+    var editBtn='<button class="btn btn-outline" style="padding:.3rem .6rem;font-size:.74rem" onclick=\'openEditUser('+JSON.stringify({id:u.id||i,username:u.username,fullname:u.fullname,role:u.role})+')\'>&#x270F;&#xFE0F; Editar</button>';
+    var delBtn=u.username!=='admin'?'<button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.74rem" onclick="removeUser('+(u.id||i)+',\''+u.username+'\')">&#x1F5D1; Remover</button>':'';
+    return '<tr><td>'+u.username+'</td><td>'+u.fullname+'</td><td>'+(u.email||'—')+'</td><td>'+(u.role==='admin'?'&#x1F511; Admin':'&#x1F464; Usuário')+'</td><td><div style="display:flex;gap:.4rem;flex-wrap:wrap">'+editBtn+delBtn+'</div></td></tr>';
   }).join('');
 }
 
@@ -999,7 +999,7 @@ async function saveEditUser(id,username){
   try{
     if(isDemo()){var us=gLS('eu',[]);var idx=us.findIndex(function(u){return u.username===username;});if(idx>-1)us[idx]=Object.assign({},us[idx],payload);sLS('eu',us);}
     else await api.patch('usuarios?id=eq.'+id,payload);
-    addLog('👤','Admin editou usuário '+username);
+    addLog('&#x1F464;','Admin editou usuário '+username);
     toast('Usuário atualizado!','ok');closeModal();renderAdmUsers();
   } catch(e){toast('Erro: '+e.message,'err');}
 }
@@ -1015,7 +1015,7 @@ async function addUser(){
   try{
     if(isDemo()){var us=gLS('eu',[]);if(us.find(function(u){return u.username===uname;})){toast('Usuário já existe.','err');return;}us.push({id:Date.now(),username:uname,password:pass,fullname:full,role:role,email:email||null});sLS('eu',us);}
     else await api.post('usuarios',{username:uname,password:pass,fullname:full,role:role,email:email||null});
-    addLog('➕','Admin criou usuário '+uname+' ('+full+')');
+    addLog('&#x2795;','Admin criou usuário '+uname+' ('+full+')');
     toast('Usuário adicionado!','ok');
     ['a-uname','a-pass','a-full'].forEach(function(id){document.getElementById(id).value='';});
     renderAdmUsers();
@@ -1039,8 +1039,8 @@ async function addBatchUsers(){
     } catch(e){errors.push(username+': '+e.message);}
   }
   if(errors.length)toast(added+' adicionados. Erros: '+errors.slice(0,2).join(', '),'err');
-  else toast('✅ '+added+' usuários adicionados!','ok');
-  addLog('📋','Admin importou '+added+' usuários em lote');
+  else toast('&#x2705; '+added+' usuários adicionados!','ok');
+  addLog('&#x1F4CB;','Admin importou '+added+' usuários em lote');
   document.getElementById('a-batch').value='';
   renderAdmUsers();
 }
@@ -1050,7 +1050,7 @@ async function removeUser(id,uname){
   try{
     if(isDemo())sLS('eu',gLS('eu',[]).filter(function(u){return u.username!==uname;}));
     else await api.delete('usuarios?id=eq.'+id);
-    addLog('🗑','Admin removeu usuário '+uname);
+    addLog('&#x1F5D1;','Admin removeu usuário '+uname);
     toast('Usuário removido.','ok');renderAdmUsers();
   } catch(e){toast('Erro: '+e.message,'err');}
 }
@@ -1115,15 +1115,15 @@ function fmtDate(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p
 function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className=type||'';t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},4500);}
 function toggleDark(){
   var dark=document.body.classList.toggle('dark');
-  var icon=dark?'☀️':'🌙';
+  var icon=dark?'&#x2600;&#xFE0F;':'&#x1F319;';
   document.getElementById('btn-dark').textContent=icon;
   document.getElementById('btn-dark-login').textContent=icon;
   localStorage.setItem('enau_dark',dark?'1':'');
 }
 if(localStorage.getItem('enau_dark')){
   document.body.classList.add('dark');
-  document.getElementById('btn-dark').textContent='☀️';
-  document.getElementById('btn-dark-login').textContent='☀️';
+  document.getElementById('btn-dark').textContent='&#x2600;&#xFE0F;';
+  document.getElementById('btn-dark-login').textContent='&#x2600;&#xFE0F;';
 }
 
 // ── Feriados Nacionais 2026 ────────────────────────────────────
@@ -1156,18 +1156,22 @@ function blkTab(tab,btn){
 
 function renderFeriadosList(){
   var el=document.getElementById('feriados-list');
-  el.innerHTML=FERIADOS_2026.map(function(f){
+  var rows='';
+  for(var i=0;i<FERIADOS_2026.length;i++){
+    var f=FERIADOS_2026[i];
     var isBlk=BLOCKED_DATES.some(function(d){return d.date===f.date;});
     var isFacult=f.reason.indexOf('Ponto Facultativo')>=0;
     var tag=isFacult?'<span class="feriado-tag">Fac.</span>':'<span class="feriado-tag" style="background:#e8f5e8;color:#1a6b2a">Feriado</span>';
-    return '<div class="block-row">'+
-      '<span class="block-date">'+fmtDate(f.date)+'</span>'+
-      '<span class="block-reason">'+f.reason+tag+'</span>'+
-      (isBlk
-        ?'<button class="btn btn-outline" style="padding:.25rem .6rem;font-size:.75rem;color:var(--green)" onclick="removeFeriado(''+f.date+'')">✅ Bloqueado</button>'
-        :'<button class="btn btn-primary" style="padding:.25rem .6rem;font-size:.75rem" onclick="addFeriado(''+f.date+'',''+f.reason.replace(/'/g,"\'")+'')"  >Bloquear</button>'
-      )+'</div>';
-  }).join('');
+    var btn='';
+    if(isBlk){
+      btn='<button class="btn btn-outline" style="padding:.25rem .6rem;font-size:.75rem;color:var(--green);border-color:var(--green)" onclick="removeFeriado(\''+f.date+'\')">Bloqueado</button>';
+    } else {
+      var safeReason=f.reason.split("'").join(' ');
+      btn='<button class="btn btn-primary" style="padding:.25rem .6rem;font-size:.75rem" onclick="addFeriado(\''+f.date+'\',\''+safeReason+'\')">Bloquear</button>';
+    }
+    rows+='<div class="block-row"><span class="block-date">'+fmtDate(f.date)+'</span><span class="block-reason">'+f.reason+tag+'</span>'+btn+'</div>';
+  }
+  el.innerHTML=rows;
 }
 
 function addFeriado(date,reason){
@@ -1175,7 +1179,7 @@ function addFeriado(date,reason){
     BLOCKED_DATES.push({date:date,reason:reason});
     BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
     sLS('ebl',BLOCKED_DATES);
-    addLog('🚫','Feriado bloqueado: '+fmtDate(date)+' ('+reason+')');
+    addLog('&#x1F6AB;','Feriado bloqueado: '+fmtDate(date)+' ('+reason+')');
   }
   renderFeriadosList();renderBlockedDates();renderCal();
   toast('Feriado bloqueado!','ok');
@@ -1197,9 +1201,9 @@ function bloquearTodosFeriados(){
   });
   BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
   sLS('ebl',BLOCKED_DATES);
-  addLog('🚫','Admin bloqueou todos os feriados nacionais 2026 ('+added+' datas)');
+  addLog('&#x1F6AB;','Admin bloqueou todos os feriados nacionais 2026 ('+added+' datas)');
   renderFeriadosList();renderBlockedDates();renderCal();
-  toast('✅ '+added+' feriados bloqueados!','ok');
+  toast('&#x2705; '+added+' feriados bloqueados!','ok');
 }
 
 function addBatchBlockedDates(){
@@ -1223,9 +1227,9 @@ function addBatchBlockedDates(){
   });
   BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
   sLS('ebl',BLOCKED_DATES);
-  addLog('🚫','Admin bloqueou '+added+' datas em lote');
+  addLog('&#x1F6AB;','Admin bloqueou '+added+' datas em lote');
   if(errors.length)toast(added+' bloqueadas. Formato inválido: '+errors.slice(0,3).join(', '),'err');
-  else toast('✅ '+added+' datas bloqueadas!','ok');
+  else toast('&#x2705; '+added+' datas bloqueadas!','ok');
   document.getElementById('block-batch').value='';
   renderBlockedDates();renderCal();
 }
@@ -1241,11 +1245,11 @@ function renderHoje(){
   var blocked=BLOCKED_DATES.find(function(d){return d.date===today;});
   var wrap=document.getElementById('hoje-content');
   var html='';
-  if(blocked)html+='<div class="info-note" style="margin-bottom:1rem;border-color:var(--coral);color:var(--coral)">🚫 Data bloqueada: <strong>'+blocked.reason+'</strong></div>';
-  if(!list.length){wrap.innerHTML=html+'<div class="today-empty"><div style="font-size:2.2rem">📭</div><p>Nenhuma reserva para hoje.</p></div>';return;}
+  if(blocked)html+='<div class="info-note" style="margin-bottom:1rem;border-color:var(--coral);color:var(--coral)">&#x1F6AB; Data bloqueada: <strong>'+blocked.reason+'</strong></div>';
+  if(!list.length){wrap.innerHTML=html+'<div class="today-empty"><div style="font-size:2.2rem">&#x1F4ED;</div><p>Nenhuma reserva para hoje.</p></div>';return;}
   html+='<div style="margin-bottom:.5rem;font-size:.8rem;color:var(--muted);font-weight:600">'+list.length+' reserva'+(list.length!==1?'s':'')+' hoje</div>';
   html+=list.map(function(b){
-    return '<div class="today-card"><div class="today-item"><div class="today-time">'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</div><div><div class="today-space">'+b.space+(b.recur_group?' ↻':'')+'</div><div class="today-meta">👤 '+b.teacher+' · 🎓 '+b.turma+(b.lesson?' · 📖 '+b.lesson:'')+(b.notes?'<br>📌 '+b.notes:'')+'</div></div></div></div>';
+    return '<div class="today-card"><div class="today-item"><div class="today-time">'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</div><div><div class="today-space">'+b.space+(b.recur_group?' &#x21BB;':'')+'</div><div class="today-meta">&#x1F464; '+b.teacher+' · &#x1F393; '+b.turma+(b.lesson?' · &#x1F4D6; '+b.lesson:'')+(b.notes?'<br>&#x1F4CC; '+b.notes:'')+'</div></div></div></div>';
   }).join('');
   wrap.innerHTML=html;
 }
@@ -1260,7 +1264,7 @@ function addBlockedDate(){
   BLOCKED_DATES.push(entry);
   BLOCKED_DATES.sort(function(a,b){return a.date>b.date?1:-1;});
   sLS('ebl',BLOCKED_DATES);
-  addLog('🚫','Admin bloqueou '+fmtDate(date)+': '+reason);
+  addLog('&#x1F6AB;','Admin bloqueou '+fmtDate(date)+': '+reason);
   toast('Data bloqueada!','ok');
   document.getElementById('block-date').value='';
   document.getElementById('block-reason').value='';
@@ -1271,7 +1275,7 @@ function removeBlockedDate(date){
   if(!confirm('Desbloquear '+fmtDate(date)+'?'))return;
   BLOCKED_DATES=BLOCKED_DATES.filter(function(d){return d.date!==date;});
   sLS('ebl',BLOCKED_DATES);
-  addLog('✅','Admin desbloqueou '+fmtDate(date));
+  addLog('&#x2705;','Admin desbloqueou '+fmtDate(date));
   toast('Data desbloqueada.','ok');
   renderBlockedDates();renderCal();
 }
