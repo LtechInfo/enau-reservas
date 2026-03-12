@@ -2349,51 +2349,61 @@ async function loadBugs(){
   }
 }
 
+var bugPage=0;
+var BUG_PAGE_SIZE=3;
+
 function renderBugReports(){
   var el=document.getElementById('bug-list');if(!el)return;
   var statusF=document.getElementById('bug-filter-status').value;
   var gravF=document.getElementById('bug-filter-grav').value;
   var gravidadeEmoji=['','&#x1F7E2;','&#x1F7E1;','&#x1F7E0;','&#x1F534;'];
   var gravClasses=['','bug-b1','bug-b2','bug-b3','bug-b4'];
-
   var filtered=BUGS.filter(function(b){
     if(statusF==='open'&&b.resolvido)return false;
     if(statusF==='resolved'&&!b.resolvido)return false;
     if(gravF&&String(b.gravidade_num)!==gravF)return false;
     return true;
   });
-
+  var total=filtered.length;
+  var totalPages=Math.max(1,Math.ceil(total/BUG_PAGE_SIZE));
+  if(bugPage>=totalPages)bugPage=totalPages-1;
+  var page=filtered.slice(bugPage*BUG_PAGE_SIZE,(bugPage+1)*BUG_PAGE_SIZE);
   var countEl=document.getElementById('bug-count');
-  if(countEl)countEl.textContent=filtered.length+' registro'+(filtered.length!==1?'s':'');
-
-  if(!filtered.length){
-    el.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--muted)">Nenhum bug encontrado.</div>';
-    return;
-  }
-  el.innerHTML=filtered.map(function(b,i){
+  if(countEl)countEl.textContent=total+' registro'+(total!==1?'s':'');
+  if(!total){el.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--muted)">Nenhum bug encontrado.</div>';return;}
+  var cards=page.map(function(b){
     var gn=b.gravidade_num||0;
     var dt=b.data||new Date(b.ts).toLocaleString('pt-BR');
+    var ts=JSON.stringify(b.ts);
     return '<div class="bug-report-card'+(b.resolvido?' resolved':'')+'">'+
       '<div class="bug-header">'+
         '<span class="bug-badge '+gravClasses[gn]+'">'+gravidadeEmoji[gn]+' '+b.gravidade+'</span>'+
         '<h5>'+b.tipo+'</h5>'+
         (b.resolvido?'<span class="bug-resolved-badge">&#x2705; Resolvido</span>':'')+
       '</div>'+
-      '<div class="bug-meta">'+
-        '&#x1F464; <strong>'+b.usuario+'</strong> (@'+b.username+')'+
-        ' &nbsp;&#x1F4F1; '+( b.dispositivo||'—')+
-        ' &nbsp;&#x1F550; '+dt+
-      '</div>'+
+      '<div class="bug-meta">&#x1F464; <strong>'+b.usuario+'</strong> (@'+b.username+') &nbsp;&#x1F4F1; '+(b.dispositivo||'&#x2014;')+' &nbsp;&#x1F550; '+dt+'</div>'+
       '<div class="bug-desc">'+b.descricao+'</div>'+
       '<div class="bug-actions">'+
-        (!b.resolvido?'<button class="btn btn-primary" style="font-size:.76rem;padding:.3rem .7rem" onclick="markBugResolved('+i+','+JSON.stringify(b.ts)+')">&#x2705; Marcar como resolvido</button>':'')+
-        '<button class="btn btn-danger" style="font-size:.76rem;padding:.3rem .7rem" onclick="deleteBug('+i+','+JSON.stringify(b.ts)+')">&#x1F5D1; Remover</button>'+
+        (!b.resolvido?'<button class="btn btn-primary" style="font-size:.76rem;padding:.3rem .7rem" onclick="markBugResolved('+ts+')">&#x2705; Marcar como resolvido</button>':'')+
+        '<button class="btn btn-danger" style="font-size:.76rem;padding:.3rem .7rem" onclick="deleteBug('+ts+')">&#x1F5D1; Remover</button>'+
       '</div>'+
     '</div>';
   }).join('');
+  var pagNav='';
+  if(totalPages>1){
+    var btns='';
+    for(var p=0;p<totalPages;p++){btns+='<button class="btn '+(p===bugPage?'btn-primary':'btn-outline')+'" style="padding:.3rem .65rem;font-size:.8rem;min-width:32px" onclick="setBugPage('+p+')">'+(p+1)+'</button>';}
+    pagNav='<div style="display:flex;align-items:center;justify-content:center;gap:.4rem;margin-top:1rem;flex-wrap:wrap;">'+
+      '<button class="btn btn-outline" style="padding:.3rem .7rem;font-size:.8rem" '+(bugPage===0?'disabled':'')+' onclick="setBugPage('+(bugPage-1)+')">&#x2190;</button>'+
+      btns+
+      '<button class="btn btn-outline" style="padding:.3rem .7rem;font-size:.8rem" '+(bugPage===totalPages-1?'disabled':'')+' onclick="setBugPage('+(bugPage+1)+')">&#x2192;</button>'+
+    '</div>';
+  }
+  el.innerHTML=cards+pagNav;
 }
 
-async function markBugResolved(idx,ts){
+function setBugPage(p){bugPage=p;renderBugReports();}
+async function markBugResolved(ts){
   if(isDemo()){
     var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
     var i=bugs.findIndex(function(b){return b.ts===ts;});
@@ -2406,8 +2416,7 @@ async function markBugResolved(idx,ts){
   addLog('&#x2705;','Admin marcou bug como resolvido');
   renderBugReports();toast('Bug marcado como resolvido!','ok');
 }
-
-async function deleteBug(idx,ts){
+async function deleteBug(ts){
   if(!confirm('Remover este relatório de bug?'))return;
   if(isDemo()){
     var bugs=JSON.parse(localStorage.getItem('enau_bugs')||'[]').filter(function(b){return b.ts!==ts;});
@@ -2418,9 +2427,6 @@ async function deleteBug(idx,ts){
   }
   renderBugReports();toast('Relatório removido.','ok');
 }
-
-// ── Inatividade ────────────────────────────────────────────────
-var _inactTimer=null;
 function resetInactivityTimer(clear){
   if(_inactTimer)clearTimeout(_inactTimer);
   if(clear)return;
