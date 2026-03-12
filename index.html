@@ -265,6 +265,41 @@ body.dark .block-row{color:var(--ink);}
 .blk-tab.on{background:var(--plum);color:#fff;}
 body.dark .blk-tab{background:var(--white);color:var(--muted);}
 body.dark .blk-tab.on{background:var(--plum);color:#fff;}
+
+/* Mural */
+.mural-card{background:linear-gradient(135deg,#fff8e6 0%,#fffdf5 100%);border:2px solid #f5c842;border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem;position:relative;}
+.mural-card h5{font-size:.92rem;font-weight:700;color:#7a5200;margin-bottom:.3rem;}
+.mural-card p{font-size:.85rem;color:#5a3d00;line-height:1.6;}
+.mural-card .mural-meta{font-size:.72rem;color:#b89040;margin-top:.4rem;}
+.mural-card .mural-del{position:absolute;top:.7rem;right:.8rem;background:none;border:none;cursor:pointer;color:#c0a020;font-size:1rem;opacity:.6;}
+.mural-card .mural-del:hover{opacity:1;color:var(--coral);}
+body.dark .mural-card{background:linear-gradient(135deg,#1e1800 0%,#1a1500 100%);border-color:#6a5000;}
+body.dark .mural-card h5{color:#f5c842;}
+body.dark .mural-card p{color:#d4a830;}
+body.dark .mural-card .mural-meta{color:#8a6820;}
+/* Manutenção */
+.manut-chip{display:block;font-size:.68rem;font-weight:700;color:#b85000;background:#fff0e6;padding:.15rem .4rem;border-radius:3px;margin-bottom:2px;}
+body.dark .manut-chip{background:#1e0f00;color:#ff9040;}
+.space-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .8rem;border-bottom:1px solid var(--border);font-size:.85rem;}
+.space-row:last-child{border-bottom:none;}
+.space-name{flex:1;font-weight:600;color:var(--ink);}
+.space-status{font-size:.75rem;padding:.18rem .55rem;border-radius:12px;font-weight:600;}
+.space-ok{background:#dcfce7;color:#15803d;}
+.space-manut{background:#fff0e6;color:#b85000;}
+body.dark .space-ok{background:#0d2e1a;color:#4ade80;}
+body.dark .space-manut{background:#1e0f00;color:#ff9040;}
+body.dark .space-name{color:var(--ink);}
+/* Conflito antecipado */
+.conflict-preview{background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:.7rem 1rem;margin-top:.5rem;font-size:.82rem;color:#b91c1c;display:none;}
+.conflict-preview strong{display:block;margin-bottom:.3rem;}
+body.dark .conflict-preview{background:#1a0a0a;border-color:#7a2020;color:#fca5a5;}
+/* Histórico de acesso */
+.access-row{display:flex;gap:.7rem;align-items:center;padding:.45rem .8rem;border-bottom:1px solid var(--border);font-size:.82rem;}
+.access-row:last-child{border-bottom:none;}
+.access-user{font-weight:700;color:var(--plum);min-width:120px;}
+body.dark .access-user{color:#c4a8d8;}
+/* Troca de senha */
+.pwd-wrap{display:flex;align-items:center;gap:.5rem;}
 </style>
 </head>
 <body>
@@ -276,6 +311,7 @@ body.dark .blk-tab.on{background:var(--plum);color:#fff;}
   <div class="topbar-right">
     <span id="topbar-user"></span>
     <button class="btn-dark-toggle" id="btn-dark" onclick="toggleDark()" title="Modo escuro">&#x1F319;</button>
+    <button class="btn-sm btn-ghost" onclick="openMinhaConta()">&#x1F464; Conta</button>
     <button class="btn-sm btn-ghost" onclick="logout()">Sair</button>
   </div>
 </div>
@@ -310,6 +346,7 @@ body.dark .blk-tab.on{background:var(--plum);color:#fff;}
       <button class="tab admin-tab" onclick="showTab('admin',this)" style="display:none">&#x2699;&#xFE0F; Admin</button>
     </div>
 
+    <div id="mural-banner" style="display:none;margin-bottom:1rem"></div>
     <div class="tab-panel on" id="tab-calendar">
       <div class="ph"><h2>Calendário de Reservas</h2><p id="ph-date"></p></div>
       <div class="cal-bar">
@@ -342,18 +379,19 @@ body.dark .blk-tab.on{background:var(--plum);color:#fff;}
         <h3 id="form-card-title">Preencha os dados</h3>
         <div class="form-row">
           <div><label class="lbl">Espaço *</label>
-            <select id="f-space">
+            <select id="f-space" onchange="checkConflictPreview()">
               <option value="">Selecione...</option>
               <option>Auditório</option><option>Lab Informática</option><option>Lab Multi (Bio/Qui/Fis)</option>
               <option>Área Verde</option><option>Biblioteca</option><option>Skill Lab</option>
               <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
             </select></div>
-          <div><label class="lbl">Data *</label><input type="date" id="f-date"></div>
+          <div><label class="lbl">Data *</label><input type="date" id="f-date" onchange="checkConflictPreview()"></div>
         </div>
         <div class="form-row">
-          <div><label class="lbl">Horário Início *</label><input type="time" id="f-start" step="600"></div>
-          <div><label class="lbl">Horário Fim *</label><input type="time" id="f-end" step="600"></div>
+          <div><label class="lbl">Horário Início *</label><input type="time" id="f-start" step="600" onchange="checkConflictPreview()"></div>
+          <div><label class="lbl">Horário Fim *</label><input type="time" id="f-end" step="600" onchange="checkConflictPreview()"></div>
         </div>
+        <div class="conflict-preview" id="conflict-preview"><strong>&#x26A0; Conflito detectado:</strong><span id="conflict-detail"></span></div>
         <div class="form-row">
           <div><label class="lbl">Professor Responsável *</label>
             <div class="teacher-display"><span>&#x1F464;</span><span id="f-teacher-name">—</span></div></div>
@@ -468,6 +506,34 @@ body.dark .blk-tab.on{background:var(--plum);color:#fff;}
       <div class="card">
         <h3>&#x1F4CB; Log de Atividade</h3>
         <div class="log-wrap" id="activity-log"></div>
+      </div>
+      <div class="card">
+        <h3>&#x1F465; Histórico de Acessos</h3>
+        <div class="log-wrap" id="access-log" style="max-height:280px;overflow-y:auto"><div style="padding:1rem;text-align:center;color:var(--muted)">Sem registros.</div></div>
+      </div>
+      <!-- Mural de Avisos -->
+      <div class="card">
+        <h3>&#x1F4E2; Mural de Avisos</h3>
+        <div class="form-row" style="margin-bottom:.6rem">
+          <div><label class="lbl">Título</label><input type="text" id="mural-title" placeholder="Ex: Auditório em manutenção..."></div>
+          <div><label class="lbl">Válido até</label><input type="date" id="mural-until"></div>
+        </div>
+        <label class="lbl">Mensagem</label>
+        <textarea id="mural-msg" style="min-height:70px" placeholder="Mensagem visível para todos os usuários ao abrir o sistema..."></textarea>
+        <button class="btn btn-primary" style="margin-top:.8rem" onclick="addMural()">Publicar Aviso</button>
+        <div style="margin-top:1.2rem;border-top:1px solid var(--border);padding-top:.8rem">
+          <label class="lbl">Avisos ativos</label>
+          <div id="mural-admin-list"></div>
+        </div>
+      </div>
+      <!-- Gestão de Espaços -->
+      <div class="card">
+        <h3>&#x1F3EB; Gestão de Espaços</h3>
+        <div class="form-row" style="margin-bottom:.8rem">
+          <div><label class="lbl">Nome do espaço</label><input type="text" id="esp-name" placeholder="Ex: Sala de Reunião"></div>
+          <div style="display:flex;gap:.5rem;align-items:flex-end"><button class="btn btn-primary" onclick="addEspaco()" style="height:44px">Adicionar</button></div>
+        </div>
+        <div id="espacos-list"></div>
       </div>
       <div class="card">
         <h3>&#x1F6AB; Bloqueio de Datas</h3>
@@ -610,7 +676,10 @@ async function doLogin(){
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
     await loadAll();
     renderCal();renderMine();renderLegend();
+    logAccess(ME.username,ME.fullname);
     resetInactivityTimer(false);
+    renderMuralBanner();
+    checkFirstAccess();
     if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
   } catch(err){
     const errEl=document.getElementById('l-err');
@@ -939,7 +1008,7 @@ function showUserForm(m){
 
 function renderAdmin(){
   if(ME.role!=='admin')return;
-  renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();
+  renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();renderAccessLog();renderMuralAdmin();renderEspacosList();
 }
 
 function renderAdmBookings(){
@@ -1013,8 +1082,8 @@ async function addUser(){
   if(!uname||!pass||!full){toast('Preencha todos os campos.','err');return;}
   if(pass.length<6){toast('Senha mínimo 6 caracteres.','err');return;}
   try{
-    if(isDemo()){var us=gLS('eu',[]);if(us.find(function(u){return u.username===uname;})){toast('Usuário já existe.','err');return;}us.push({id:Date.now(),username:uname,password:pass,fullname:full,role:role,email:email||null});sLS('eu',us);}
-    else await api.post('usuarios',{username:uname,password:pass,fullname:full,role:role,email:email||null});
+    if(isDemo()){var us=gLS('eu',[]);if(us.find(function(u){return u.username===uname;})){toast('Usuário já existe.','err');return;}us.push({id:Date.now(),username:uname,password:pass,fullname:full,role:role,email:email||null,first_access:true});sLS('eu',us);}
+    else await api.post('usuarios',{username:uname,password:pass,fullname:full,role:role,email:email||null,first_access:true});
     addLog('&#x2795;','Admin criou usuário '+uname+' ('+full+')');
     toast('Usuário adicionado!','ok');
     ['a-uname','a-pass','a-full'].forEach(function(id){document.getElementById(id).value='';});
@@ -1105,7 +1174,7 @@ function showTab(id,btn){
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
   document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
-  if(id==='calendar')renderCal();
+  if(id==='calendar'){renderCal();renderMuralBanner();}
   if(id==='hoje')renderHoje();
   if(id==='mine')renderMine();
   if(id==='admin')renderAdmin();
@@ -1301,6 +1370,271 @@ window.addEventListener('beforeunload',function(e){
   }
 });
 
+
+// ══════════════════════════════════════════════════════════════
+// ESPAÇOS (dinâmico)
+// ══════════════════════════════════════════════════════════════
+function getSpaces(){
+  var saved=gLS('enau_spaces',null);
+  if(saved&&saved.length)return saved;
+  return['Auditório','Lab Informática','Lab Multi (Bio/Qui/Fis)','Área Verde','Biblioteca','Skill Lab','Lab Anatomia','Sala de Artes','Brinquedoteca','Lab Enfermagem'];
+}
+function saveSpaces(arr){sLS('enau_spaces',arr);}
+function getManut(){return gLS('enau_manut',{});}
+function saveManut(obj){sLS('enau_manut',obj);}
+
+function buildSpaceOptions(selectId){
+  var el=document.getElementById(selectId);if(!el)return;
+  var cur=el.value;
+  var spaces=getSpaces();
+  var manut=getManut();
+  var opts='<option value="">Selecione...</option>';
+  spaces.forEach(function(s){
+    var isM=manut[s];
+    opts+='<option value="'+s+'"'+(cur===s?' selected':'')+(isM?' disabled':'')+'>'+s+(isM?' [Manut.]':'')+'</option>';
+  });
+  el.innerHTML=opts;
+}
+function buildSpaceFilter(selectId){
+  var el=document.getElementById(selectId);if(!el)return;
+  var cur=el.value;
+  var spaces=getSpaces();
+  var opts='<option value="">Todos os espaços</option>';
+  spaces.forEach(function(s){opts+='<option value="'+s+'"'+(cur===s?' selected':'')+'>'+s+'</option>';});
+  el.innerHTML=opts;
+}
+function refreshAllSpaceDropdowns(){
+  buildSpaceOptions('f-space');
+  buildSpaceFilter('cal-filter');
+  buildSpaceFilter('mine-filter-space');
+  // rebuild SPACES and SPACE_CLS globals
+  var sp=getSpaces();
+  SPACES.length=0;sp.forEach(function(s){SPACES.push(s);});
+  Object.keys(SPACE_CLS).forEach(function(k){delete SPACE_CLS[k];});
+  sp.forEach(function(s,i){SPACE_CLS[s]='ch-'+(i%10);});
+  renderLegend();renderEspacosList();
+}
+
+function addEspaco(){
+  var name=document.getElementById('esp-name').value.trim();
+  if(!name){toast('Digite o nome do espaço.','err');return;}
+  var spaces=getSpaces();
+  if(spaces.indexOf(name)>=0){toast('Espaço já existe.','err');return;}
+  spaces.push(name);saveSpaces(spaces);
+  document.getElementById('esp-name').value='';
+  addLog('&#x1F3EB;','Admin adicionou espaço: '+name);
+  refreshAllSpaceDropdowns();toast('Espaço adicionado!','ok');
+}
+
+function toggleManut(space){
+  var manut=getManut();
+  if(manut[space]){
+    delete manut[space];toast('Manutenção encerrada para '+space,'ok');
+    addLog('&#x2705;','Admin encerrou manutenção de '+space);
+  } else {
+    var motivo=prompt('Motivo da manutenção (ex: Reforma, Limpeza):');
+    if(!motivo)return;
+    manut[space]=motivo;toast('Espaço em manutenção!','ok');
+    addLog('&#x1F6A7;','Admin colocou '+space+' em manutenção: '+motivo);
+  }
+  saveManut(manut);refreshAllSpaceDropdowns();renderEspacosList();
+}
+
+function removeEspaco(space){
+  if(!confirm('Remover espaço "'+space+'"?\nReservas existentes não serão apagadas.'))return;
+  var spaces=getSpaces().filter(function(s){return s!==space;});
+  saveSpaces(spaces);
+  var manut=getManut();delete manut[space];saveManut(manut);
+  addLog('&#x1F5D1;','Admin removeu espaço: '+space);
+  refreshAllSpaceDropdowns();toast('Espaço removido.','ok');
+}
+
+function renderEspacosList(){
+  var el=document.getElementById('espacos-list');if(!el)return;
+  var spaces=getSpaces();var manut=getManut();
+  if(!spaces.length){el.innerHTML='<div style="padding:1rem;text-align:center;color:var(--muted)">Nenhum espaço cadastrado.</div>';return;}
+  var rows='';
+  for(var i=0;i<spaces.length;i++){
+    var s=spaces[i];var isM=manut[s];
+    rows+='<div class="space-row">'+
+      '<span class="space-name">'+s+'</span>'+
+      '<span class="space-status '+(isM?'space-manut':'space-ok')+'">'+(isM?'Em manutencao':'Disponivel')+'</span>'+
+      (isM?'<span style="font-size:.75rem;color:var(--muted)">'+manut[s]+'</span>':'')+
+      '<button class="btn '+(isM?'btn-primary':'btn-outline')+'" style="padding:.25rem .6rem;font-size:.74rem" onclick="toggleManut(\''+s+'\')">'+
+        (isM?'Encerrar manut.':'Em manutencao')+'</button>'+
+      '<button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.74rem" onclick="removeEspaco(\''+s+'\')">Remover</button>'+
+    '</div>';
+  }
+  el.innerHTML='<div style="border:1.5px solid var(--border);border-radius:8px;background:var(--white)">'+rows+'</div>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// CONFLITO ANTECIPADO
+// ══════════════════════════════════════════════════════════════
+function checkConflictPreview(){
+  var space=document.getElementById('f-space').value;
+  var date=document.getElementById('f-date').value;
+  var start=document.getElementById('f-start').value;
+  var end=document.getElementById('f-end').value;
+  var prev=document.getElementById('conflict-preview');
+  var det=document.getElementById('conflict-detail');
+  if(!space||!date||!start||!end){prev.style.display='none';return;}
+  var conflicts=BOOKINGS.filter(function(b){
+    return b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId);
+  });
+  if(conflicts.length){
+    var msgs=conflicts.map(function(b){return ' '+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+' ('+b.teacher+')';});
+    det.textContent=msgs.join('; ');
+    prev.style.display='block';
+  } else {
+    prev.style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// MURAL DE AVISOS
+// ══════════════════════════════════════════════════════════════
+function getMural(){return gLS('enau_mural',[]);}
+function saveMural(arr){sLS('enau_mural',arr);}
+
+function addMural(){
+  var title=document.getElementById('mural-title').value.trim();
+  var msg=document.getElementById('mural-msg').value.trim();
+  var until=document.getElementById('mural-until').value;
+  if(!title||!msg){toast('Preencha título e mensagem.','err');return;}
+  var mural=getMural();
+  mural.unshift({id:Date.now(),title:title,msg:msg,until:until||null,by:ME.fullname,ts:new Date().toISOString()});
+  saveMural(mural);
+  document.getElementById('mural-title').value='';
+  document.getElementById('mural-msg').value='';
+  document.getElementById('mural-until').value='';
+  addLog('&#x1F4E2;','Admin publicou aviso: '+title);
+  toast('Aviso publicado!','ok');
+  renderMuralAdmin();renderMuralBanner();
+}
+
+function removeMural(id){
+  saveMural(getMural().filter(function(m){return m.id!==id;}));
+  renderMuralAdmin();renderMuralBanner();toast('Aviso removido.','ok');
+}
+
+function renderMuralBanner(){
+  var banner=document.getElementById('mural-banner');if(!banner)return;
+  var today=new Date().toISOString().split('T')[0];
+  var active=getMural().filter(function(m){return !m.until||m.until>=today;});
+  if(!active.length){banner.style.display='none';return;}
+  banner.style.display='block';
+  banner.innerHTML=active.map(function(m){
+    return '<div class="mural-card"><h5>&#x1F4E2; '+m.title+'</h5><p>'+m.msg+'</p><div class="mural-meta">Por '+m.by+(m.until?' · Válido até '+fmtDate(m.until):'')+'</div></div>';
+  }).join('');
+}
+
+function renderMuralAdmin(){
+  var el=document.getElementById('mural-admin-list');if(!el)return;
+  var mural=getMural();
+  if(!mural.length){el.innerHTML='<div style="padding:.8rem;color:var(--muted);font-size:.85rem">Nenhum aviso ativo.</div>';return;}
+  el.innerHTML=mural.map(function(m){
+    return '<div class="mural-card"><button class="mural-del" onclick="removeMural('+m.id+')">&#x2715;</button>'+
+      '<h5>'+m.title+'</h5><p>'+m.msg+'</p>'+
+      '<div class="mural-meta">Por '+m.by+(m.until?' · Válido até '+fmtDate(m.until):'· Sem validade')+'</div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// HISTÓRICO DE ACESSOS
+// ══════════════════════════════════════════════════════════════
+function logAccess(username,fullname){
+  var logs=gLS('enau_access',[]);
+  logs.unshift({username:username,fullname:fullname,ts:new Date().toISOString(),ua:navigator.userAgent.slice(0,80)});
+  if(logs.length>200)logs=logs.slice(0,200);
+  sLS('enau_access',logs);
+}
+
+function renderAccessLog(){
+  var el=document.getElementById('access-log');if(!el)return;
+  var logs=gLS('enau_access',[]);
+  if(!logs.length){el.innerHTML='<div style="padding:1rem;text-align:center;color:var(--muted)">Nenhum acesso registrado.</div>';return;}
+  el.innerHTML=logs.map(function(l){
+    return '<div class="access-row">'+
+      '<span class="access-user">'+l.fullname+'</span>'+
+      '<span style="color:var(--muted);font-size:.75rem;min-width:130px">'+new Date(l.ts).toLocaleString('pt-BR')+'</span>'+
+      '<span style="color:var(--muted);font-size:.72rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+l.username+'</span>'+
+    '</div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// MINHA CONTA / TROCA DE SENHA / PRIMEIRO ACESSO
+// ══════════════════════════════════════════════════════════════
+function openMinhaConta(){
+  document.getElementById('m-title').textContent='Minha Conta';
+  document.getElementById('m-body').innerHTML=
+    '<p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Usuário: <strong>'+ME.username+'</strong></p>'+
+    '<label class="mlbl">Senha atual</label><input type="password" id="pwd-cur" placeholder="Senha atual">'+
+    '<label class="mlbl">Nova senha</label><input type="password" id="pwd-new" placeholder="Mínimo 6 caracteres">'+
+    '<label class="mlbl">Confirmar nova senha</label><input type="password" id="pwd-confirm" placeholder="Repita a nova senha">';
+  document.getElementById('m-acts').innerHTML=
+    '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>'+
+    '<button class="btn btn-primary" onclick="trocarSenha()">Salvar senha</button>';
+  document.getElementById('overlay').style.display='flex';
+}
+
+async function trocarSenha(){
+  var cur=document.getElementById('pwd-cur').value;
+  var nw=document.getElementById('pwd-new').value;
+  var conf=document.getElementById('pwd-confirm').value;
+  if(!cur||!nw||!conf){toast('Preencha todos os campos.','err');return;}
+  if(cur!==ME.password){toast('Senha atual incorreta.','err');return;}
+  if(nw.length<6){toast('Nova senha deve ter pelo menos 6 caracteres.','err');return;}
+  if(nw!==conf){toast('Confirmação não confere.','err');return;}
+  try{
+    if(isDemo()){
+      var us=gLS('eu',[]);
+      var idx=us.findIndex(function(u){return u.username===ME.username;});
+      if(idx>-1){us[idx].password=nw;sLS('eu',us);}
+      ME.password=nw;sLS('enau_session',ME);
+    } else {
+      await api.patch('usuarios?id=eq.'+ME.id,{password:nw,first_access:false});
+      ME.password=nw;ME.first_access=false;sLS('enau_session',ME);
+    }
+    addLog('&#x1F511;',ME.fullname+' alterou a própria senha');
+    toast('Senha alterada com sucesso!','ok');closeModal();
+  } catch(e){toast('Erro: '+e.message,'err');}
+}
+
+function checkFirstAccess(){
+  if(ME&&ME.first_access){
+    document.getElementById('m-title').textContent='Bem-vindo! Crie sua senha';
+    document.getElementById('m-body').innerHTML=
+      '<div class="info-note" style="margin-bottom:1rem">&#x26A0; Este é seu primeiro acesso. Por segurança, defina uma senha pessoal antes de continuar.</div>'+
+      '<label class="mlbl">Nova senha</label><input type="password" id="pwd-new" placeholder="Mínimo 6 caracteres">'+
+      '<label class="mlbl">Confirmar nova senha</label><input type="password" id="pwd-confirm" placeholder="Repita a nova senha">';
+    document.getElementById('m-acts').innerHTML=
+      '<button class="btn btn-primary" onclick="trocarSenhaFirstAccess()">Definir senha e entrar</button>';
+    document.getElementById('overlay').style.display='flex';
+  }
+}
+
+async function trocarSenhaFirstAccess(){
+  var nw=document.getElementById('pwd-new').value;
+  var conf=document.getElementById('pwd-confirm').value;
+  if(nw.length<6){toast('Senha deve ter pelo menos 6 caracteres.','err');return;}
+  if(nw!==conf){toast('Senhas não conferem.','err');return;}
+  try{
+    if(isDemo()){
+      var us=gLS('eu',[]);
+      var idx=us.findIndex(function(u){return u.username===ME.username;});
+      if(idx>-1){us[idx].password=nw;us[idx].first_access=false;sLS('eu',us);}
+      ME.password=nw;ME.first_access=false;sLS('enau_session',ME);
+    } else {
+      await api.patch('usuarios?id=eq.'+ME.id,{password:nw,first_access:false});
+      ME.password=nw;ME.first_access=false;sLS('enau_session',ME);
+    }
+    addLog('&#x1F511;',ME.fullname+' definiu senha no primeiro acesso');
+    toast('Senha definida! Bem-vindo(a)!','ok');closeModal();
+  } catch(e){toast('Erro: '+e.message,'err');}
+}
+
 // ── Inatividade ────────────────────────────────────────────────
 var _inactTimer=null;
 function resetInactivityTimer(clear){
@@ -1330,7 +1664,7 @@ function resetInactivityTimer(clear){
   document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('f-date').value=now.toISOString().split('T')[0];
   BLOCKED_DATES=gLS('ebl',[]);
-  loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();if(ME&&ME.role==='admin')renderAdmin();});
+  loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();});
   resetInactivityTimer(false);
 })();
 
