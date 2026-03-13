@@ -1117,7 +1117,7 @@ function renderMonth(){
   }
     var total=startDay+last.getDate();var rem=(7-total%7)%7;
   for(var j=1;j<=rem;j++)html+='<div class="month-day other-month"><div class="month-day-num">'+j+'</div></div>';
-  document.getElementById('cal-content').innerHTML=html+'</div>';
+  document.getElementById('cal-content').innerHTML='<div class="month-scroll-wrap">'+html+'</div>'+'</div>';
 }
 
 function renderLegend(){
