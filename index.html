@@ -591,6 +591,42 @@ body.dark #btn-bug:hover{background:rgba(217,80,106,.28);}
 .bug-report-card .bug-actions{display:flex;gap:.5rem;margin-top:.7rem;}
 body.dark .bug-report-card{background:var(--white);}
 body.dark .bug-report-card .bug-desc{background:var(--cream);}
+
+/* Avatar no modal de reserva */
+.modal-booking-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:.8rem;}
+.modal-booking-avatar{flex-shrink:0;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:#fff;border:2px solid var(--border);overflow:hidden;}
+.modal-booking-avatar img{width:100%;height:100%;object-fit:cover;}
+.modal-booking-info{flex:1;}
+
+/* Busca global */
+.global-search-wrap{position:relative;max-width:420px;margin:0 auto 1.2rem;}
+.global-search-wrap input{width:100%;padding:.55rem 1rem .55rem 2.4rem;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.88rem;font-family:'Outfit',sans-serif;color:var(--ink);transition:border-color .2s;}
+.global-search-wrap input:focus{border-color:var(--plum);outline:none;}
+.global-search-wrap .search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.95rem;pointer-events:none;}
+.global-search-results{background:var(--white);border:1.5px solid var(--border);border-radius:10px;margin-top:.4rem;max-height:320px;overflow-y:auto;box-shadow:0 4px 18px rgba(61,26,79,.12);display:none;}
+.global-search-results.open{display:block;}
+.gs-item{padding:.6rem 1rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+.gs-item:last-child{border-bottom:none;}
+.gs-item:hover{background:var(--cream);}
+.gs-item .gs-space{font-weight:700;font-size:.85rem;color:var(--plum);}
+.gs-item .gs-meta{font-size:.76rem;color:var(--muted);}
+.gs-empty{padding:1rem;text-align:center;color:var(--muted);font-size:.85rem;}
+body.dark .global-search-results{background:var(--card-bg);}
+body.dark .gs-item:hover{background:#1a1030;}
+
+/* Vista por espaço */
+.space-view-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:.5rem;}
+.space-view-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
+.space-view-card .sv-head{padding:.6rem .9rem;font-weight:700;font-size:.88rem;color:#fff;display:flex;align-items:center;justify-content:space-between;}
+.space-view-card .sv-body{padding:.5rem .9rem;}
+.sv-bk{padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.8rem;}
+.sv-bk:last-child{border-bottom:none;}
+.sv-bk .sv-time{font-weight:700;color:var(--ink);font-size:.82rem;}
+.sv-bk .sv-teacher{color:var(--muted);font-size:.76rem;}
+.sv-empty{padding:.8rem 0;color:var(--muted);font-size:.8rem;text-align:center;}
+.sv-badge{background:rgba(255,255,255,.25);border-radius:10px;padding:.1rem .45rem;font-size:.72rem;}
+body.dark .space-view-card{background:var(--card-bg);}
+@media(max-width:640px){.space-view-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -605,7 +641,12 @@ body.dark .bug-report-card .bug-desc{background:var(--cream);}
     <img class="topbar-logo" src="logo.png" alt="Colégio ENAU" style="filter:brightness(0) invert(1);"
          onerror="this.outerHTML='<svg width=\'140\' height=\'80\' viewBox=\'0 0 280 160\' fill=\'none\'><path d=\'M44 136C38 122 24 110 18 92C12 74 16 58 30 52C38 48 44 52 50 60\' fill=\'#f2839a\'/><path d=\'M50 60C56 52 62 48 70 52C84 58 88 74 82 92C76 110 62 122 56 136\' fill=\'#d9506a\'/><path d=\'M50 60C42 48 32 38 28 24C24 12 30 6 38 10C46 14 48 30 50 46\' fill=\'#9b3568\'/><path d=\'M50 46C52 30 54 14 62 10C70 6 76 12 72 24C68 38 58 48 50 60\' fill=\'#6e2e8a\'/><path d=\'M50 46C48 30 47 16 48 10C48.5 6 49.5 6 50 10C51 16 52 30 50 46\' fill=\'#fff\'/><text x=\'90\' y=\'90\' font-family=\'Playfair Display,serif\' font-size=\'50\' font-weight=\'700\' fill=\'white\'>enau</text><text x=\'90\' y=\'116\' font-family=\'Outfit,sans-serif\' font-size=\'17\' font-weight=\'400\' fill=\'rgba(255,255,255,.55)\' letter-spacing=\'2\'>RESERVAS</text></svg>'">
   </div>
-  <div class="topbar-right">
+  <div class="global-search-wrap" id="global-search-wrap" style="display:none">
+      <span class="search-icon">&#x1F50D;</span>
+      <input type="text" id="global-search-input" placeholder="Buscar reservas..." oninput="globalSearch(this.value)" onblur="setTimeout(function(){closeGlobalSearch()},200)" autocomplete="off">
+      <div class="global-search-results" id="global-search-results"></div>
+    </div>
+    <div class="topbar-right">
     <div class="avatar" id="topbar-avatar" onclick="openMinhaConta()" title="Minha conta"></div>
     <span id="topbar-user"></span>
     <button class="compact-toggle" id="btn-compact" onclick="toggleCompact()" title="Modo compacto" style="font-size:1.1rem;letter-spacing:0">&#x2630;</button>
@@ -642,6 +683,7 @@ body.dark .bug-report-card .bug-desc{background:var(--cream);}
       <button class="tab" id="tab-btn-hoje" onclick="showTab('hoje',this)">&#x1F4CC; Hoje</button>
       <button class="tab" onclick="showTab('new',this)">＋ Nova Reserva</button>
       <button class="tab" onclick="showTab('mine',this)">&#x1F4CB; Minhas Reservas</button>
+      <button class="tab" onclick="showTab('spaces',this)">&#x1F3E2; Espaços</button>
       <button class="tab coord-tab" id="tab-btn-coord" onclick="showTab('coord',this)" style="display:none">&#x1F4CB; Painel</button>
       <button class="tab admin-tab" onclick="showTab('admin',this)" style="display:none">&#x2699;&#xFE0F; Admin</button>
     </div>
@@ -799,6 +841,20 @@ body.dark .bug-report-card .bug-desc{background:var(--cream);}
       <div id="mine-list"></div>
     </div>
 
+    <div class="tab-panel" id="tab-spaces">
+      <div class="ph"><h2>&#x1F3E2; Vista por Espaço</h2></div>
+      <div class="card">
+        <div style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
+          <label class="lbl" style="margin:0">Ver reservas de:</label>
+          <select id="sv-period" onchange="renderSpaceView()" style="width:auto;min-width:160px">
+            <option value="today">Hoje</option>
+            <option value="week" selected>Esta semana</option>
+            <option value="month">Este mês</option>
+          </select>
+        </div>
+        <div class="space-view-grid" id="space-view-grid"></div>
+      </div>
+    </div>
     <div class="tab-panel" id="tab-coord">
       <div class="ph"><h2>Painel do Coordenador</h2></div>
       <div class="card">
@@ -1265,12 +1321,11 @@ function openModal(id){
   var isAdminOrCoord=isAdmin()||isCoord();
   var canAct=isAdminOrCoord||(isOwner&&hl>=5);
   document.getElementById('m-title').textContent=b.space+(b.recur_group?' &#x21BB;':'');
-  var body='<div class="row">';
+  var avatarHtml=buildUserAvatar(b.booked_by,b.teacher);
+  var body='<div class="modal-booking-header">'+avatarHtml+'<div class="modal-booking-info"><p style="font-weight:700;font-size:.95rem;margin:0 0 .15rem">'+b.teacher+'</p><p style="font-size:.8rem;color:var(--muted);margin:0">'+b.turma+(b.lesson?' · '+b.lesson:'')+'</p></div></div><div class="row">';
   body+='<p><strong>Data:</strong> '+fmtDate(b.date)+'</p>';
   body+='<p><strong>Horário:</strong> '+b.time_start+' – '+b.time_end+'</p>';
-  body+='<p><strong>Professor:</strong> '+b.teacher+'</p>';
-  body+='<p><strong>Turma:</strong> '+b.turma+'</p>';
-  if(b.lesson)body+='<p><strong>Período/Aula:</strong> '+b.lesson+'</p>';
+  if(b.lesson){/*lesson shown in avatar header*/}
   if(b.notes)body+='<p><strong>Obs/Recursos:</strong> '+b.notes+'</p>';
   body+='<p><strong>Agendado por:</strong> '+b.booked_by_name+'</p>';
   if(b.recur_group)body+='<div class="info-note" style="margin-top:.5rem">&#x21BB; Reserva recorrente</div>';
@@ -1535,6 +1590,7 @@ function showTab(id,btn){
   if(id==='mine')renderMine();
   if(id==='admin')renderAdmin();
   if(id==='coord')renderCoord();
+  if(id==='spaces')renderSpaceView();
 }
 
 function fmtDate(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
@@ -2471,6 +2527,105 @@ async function deleteBug(ts){
   }
   renderBugReports();toast('Relatório removido.','ok');
 }
+
+// ══════════════════════════════════════════════════════════════
+// BUSCA GLOBAL
+// ══════════════════════════════════════════════════════════════
+function initGlobalSearch(){
+  var wrap=document.getElementById('global-search-wrap');
+  if(wrap)wrap.style.display='flex';
+}
+function globalSearch(q){
+  var res=document.getElementById('global-search-results');
+  if(!res)return;
+  q=(q||'').trim().toLowerCase();
+  if(!q){res.classList.remove('open');return;}
+  var matches=BOOKINGS.filter(function(b){
+    return (b.teacher+b.turma+b.space+(b.lesson||'')+(b.notes||'')+(b.booked_by_name||'')).toLowerCase().indexOf(q)>=0;
+  }).slice(0,8);
+  if(!matches.length){res.innerHTML='<div class="gs-empty">Nenhuma reserva encontrada</div>';res.classList.add('open');return;}
+  res.innerHTML=matches.map(function(b){
+    return '<div class="gs-item" onclick="openModal(\''+b.id+'\');closeGlobalSearch()">'+
+      '<div class="gs-space">'+b.space+'</div>'+
+      '<div class="gs-meta">'+fmtDate(b.date)+' &middot; '+b.time_start.slice(0,5)+'-'+b.time_end.slice(0,5)+' &middot; '+b.teacher+' &middot; '+b.turma+'</div>'+
+    '</div>';
+  }).join('');
+  res.classList.add('open');
+}
+function closeGlobalSearch(){
+  var res=document.getElementById('global-search-results');
+  var inp=document.getElementById('global-search-input');
+  if(res)res.classList.remove('open');
+  if(inp)inp.value='';
+}
+
+// ══════════════════════════════════════════════════════════════
+// AVATAR DO PROFESSOR NO MODAL
+// ══════════════════════════════════════════════════════════════
+var USERS_AVATAR_CACHE={};
+async function loadUsersAvatarCache(){
+  try{
+    if(isDemo()){
+      var us=gLS('eu',[]);
+      us.forEach(function(u){USERS_AVATAR_CACHE[u.username]={fullname:u.fullname,avatar:u.avatar||null};});
+    } else {
+      var r=await api.get('usuarios?select=username,fullname,avatar').catch(function(){return[];});
+      (r||[]).forEach(function(u){USERS_AVATAR_CACHE[u.username]={fullname:u.fullname,avatar:u.avatar||null};});
+    }
+  }catch(e){}
+}
+function buildUserAvatar(username,fullname){
+  var info=USERS_AVATAR_CACHE[username]||{fullname:fullname,avatar:null};
+  var avatarData=info.avatar||gLS('enau_avatar_'+username,null);
+  var colors=['#7b2d52','#3d1a4f','#d9506a','#5b3a8a','#2d6a7b','#7b5230'];
+  var sum=0;for(var i=0;i<(fullname||'').length;i++)sum+=(fullname||'').charCodeAt(i);
+  var bg=colors[sum%colors.length];
+  var parts=(fullname||'?').trim().split(' ');
+  var initials=(parts[0][0]+(parts.length>1?parts[parts.length-1][0]:'')).toUpperCase();
+  if(avatarData)return '<div class="modal-booking-avatar"><img src="'+avatarData+'" alt="'+fullname+'"></div>';
+  return '<div class="modal-booking-avatar" style="background:'+bg+'">'+initials+'</div>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// VISTA POR ESPACO
+// ══════════════════════════════════════════════════════════════
+var SPACE_COLORS=['#7b2d52','#3d1a4f','#d9506a','#5b3a8a','#2d6a7b','#7b5230','#2d7b3a','#7b6e2d','#2d3a7b','#6a2d7b'];
+function renderSpaceView(){
+  var grid=document.getElementById('space-view-grid');if(!grid)return;
+  var period=(document.getElementById('sv-period')||{value:'week'}).value;
+  var today=new Date();today.setHours(0,0,0,0);
+  var spaces=getSpaces();
+  var from,to;
+  if(period==='today'){
+    from=to=today.toISOString().split('T')[0];
+  } else if(period==='week'){
+    var dow=today.getDay()===0?6:today.getDay()-1;
+    var mon=new Date(today);mon.setDate(today.getDate()-dow);
+    var sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    from=mon.toISOString().split('T')[0];to=sun.toISOString().split('T')[0];
+  } else {
+    var y=today.getFullYear(),mo=today.getMonth();
+    from=new Date(y,mo,1).toISOString().split('T')[0];
+    to=new Date(y,mo+1,0).toISOString().split('T')[0];
+  }
+  grid.innerHTML=spaces.map(function(space,si){
+    var bks=BOOKINGS.filter(function(b){return b.space===space&&b.date>=from&&b.date<=to;})
+      .sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
+    var color=SPACE_COLORS[si%SPACE_COLORS.length];
+    var badge=bks.length+' reserva'+(bks.length!==1?'s':'');
+    var rows=bks.length?bks.map(function(b){
+      return '<div class="sv-bk" onclick="openModal(\''+b.id+'\')" style="cursor:pointer">'+
+        '<div class="sv-time">'+fmtDate(b.date)+' &middot; '+b.time_start.slice(0,5)+'-'+b.time_end.slice(0,5)+'</div>'+
+        '<div class="sv-teacher">'+b.teacher+' &middot; '+b.turma+'</div>'+
+      '</div>';
+    }).join(''):'<div class="sv-empty">Nenhuma reserva</div>';
+    return '<div class="space-view-card">'+
+      '<div class="sv-head" style="background:'+color+'"><span>'+space+'</span><span class="sv-badge">'+badge+'</span></div>'+
+      '<div class="sv-body">'+rows+'</div>'+
+    '</div>';
+  }).join('');
+}
+
 function resetInactivityTimer(clear){
   if(_inactTimer)clearTimeout(_inactTimer);
   if(clear)return;
@@ -2509,7 +2664,8 @@ function resetInactivityTimer(clear){
   BLOCKED_DATES=gLS('ebl',[]);
   refreshTopbarAvatar();
   buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
-  loadAll().then(function(){renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
+  initGlobalSearch();
+  loadAll().then(function(){loadUsersAvatarCache();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
   resetInactivityTimer(false);
 })();
 
