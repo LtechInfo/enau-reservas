@@ -1133,7 +1133,7 @@ async function doLogin(){
     document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
     await loadAll();
-    renderCal();renderMine();renderLegend();
+    renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();
     logAccess(ME.username,ME.fullname);
     resetInactivityTimer(false);
     // Sync avatar from Supabase into localStorage for offline use
@@ -1141,8 +1141,11 @@ async function doLogin(){
     else{var lsAvatar=gLS('enau_avatar_'+ME.username,null);if(lsAvatar)ME.avatar=lsAvatar;}
     refreshTopbarAvatar();
     buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
-    renderMuralBanner();
+    refreshAllSpaceDropdowns();
+    initGlobalSearch();
     checkFirstAccess();
+    loadUsersAvatarCache();
+    initChat();
     if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
   } catch(err){
     const errEl=document.getElementById('l-err');
@@ -2729,6 +2732,8 @@ async function initChat(){
   if(tabBtn)tabBtn.style.display='inline-block';
   // Load users list
   await loadChatUsers();
+  // Render sidebar immediately so it's ready when user opens chat
+  renderChatUserList();
   // Load unread counts
   await loadChatUnread();
   updateChatTabBadge();
