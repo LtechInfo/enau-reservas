@@ -1455,7 +1455,8 @@ async function deleteBooking(id,andFuture){
   closeModal();renderCal();renderMine();if(isAdmin())renderAdmin();if(isCoord()&&!isAdmin())renderCoord();
 }
 
-function closeModal(){document.getElementById('overlay').style.display='none';}
+function closeModal(){
+  if(typeof BUG_IMAGE_DATA!=='undefined'&&BUG_IMAGE_DATA)bugImageClear();document.getElementById('overlay').style.display='none';}
 function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
 
 function renderMine(){
@@ -2413,7 +2414,17 @@ function openBugReport(){
       '<span class="bug-star" data-v="4" onclick="setBugRating(4)" title="Crítica">&#x2605;</span>'+
     '</div>'+
     '<div style="font-size:.75rem;color:var(--muted);margin-top:-.5rem" id="bug-rating-lbl">Selecione a gravidade (1 = baixa, 4 = crítica)</div>'+
-    '<div class="info-note" style="margin-top:.8rem;font-size:.78rem">&#x2139;&#xFE0F; O relatório será salvo e enviado ao T.I. automaticamente.</div>';
+    '<label class="mlbl" style="margin-top:.8rem">Print da tela <span style="color:var(--muted);font-weight:400;font-size:.78rem">(opcional)</span></label>'+
+    '<div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.5rem">'+
+      '<label id="bug-img-label" style="cursor:pointer;background:var(--cream);border:1.5px dashed var(--border);border-radius:8px;padding:.5rem 1rem;font-size:.82rem;color:var(--muted);transition:border-color .2s" onmouseover="this.style.borderColor=\'var(--plum)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'+
+        '&#x1F4F8; Anexar imagem'+
+        '<input type="file" id="bug-img-input" accept="image/*" style="display:none" onchange="bugImageSelected(this)">'+
+      '</label>'+
+      '<span id="bug-img-name" style="font-size:.78rem;color:var(--muted)"></span>'+
+      '<button id="bug-img-clear" onclick="bugImageClear()" style="display:none;background:none;border:none;color:var(--coral);cursor:pointer;font-size:.85rem" title="Remover">&#x2715;</button>'+
+    '</div>'+
+    '<div id="bug-img-preview" style="display:none;margin-bottom:.5rem"><img id="bug-img-thumb" style="max-width:100%;max-height:120px;border-radius:6px;border:1px solid var(--border)"></div>'+
+    '<div class="info-note" style="font-size:.78rem">&#x2139;&#xFE0F; O relatório será salvo e enviado ao T.I. automaticamente.</div>';
   document.getElementById('m-acts').innerHTML=
     '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>'+
     '<button class="btn btn-primary" onclick="submitBugReport()">Enviar relatório</button>';
@@ -2492,6 +2503,14 @@ async function submitBugReport(){
     var tgMsg='<b>&#x1F41B; Bug Reportado — ENAU Reservas</b>\n\n'+gravidadeEmoji[bugRating]+' <b>Gravidade:</b> '+gravidades[bugRating]+'\n'+'&#x1F4CB; <b>Tipo:</b> '+type+'\n'+'&#x1F464; <b>Usuário:</b> '+report.usuario+' (@'+report.username+')\n'+'&#x1F4F1; <b>Dispositivo:</b> '+report.dispositivo+'\n'+'&#x1F550; <b>Data/Hora:</b> '+report.data+'\n\n'+'&#x1F4DD; <b>Descrição:</b>\n'+desc;
     await sendTelegram(tgMsg);
   } catch(e){}
+  // Enviar imagem separada se houver
+  if(BUG_IMAGE_DATA){
+    try{
+      var imgCaption='&#x1F4F8; <b>Print do bug:</b> '+type+' — '+report.usuario;
+      await sendTelegramPhoto(BUG_IMAGE_DATA,imgCaption);
+    }catch(e){}
+    bugImageClear();
+  }
   closeModal();
   toast('Relatório enviado! Obrigado.','ok');
 }
@@ -2907,6 +2926,65 @@ function startChatRealtime(){
       setTimeout(startChatRealtime,3000);
     };
   }catch(e){}
+}
+
+
+// ── Bug report image ──────────────────────────────────────────
+var BUG_IMAGE_DATA=null;
+var BUG_IMAGE_NAME='';
+
+function bugImageSelected(input){
+  var file=input.files[0];if(!file)return;
+  if(file.size>5*1024*1024){toast('Imagem muito grande. Máximo 5MB.','err');return;}
+  BUG_IMAGE_NAME=file.name;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    BUG_IMAGE_DATA=e.target.result; // full base64 data URL
+    var nameEl=document.getElementById('bug-img-name');
+    var clearBtn=document.getElementById('bug-img-clear');
+    var preview=document.getElementById('bug-img-preview');
+    var thumb=document.getElementById('bug-img-thumb');
+    var label=document.getElementById('bug-img-label');
+    if(nameEl)nameEl.textContent=file.name.length>28?file.name.slice(0,25)+'...':file.name;
+    if(clearBtn)clearBtn.style.display='inline-block';
+    if(preview)preview.style.display='block';
+    if(thumb)thumb.src=BUG_IMAGE_DATA;
+    if(label)label.style.borderColor='var(--plum)';
+  };
+  reader.readAsDataURL(file);
+}
+
+function bugImageClear(){
+  BUG_IMAGE_DATA=null;BUG_IMAGE_NAME='';
+  var nameEl=document.getElementById('bug-img-name');
+  var clearBtn=document.getElementById('bug-img-clear');
+  var preview=document.getElementById('bug-img-preview');
+  var input=document.getElementById('bug-img-input');
+  var label=document.getElementById('bug-img-label');
+  if(nameEl)nameEl.textContent='';
+  if(clearBtn)clearBtn.style.display='none';
+  if(preview)preview.style.display='none';
+  if(input)input.value='';
+  if(label)label.style.borderColor='var(--border)';
+}
+
+async function sendTelegramPhoto(base64DataUrl,caption){
+  try{
+    // Convert base64 data URL to blob
+    var arr=base64DataUrl.split(',');
+    var mime=arr[0].match(/:(.*?);/)[1];
+    var bstr=atob(arr[1]);
+    var n=bstr.length;
+    var u8=new Uint8Array(n);
+    for(var i=0;i<n;i++)u8[i]=bstr.charCodeAt(i);
+    var blob=new Blob([u8],{type:mime});
+    var fd=new FormData();
+    fd.append('chat_id',TELEGRAM_CHAT_ID);
+    fd.append('photo',blob,'bug_print.jpg');
+    fd.append('caption',caption);
+    fd.append('parse_mode','HTML');
+    await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendPhoto',{method:'POST',body:fd});
+  }catch(e){console.error('Telegram photo error',e);}
 }
 
 function resetInactivityTimer(clear){
