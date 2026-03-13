@@ -1653,7 +1653,7 @@ function showTab(id,btn){
   if(id==='admin')renderAdmin();
   if(id==='coord')renderCoord();
   if(id==='spaces')renderSpaceView();
-  if(id==='chat'){renderChatUserList();if(CHAT_ACTIVE_USER)renderChatMessages();}
+  if(id==='chat'){stopTitleBlink();renderChatUserList();if(CHAT_ACTIVE_USER)renderChatMessages();}
 }
 
 function fmtDate(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
@@ -2716,9 +2716,13 @@ var CHAT_ACTIVE_USER=null;
 var CHAT_MESSAGES=[];
 var CHAT_REALTIME=null;
 var CHAT_UNREAD={};
+var CHAT_LAST_MSG={};   // username -> timestamp of last message (for sorting)
+var CHAT_TITLE_INT=null; // interval for blinking title
+var CHAT_ORIG_TITLE=document.title;
 
 async function initChat(){
   if(!ME)return;
+  requestNotifPermission();
   // Show chat tab
   var tabBtn=document.getElementById('tab-btn-chat');
   if(tabBtn)tabBtn.style.display='inline-block';
@@ -2764,7 +2768,14 @@ function updateChatTabBadge(){
 function renderChatUserList(){
   var el=document.getElementById('chat-user-list');if(!el)return;
   if(!CHAT_USERS.length){el.innerHTML='<div style="padding:1rem;color:var(--muted);font-size:.83rem">Nenhum usuário encontrado.</div>';return;}
-  el.innerHTML=CHAT_USERS.map(function(u){
+  // Sort: active conversations first (by last message time), then alphabetical
+  var sorted=CHAT_USERS.slice().sort(function(a,b){
+    var ta=CHAT_LAST_MSG[a.username]||'';
+    var tb=CHAT_LAST_MSG[b.username]||'';
+    if(tb>ta)return 1;if(ta>tb)return -1;
+    return a.fullname.localeCompare(b.fullname,'pt-BR');
+  });
+  el.innerHTML=sorted.map(function(u){
     var unread=CHAT_UNREAD[u.username]||0;
     var avatarData=u.avatar||gLS('enau_avatar_'+u.username,null);
     var colors=['#7b2d52','#3d1a4f','#d9506a','#5b3a8a','#2d6a7b','#7b5230'];
@@ -2833,6 +2844,12 @@ async function loadChatMessages(){
     var conv=chatConvKey(ME.username,CHAT_ACTIVE_USER.username);
     var r=await api.get('mensagens?conv=eq.'+encodeURIComponent(conv)+'&order=ts.asc&limit=100').catch(function(){return[];});
     CHAT_MESSAGES=r||[];
+    // Update last msg timestamp for sorting
+    if(CHAT_MESSAGES.length){
+      var last=CHAT_MESSAGES[CHAT_MESSAGES.length-1];
+      CHAT_LAST_MSG[CHAT_ACTIVE_USER.username]=last.ts;
+      renderChatUserList();
+    }
     renderChatMessages();
   }catch(e){el.innerHTML='<div class="chat-empty">Erro ao carregar mensagens.</div>';}
 }
@@ -2900,14 +2917,24 @@ function startChatRealtime(){
           if(rec.para===ME.username){
             if(CHAT_ACTIVE_USER&&rec.de===CHAT_ACTIVE_USER.username){
               CHAT_MESSAGES.push(rec);
+              CHAT_LAST_MSG[rec.de]=rec.ts;
               renderChatMessages();
+              renderChatUserList();
+              playChatSound();
               // Mark as read immediately
               api.patch('mensagens?id=eq.'+rec.id,{lido:true}).catch(function(){});
             } else {
               CHAT_UNREAD[rec.de]=(CHAT_UNREAD[rec.de]||0)+1;
+              CHAT_LAST_MSG[rec.de]=rec.ts;
               updateChatTabBadge();
               renderChatUserList();
-              toast('&#x1F4AC; Nova mensagem de '+rec.de,'ok');
+              // Find sender fullname
+              var sender=CHAT_USERS.find(function(u){return u.username===rec.de;});
+              var sName=sender?sender.fullname.split(' ')[0]:rec.de;
+              playChatSound();
+              showBrowserNotif('\uD83D\uDCAC '+sName+' \u2014 ENAU',rec.texto.slice(0,80));
+              startTitleBlink(sName);
+              toast('&#x1F4AC; Nova mensagem de '+sName,'ok');
             }
           }
           // My message confirmed
@@ -2985,6 +3012,55 @@ async function sendTelegramPhoto(base64DataUrl,caption){
     fd.append('parse_mode','HTML');
     await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendPhoto',{method:'POST',body:fd});
   }catch(e){console.error('Telegram photo error',e);}
+}
+
+
+// ── Notification helpers ──────────────────────────────────────
+function requestNotifPermission(){
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+
+function showBrowserNotif(title,body){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  if(document.hasFocus())return; // only when window not focused
+  try{
+    var n=new Notification(title,{body:body,icon:'MOBILEICON.png',badge:'MOBILEICON.png',tag:'enau-chat'});
+    n.onclick=function(){window.focus();showTab('chat',document.getElementById('tab-btn-chat'));n.close();};
+    setTimeout(function(){n.close();},6000);
+  }catch(e){}
+}
+
+function playChatSound(){
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var osc=ctx.createOscillator();
+    var gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880,ctx.currentTime);
+    osc.frequency.setValueAtTime(1100,ctx.currentTime+0.08);
+    gain.gain.setValueAtTime(0.15,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime+0.3);
+  }catch(e){}
+}
+
+function startTitleBlink(senderName){
+  if(CHAT_TITLE_INT)return; // already blinking
+  var blink=true;
+  CHAT_TITLE_INT=setInterval(function(){
+    document.title=blink?'\uD83D\uDCAC '+senderName+'!':CHAT_ORIG_TITLE;
+    blink=!blink;
+  },1200);
+  // Stop blinking when window gets focus
+  window.addEventListener('focus',stopTitleBlink,{once:true});
+}
+
+function stopTitleBlink(){
+  if(CHAT_TITLE_INT){clearInterval(CHAT_TITLE_INT);CHAT_TITLE_INT=null;}
+  document.title=CHAT_ORIG_TITLE;
 }
 
 function resetInactivityTimer(clear){
