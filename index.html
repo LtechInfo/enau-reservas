@@ -1031,7 +1031,7 @@ async function loadAll(){
   }
 }
 
-const DAYS_W=['Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DAYS_W=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MONTHS_Y=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 function setCalView(v,btn){
@@ -1098,7 +1098,7 @@ function renderMonth(){
   var y=monthCursor.getFullYear(),m=monthCursor.getMonth();
   document.getElementById('wlbl').textContent=MONTHS_Y[m]+' '+y;
   var first=new Date(y,m,1),last=new Date(y,m+1,0);
-  var startDay=first.getDay()===0?6:first.getDay()-1;
+  var startDay=first.getDay();
   var today=new Date();today.setHours(0,0,0,0);
   var html='<div class="month-header">'+DAYS_W.map(function(d){return '<span>'+d+'</span>';}).join('')+'</div><div class="month-grid">';
   for(var i=0;i<startDay;i++){var pd=new Date(y,m,1-startDay+i);html+='<div class="month-day other-month"><div class="month-day-num">'+pd.getDate()+'</div></div>';}
@@ -2377,7 +2377,7 @@ function renderBugReports(){
   var cards=page.map(function(b){
     var gn=b.gravidade_num||0;
     var dt=b.data||new Date(b.ts).toLocaleString('pt-BR');
-    var ts=JSON.stringify(b.ts);
+    var ts="'"+b.ts+"'";
     return '<div class="bug-report-card'+(b.resolvido?' resolved':'')+'">'+
       '<div class="bug-header">'+
         '<span class="bug-badge '+gravClasses[gn]+'">'+gravidadeEmoji[gn]+' '+b.gravidade+'</span>'+
