@@ -845,25 +845,6 @@ body.dark .chat-input-bar{background:var(--card-bg);}
             </select></div>
           <div><label class="lbl">Data *</label><input type="date" id="f-date" onchange="checkConflictPreview()"></div>
         </div>
-        <div class="info-note" id="fav-spaces-box" style="margin-bottom:.8rem">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
-            <strong style="font-size:.82rem">Favoritos de Espaço</strong>
-            <button class="btn btn-outline" type="button" style="padding:.25rem .55rem;font-size:.74rem" onclick="toggleFavoriteCurrentSpace()">Favoritar/Desfavoritar selecionado</button>
-          </div>
-          <div id="fav-space-chips" style="margin-top:.45rem;display:flex;gap:.35rem;flex-wrap:wrap"></div>
-        </div>
-        <div class="form-row" style="margin-bottom:.7rem">
-          <div>
-            <label class="lbl">Template Rápido</label>
-            <select id="f-template" onchange="applyBookingTemplate(this.value)">
-              <option value="">Selecione um template...</option>
-            </select>
-          </div>
-          <div style="display:flex;align-items:flex-end;gap:.5rem;flex-wrap:wrap">
-            <button class="btn btn-outline" type="button" style="padding:.5rem .9rem;font-size:.78rem" onclick="saveBookingTemplate()">Salvar Template</button>
-            <button class="btn btn-outline" type="button" style="padding:.5rem .9rem;font-size:.78rem" onclick="deleteBookingTemplate()">Remover</button>
-          </div>
-        </div>
         <div class="form-row">
           <div><label class="lbl">Horário Início *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-start-h" onchange="syncTimeField('start');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-start-m" onchange="syncTimeField('start');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-start"></div>
           <div><label class="lbl">Horário Fim *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-end-h" onchange="syncTimeField('end');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-end-m" onchange="syncTimeField('end');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-end"></div>
@@ -922,6 +903,31 @@ body.dark .chat-input-bar{background:var(--card-bg);}
             </div></div>
         </div>
         <div><label class="lbl">Observações / Recursos necessários</label><textarea id="f-notes" placeholder="Ex: Datashow, Internet, Powerpoint, Word, Excel..."></textarea></div>
+        <div class="info-note" style="margin-top:.9rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+            <strong style="font-size:.85rem">Atalhos (opcional)</strong>
+            <span style="font-size:.78rem;color:var(--muted)">Use apenas se quiser agilizar reservas futuras</span>
+          </div>
+          <div class="info-note" id="fav-spaces-box" style="margin-top:.65rem;margin-bottom:.65rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+              <strong style="font-size:.82rem">Favoritos de Espaço</strong>
+              <button class="btn btn-outline" type="button" style="padding:.25rem .55rem;font-size:.74rem" onclick="toggleFavoriteCurrentSpace()">Favoritar/Desfavoritar selecionado</button>
+            </div>
+            <div id="fav-space-chips" style="margin-top:.45rem;display:flex;gap:.35rem;flex-wrap:wrap"></div>
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <div>
+              <label class="lbl">Template Rápido</label>
+              <select id="f-template" onchange="applyBookingTemplate(this.value)">
+                <option value="">Selecione um template...</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:.5rem;flex-wrap:wrap">
+              <button class="btn btn-outline" type="button" style="padding:.5rem .9rem;font-size:.78rem" onclick="saveBookingTemplate()">Salvar como template</button>
+              <button class="btn btn-outline" type="button" style="padding:.5rem .9rem;font-size:.78rem" onclick="deleteBookingTemplate()">Excluir template</button>
+            </div>
+          </div>
+        </div>
         <div style="margin-top:.8rem">
           <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.88rem;color:var(--ink2);">
             <input type="checkbox" id="f-recur-on" onchange="toggleRecurBox()" style="width:16px;height:16px;accent-color:var(--plum);flex-shrink:0"> Reserva recorrente (repetir semanalmente)
