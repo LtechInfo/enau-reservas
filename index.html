@@ -149,6 +149,24 @@ table.cal tbody tr:last-child td{border-bottom:none;}
 table.cal tbody tr td:hover .plus-hint{opacity:1;}
 .legend{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem;font-size:.78rem;color:var(--muted);}
 .legend span{display:flex;align-items:center;gap:.3rem;}
+.cal-alerts{display:none;background:linear-gradient(135deg,#fff8e6 0%,#fffdf5 100%);border:1.5px solid #f5c842;border-radius:10px;padding:.75rem .9rem;margin:0 0 .85rem;}
+.cal-alert-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.45rem;}
+.cal-alert-head strong{font-size:.84rem;color:#7a5200;}
+.cal-alert-head span{font-size:.74rem;color:#a17218;}
+.cal-alert-list{display:grid;gap:.42rem;}
+.cal-alert-item{display:grid;grid-template-columns:auto 1fr;gap:.5rem;align-items:flex-start;background:rgba(255,255,255,.65);border:1px solid rgba(245,200,66,.55);border-radius:7px;padding:.42rem .52rem;}
+.cal-alert-badge{display:inline-block;font-size:.65rem;font-weight:700;line-height:1;padding:.22rem .42rem;border-radius:20px;background:#7a5200;color:#fff;letter-spacing:.02em;min-width:46px;text-align:center;}
+.cal-alert-text{font-size:.76rem;line-height:1.45;color:#5a3d00;}
+.cal-alert-text strong{color:#7a5200;font-weight:700;}
+.cal-alert-more{font-size:.72rem;color:#a17218;margin-top:.15rem;}
+body.dark .cal-alerts{background:linear-gradient(135deg,#1e1800 0%,#1a1500 100%);border-color:#6a5000;}
+body.dark .cal-alert-head strong{color:#f5c842;}
+body.dark .cal-alert-head span{color:#c49b35;}
+body.dark .cal-alert-item{background:rgba(45,34,0,.55);border-color:#6a5000;}
+body.dark .cal-alert-badge{background:#f5c842;color:#322400;}
+body.dark .cal-alert-text{color:#d4a830;}
+body.dark .cal-alert-text strong{color:#f5c842;}
+body.dark .cal-alert-more{color:#c49b35;}
 .dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
 .month-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
 .month-header span{text-align:center;font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:.3rem 0;}
@@ -787,6 +805,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
           <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
         </select>
       </div>
+      <div id="calendar-alerts" class="cal-alerts"></div>
       <div id="cal-content"></div>
       <div class="legend" id="cal-legend"></div>
     </div>
@@ -1146,6 +1165,12 @@ function initDemo(){
 
 let ME=null,editId=null,BOOKINGS=[],CANCELLED=[],ACTIVITY_LOG=[],BLOCKED_DATES=[];
 var _inactTimer=null;
+var BOOKING_ALERT_MARKS=[60,30,10];
+var BOOKING_ALERT_TIMER=null;
+var BOOKING_ALERT_SEEN={};
+var BOOKING_ALERT_PREV_MIN={};
+var BOOKING_ALERT_SYNCING=false;
+var BOOKING_ALERT_RUNNING=false;
 let calView='week',weekStart=monday(new Date()),monthCursor=new Date();
 function monday(d){const dt=new Date(d),day=dt.getDay();dt.setDate(dt.getDate()-(day===0?6:day-1));dt.setHours(0,0,0,0);return dt;}
 
@@ -1200,6 +1225,7 @@ async function doLogin(){
     checkFirstAccess();
     loadUsersAvatarCache();
     initChat();
+    startBookingAlerts();
     if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
   } catch(err){
     const errEl=document.getElementById('l-err');
@@ -1213,6 +1239,7 @@ document.getElementById('l-pass').addEventListener('keydown',function(e){if(e.ke
 
 function logout(msg){
   ME=null;BOOKINGS=[];CANCELLED=[];ACTIVITY_LOG=[];BLOCKED_DATES=[];BUGS=[];CHAT_MESSAGES=[];CHAT_ACTIVE_USER=null;CHAT_UNREAD={};editId=null;
+  stopBookingAlerts();
   if(CHAT_REALTIME)try{CHAT_REALTIME.close();}catch(e){}
   localStorage.removeItem('enau_session');
   resetInactivityTimer(true);
@@ -1343,7 +1370,164 @@ function renderLegend(){
   }).join('');
 }
 
-function hoursUntil(b){return(new Date(b.date+'T'+b.time_start)-new Date())/3600000;}
+function toLocalDateTime(dateStr,timeStr){
+  if(!dateStr||!timeStr)return null;
+  var d=(dateStr||'').split('-');
+  var t=(timeStr||'').split(':');
+  var y=parseInt(d[0],10),m=parseInt(d[1],10)-1,day=parseInt(d[2],10);
+  var hh=parseInt(t[0],10),mm=parseInt(t[1],10);
+  if(isNaN(y)||isNaN(m)||isNaN(day)||isNaN(hh)||isNaN(mm))return null;
+  return new Date(y,m,day,hh,mm,0,0);
+}
+function minutesUntilBooking(b){
+  var dt=toLocalDateTime(b.date,b.time_start);
+  if(!dt)return NaN;
+  return (dt-new Date())/60000;
+}
+function hoursUntil(b){return minutesUntilBooking(b)/60;}
+
+function bookingAlertKey(b){
+  return String((b&&b.id)?b.id:((b.booked_by||'')+'|'+(b.space||'')+'|'+(b.date||'')+'|'+(b.time_start||'')));
+}
+
+function getAlertEligibleBookings(){
+  if(!ME)return [];
+  var adminUser=isAdmin();
+  return BOOKINGS.filter(function(b){
+    if(!b||!b.date||!b.time_start)return false;
+    if(!adminUser&&b.booked_by!==ME.username)return false;
+    var mins=minutesUntilBooking(b);
+    return isFinite(mins)&&mins>0;
+  }).sort(function(a,b){
+    var da=toLocalDateTime(a.date,a.time_start);
+    var db=toLocalDateTime(b.date,b.time_start);
+    return da-db;
+  });
+}
+
+function formatRemainingMinutes(mins){
+  if(mins<=1)return 'menos de 1 min';
+  return Math.ceil(mins)+' min';
+}
+
+function renderCalendarAlerts(eligible){
+  var box=document.getElementById('calendar-alerts');
+  if(!box)return;
+  if(!ME){box.style.display='none';box.innerHTML='';return;}
+  var source=eligible||getAlertEligibleBookings();
+  var soon=source.filter(function(b){
+    var mins=minutesUntilBooking(b);
+    return isFinite(mins)&&mins>0&&mins<=60;
+  });
+  soon.sort(function(a,b){return minutesUntilBooking(a)-minutesUntilBooking(b);});
+  var more=Math.max(soon.length-6,0);
+  soon=soon.slice(0,6);
+  if(!soon.length){box.style.display='none';box.innerHTML='';return;}
+  var listHtml=soon.map(function(b){
+    var mins=minutesUntilBooking(b);
+    var badge=mins<=10?'10m':(mins<=30?'30m':'1h');
+    var owner=isAdmin()?' · '+escHtml(b.teacher||'Sem professor'):'';
+    return '<div class="cal-alert-item">'+
+      '<span class="cal-alert-badge">'+badge+'</span>'+
+      '<div class="cal-alert-text"><strong>'+escHtml(b.space||'Espaço')+'</strong> · '+fmtDate(b.date)+' '+(b.time_start||'').slice(0,5)+owner+'<br>Inicia em '+formatRemainingMinutes(mins)+'</div>'+
+    '</div>';
+  }).join('');
+  var title=isAdmin()?'Alertas de inicio (admin)':'Seus proximos avisos de inicio';
+  box.innerHTML=
+    '<div class="cal-alert-head"><strong>'+title+'</strong><span>'+soon.length+' item(ns)</span></div>'+
+    '<div class="cal-alert-list">'+listHtml+'</div>'+
+    (more?'<div class="cal-alert-more">+'+more+' agendamento(s) na janela de 1h.</div>':'');
+  box.style.display='block';
+}
+
+async function syncBookingsForAlerts(){
+  if(isDemo()||!ME||BOOKING_ALERT_SYNCING)return;
+  BOOKING_ALERT_SYNCING=true;
+  try{
+    var rows=await api.get('reservas?select=*&order=date.asc,time_start.asc').catch(function(){return null;});
+    if(rows)BOOKINGS=rows;
+    var active=document.querySelector('.tab-panel.on');
+    if(active&&active.id==='tab-calendar')renderCal();
+    if(active&&active.id==='tab-hoje')renderHoje();
+    if(active&&active.id==='tab-mine')renderMine();
+    if(active&&active.id==='tab-admin')renderAdmin();
+    if(active&&active.id==='tab-coord')renderCoord();
+  }catch(e){
+    // Silent fail: alerts continue with local cache
+  }finally{
+    BOOKING_ALERT_SYNCING=false;
+  }
+}
+
+function getDueBookingAlerts(eligible){
+  var due=[];
+  var active={};
+  eligible.forEach(function(b){
+    var mins=minutesUntilBooking(b);
+    if(!isFinite(mins)||mins<=0)return;
+    var key=bookingAlertKey(b);
+    active[key]=1;
+    var prev=BOOKING_ALERT_PREV_MIN[key];
+    if(typeof prev!=='number'){
+      BOOKING_ALERT_PREV_MIN[key]=mins;
+      return;
+    }
+    BOOKING_ALERT_MARKS.forEach(function(mark){
+      var seenKey=key+'|'+mark;
+      if(BOOKING_ALERT_SEEN[seenKey])return;
+      if(prev>mark&&mins<=mark){
+        BOOKING_ALERT_SEEN[seenKey]=true;
+        due.push({booking:b,mark:mark});
+      }
+    });
+    BOOKING_ALERT_PREV_MIN[key]=mins;
+  });
+  Object.keys(BOOKING_ALERT_PREV_MIN).forEach(function(key){
+    if(!active[key])delete BOOKING_ALERT_PREV_MIN[key];
+  });
+  return due;
+}
+
+async function runBookingAlertCycle(opts){
+  opts=opts||{};
+  if(!ME||BOOKING_ALERT_RUNNING)return;
+  BOOKING_ALERT_RUNNING=true;
+  try{
+    if(!opts.skipSync)await syncBookingsForAlerts();
+    var eligible=getAlertEligibleBookings();
+    var due=getDueBookingAlerts(eligible);
+    renderCalendarAlerts(eligible);
+    if(!due.length)return;
+    if(due.length===1){
+      var d=due[0];
+      var b=d.booking;
+      toast('Alerta: '+(b.space||'Espaço')+' inicia em '+d.mark+' min ('+fmtDate(b.date)+' '+(b.time_start||'').slice(0,5)+').','ok');
+      return;
+    }
+    toast('Alerta: '+due.length+' agendamentos atingiram um marco de inicio.','ok');
+  }finally{
+    BOOKING_ALERT_RUNNING=false;
+  }
+}
+
+function startBookingAlerts(){
+  stopBookingAlerts();
+  if(!ME)return;
+  BOOKING_ALERT_SEEN={};
+  BOOKING_ALERT_PREV_MIN={};
+  runBookingAlertCycle({skipSync:false});
+  BOOKING_ALERT_TIMER=setInterval(function(){runBookingAlertCycle({skipSync:false});},60000);
+}
+
+function stopBookingAlerts(){
+  if(BOOKING_ALERT_TIMER){clearInterval(BOOKING_ALERT_TIMER);BOOKING_ALERT_TIMER=null;}
+  BOOKING_ALERT_RUNNING=false;
+  BOOKING_ALERT_SYNCING=false;
+  BOOKING_ALERT_SEEN={};
+  BOOKING_ALERT_PREV_MIN={};
+  renderCalendarAlerts([]);
+}
+
 function toggleRecurBox(){document.getElementById('recur-box').style.display=document.getElementById('f-recur-on').checked?'block':'none';}
 
 async function submitBooking(){
@@ -1415,6 +1599,7 @@ async function submitBooking(){
     } catch(e){toast('Erro: '+e.message,'err');}
   }
   clearForm();renderCal();renderMine();if(ME.role==='admin')renderAdmin();
+  runBookingAlertCycle({skipSync:true});
   btn.innerHTML='Confirmar Reserva';btn.disabled=false;
 }
 
@@ -1512,6 +1697,7 @@ async function deleteBooking(id,andFuture){
   BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});
   addLog('&#x1F5D1;',ME.fullname+' cancelou '+toDelete.length+' reserva(s) em '+b.space+' ('+fmtDate(b.date)+')');
   toast('Reserva(s) cancelada(s).','ok');
+  runBookingAlertCycle({skipSync:true});
   closeModal();renderCal();renderMine();if(isAdmin())renderAdmin();if(isCoord()&&!isAdmin())renderCoord();
 }
 
@@ -1707,7 +1893,7 @@ function showTab(id,btn){
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
   document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
-  if(id==='calendar'){renderCal();renderMuralBanner();}
+  if(id==='calendar'){renderCal();renderMuralBanner();renderCalendarAlerts(getAlertEligibleBookings());}
   if(id==='hoje')renderHoje();
   if(id==='mine')renderMine();
   if(id==='admin')renderAdmin();
@@ -3323,7 +3509,7 @@ function resetInactivityTimer(clear){
   refreshTopbarAvatar();
   buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
   initGlobalSearch();
-  loadAll().then(function(){loadUsersAvatarCache();initChat();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
+  loadAll().then(function(){loadUsersAvatarCache();initChat();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();startBookingAlerts();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
   resetInactivityTimer(false);
 })();
 
