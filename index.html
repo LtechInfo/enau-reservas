@@ -266,6 +266,13 @@ body.dark .today-meta{color:#9a7aaa;}
 body.dark .blocked-day{background:#2a0f1a!important;border-color:#5a1a2a!important;}
 .blocked-chip{display:block;font-size:.68rem;font-weight:700;color:#b83255;background:#fce8ee;padding:.15rem .4rem;border-radius:3px;margin-bottom:2px;}
 body.dark .blocked-chip{background:#2a0f1a;color:#f9a8b8;}
+.blocked-week-h{background:#fff5f7!important;color:#b83255!important;}
+.holiday-pill{display:block;margin-top:.24rem;padding:.12rem .42rem;border:1px solid #f7b3c0;background:rgba(255,255,255,.65);border-radius:999px;font-size:.63rem;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.blocked-week-day{position:relative;cursor:not-allowed;background:repeating-linear-gradient(-45deg,rgba(248,113,141,.08),rgba(248,113,141,.08) 8px,rgba(248,113,141,.03) 8px,rgba(248,113,141,.03) 16px)!important;border-color:#f7b3c0!important;}
+.blocked-week-day::after{content:'\26D4';position:absolute;top:3px;right:4px;font-size:.72rem;opacity:.7;pointer-events:none;}
+body.dark .blocked-week-h{background:#311022!important;color:#f9a8b8!important;}
+body.dark .holiday-pill{border-color:#7a263f;background:rgba(59,17,34,.55);color:#f9c1d1;}
+body.dark .blocked-week-day{background:repeating-linear-gradient(-45deg,rgba(120,35,60,.22),rgba(120,35,60,.22) 8px,rgba(120,35,60,.12) 8px,rgba(120,35,60,.12) 16px)!important;border-color:#7a263f!important;}
 .mine-filter{display:flex;gap:.7rem;margin-bottom:1.2rem;align-items:center;flex-wrap:wrap;}
 .mine-filter select{padding:.5rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:.88rem;background:var(--white);color:var(--ink);outline:none;cursor:pointer;}
 body.dark .mine-filter select{background:var(--white);border-color:var(--border);color:var(--ink);}
@@ -477,6 +484,8 @@ body.compact .section-title{font-size:.9rem;}
   .month-day-num{font-size:.78rem;}
   .chip{font-size:.6rem;}
   .blocked-chip{font-size:.62rem;padding:.1rem .3rem;}
+  .holiday-pill{font-size:.57rem;padding:.08rem .26rem;margin-top:.18rem;}
+  .blocked-week-day::after{font-size:.62rem;top:2px;right:3px;}
 
   /* Legenda */
   .legend{display:flex;flex-wrap:wrap;gap:.3rem .6rem;margin-top:.8rem;}
@@ -1306,13 +1315,15 @@ function renderWeek(){
   var slots=Object.keys(slotSet).sort();
   if(!slots.length)slots=['07:00–07:50','07:50–08:40','09:50–10:40','10:40–11:30','13:00–13:50','13:50–14:40'];
   var html='<div class="cal-table-wrap"><table class="cal"><thead><tr><th>Horário</th>';
-  days.forEach(function(d,i){
+  days.forEach(function(d){
     var isT=d.getTime()===today.getTime();
     var ds_w=d.toISOString().split('T')[0];
     var blkW=BLOCKED_DATES.find(function(bd){return bd.date===ds_w;});
-    html+='<th class="'+(isT?'today-h':'')+(blkW?' blocked-h':'')+'" style="'+(blkW?'background:#fce8ee;color:#b83255':'')+'">';
+    var blkReasonW=blkW&&blkW.reason?blkW.reason:'Data bloqueada';
+    var blkReasonWAttr=blkReasonW.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    html+='<th class="'+(isT?'today-h ':'')+(blkW?'blocked-week-h':'')+'">';
     html+=DAYS_W[d.getDay()]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span>';
-    if(blkW)html+='<br><span style="font-size:.65rem;font-weight:600">&#x1F6AB; '+blkW.reason+'</span>';
+    if(blkW)html+='<br><span class="holiday-pill" title="'+blkReasonWAttr+'">&#x1F6AB; '+escHtml(blkReasonW)+'</span>';
     html+='</th>';
   });
   html+='</tr></thead><tbody>';
@@ -1327,7 +1338,9 @@ function renderWeek(){
       }).join('');
       var isBlkW=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
       if(isBlkW){
-        html+='<td class="'+(isT?'today-c':'')+' blocked-day" style="cursor:not-allowed;background:#fce8ee">'+chips+'<span style="font-size:.68rem;font-weight:700;color:#b83255;display:block;margin-top:2px">&#x1F6AB; '+isBlkW.reason+'</span></td>';
+        var blkReasonC=isBlkW.reason||'Data bloqueada';
+        var blkReasonCAttr=blkReasonC.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        html+='<td class="'+(isT?'today-c ':'')+'blocked-week-day" title="Bloqueado: '+blkReasonCAttr+'">'+chips+'</td>';
       } else {
         html+='<td class="'+(isT?'today-c':'')+'" onclick="prefillNew(\''+ds+'\')">'+chips+'<span class="plus-hint">+</span></td>';
       }
@@ -3529,3 +3542,4 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 <button id="btn-bug" onclick="openBugReport()" title="Reportar um problema">&#x1F41B; Reportar bug</button>
 </body>
 </html>
+
