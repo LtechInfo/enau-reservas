@@ -1311,7 +1311,7 @@ function renderWeek(){
     var ds_w=d.toISOString().split('T')[0];
     var blkW=BLOCKED_DATES.find(function(bd){return bd.date===ds_w;});
     html+='<th class="'+(isT?'today-h':'')+(blkW?' blocked-h':'')+'" style="'+(blkW?'background:#fce8ee;color:#b83255':'')+'">';
-    html+=DAYS_W[i]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span>';
+    html+=DAYS_W[d.getDay()]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span>';
     if(blkW)html+='<br><span style="font-size:.65rem;font-weight:600">&#x1F6AB; '+blkW.reason+'</span>';
     html+='</th>';
   });
