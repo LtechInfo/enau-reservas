@@ -995,6 +995,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
         <h3>&#x1F50D; Busca Rápida</h3>
         <div class="search-bar"><input type="text" id="adm-search" placeholder="Buscar por professor, turma, espaço, observações..." oninput="renderAdmBookings()"></div>
         <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Período/Aula</th><th>Feito por</th><th>Ação</th></tr></thead><tbody id="adm-tbody"></tbody></table></div>
+        <div id="adm-page-nav" style="display:none;align-items:center;justify-content:flex-end;gap:.45rem;margin-top:.75rem;flex-wrap:wrap"></div>
       </div>
       <div class="card">
         <h3>&#x1F5C2; Histórico de Cancelamentos</h3>
@@ -1022,10 +1023,6 @@ body.dark .chat-input-bar{background:var(--card-bg);}
           <span id="bug-count" style="font-size:.8rem;color:var(--muted);margin-left:auto"></span>
         </div>
         <div id="bug-list"></div>
-      </div>
-      <div class="card">
-        <h3>&#x1F465; Histórico de Acessos</h3>
-        <div class="log-wrap" id="access-log" style="max-height:280px;overflow-y:auto"><div style="padding:1rem;text-align:center;color:var(--muted)">Sem registros.</div></div>
       </div>
       <!-- Mural de Avisos -->
       <div class="card">
@@ -1736,21 +1733,56 @@ function showUserForm(m){
   document.getElementById('form-batch').style.display=m==='batch'?'block':'none';
 }
 
+var ADM_BOOKINGS_PAGE_SIZE=5;
+var ADM_BOOKINGS_PAGE=1;
+var ADM_BOOKINGS_LAST_Q='';
+
+function setAdmBookingsPage(page){
+  ADM_BOOKINGS_PAGE=page;
+  renderAdmBookings();
+}
+
 function renderAdmin(){
   if(!isAdmin())return;
-  renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();renderAccessLog();renderMuralAdmin();renderEspacosList();
+  renderAdmBookings();renderAdmCancelled();renderAdmUsers();renderLog();renderBlockedDates();renderMuralAdmin();renderEspacosList();
   loadBugs().then(renderBugReports);
 }
 
 function renderAdmBookings(){
   var q=(document.getElementById('adm-search')?document.getElementById('adm-search').value:'').toLowerCase();
   var tbody=document.getElementById('adm-tbody');
+  var nav=document.getElementById('adm-page-nav');
+  if(q!==ADM_BOOKINGS_LAST_Q){
+    ADM_BOOKINGS_LAST_Q=q;
+    ADM_BOOKINGS_PAGE=1;
+  }
   var list=BOOKINGS.slice().sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
   if(q)list=list.filter(function(b){return [b.space,b.teacher,b.turma,b.lesson,b.notes,b.booked_by_name].join(' ').toLowerCase().indexOf(q)>=0;});
-  if(!list.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">'+(q?'Nenhum resultado.':'Nenhuma reserva.')+'</td></tr>';return;}
-  tbody.innerHTML=list.map(function(b){
-    return '<tr><td><span class="chip '+(SPACE_CLS[b.space]||'ch-0')+'" style="display:inline-block">'+b.space+(b.recur_group?' &#x21BB;':'')+'</span></td><td>'+fmtDate(b.date)+'</td><td>'+b.time_start+'–'+b.time_end+'</td><td>'+b.teacher+'</td><td>'+b.turma+'</td><td>'+(b.lesson||'—')+'</td><td>'+b.booked_by_name+'</td><td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button></td></tr>';
+  if(!list.length){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">'+(q?'Nenhum resultado.':'Nenhuma reserva.')+'</td></tr>';
+    if(nav){nav.style.display='none';nav.innerHTML='';}
+    return;
+  }
+
+  var totalPages=Math.max(1,Math.ceil(list.length/ADM_BOOKINGS_PAGE_SIZE));
+  if(ADM_BOOKINGS_PAGE>totalPages)ADM_BOOKINGS_PAGE=totalPages;
+  if(ADM_BOOKINGS_PAGE<1)ADM_BOOKINGS_PAGE=1;
+
+  var start=(ADM_BOOKINGS_PAGE-1)*ADM_BOOKINGS_PAGE_SIZE;
+  var pageRows=list.slice(start,start+ADM_BOOKINGS_PAGE_SIZE);
+
+  tbody.innerHTML=pageRows.map(function(b){
+    return '<tr><td><span class="chip '+(SPACE_CLS[b.space]||'ch-0')+'" style="display:inline-block">'+b.space+(b.recur_group?' &#x21BB;':'')+'</span></td><td>'+fmtDate(b.date)+'</td><td>'+b.time_start+' - '+b.time_end+'</td><td>'+b.teacher+'</td><td>'+b.turma+'</td><td>'+(b.lesson||'-')+'</td><td>'+b.booked_by_name+'</td><td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button></td></tr>';
   }).join('');
+
+  if(!nav)return;
+  if(totalPages<=1){nav.style.display='none';nav.innerHTML='';return;}
+
+  nav.style.display='flex';
+  nav.innerHTML=
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(ADM_BOOKINGS_PAGE===1?'disabled':'')+' onclick="setAdmBookingsPage('+(ADM_BOOKINGS_PAGE-1)+')">&#x2190; Anterior</button>'+
+    '<span style="font-size:.78rem;color:var(--muted)">Página '+ADM_BOOKINGS_PAGE+' de '+totalPages+' ('+list.length+' reservas)</span>'+
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(ADM_BOOKINGS_PAGE===totalPages?'disabled':'')+' onclick="setAdmBookingsPage('+(ADM_BOOKINGS_PAGE+1)+')">Próxima &#x2192;</button>';
 }
 
 function renderAdmCancelled(){
