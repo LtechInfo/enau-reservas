@@ -279,6 +279,17 @@ body.dark .mural-card{background:linear-gradient(135deg,#1e1800 0%,#1a1500 100%)
 body.dark .mural-card h5{color:#f5c842;}
 body.dark .mural-card p{color:#d4a830;}
 body.dark .mural-card .mural-meta{color:#8a6820;}
+/* Mural de Login */
+.login-mural-wrap{margin:0 0 1rem;display:flex;flex-direction:column;gap:.5rem;}
+.login-mural-card{background:linear-gradient(135deg,#fff8e6 0%,#fffdf5 100%);border:1.5px solid #f5c842;border-radius:10px;padding:.75rem 1rem;position:relative;overflow:hidden;}
+.login-mural-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#f5c842,#e8a020);}
+.login-mural-card h6{font-size:.82rem;font-weight:700;color:#7a5200;margin-bottom:.2rem;padding-left:.25rem;}
+.login-mural-card p{font-size:.78rem;color:#5a3d00;line-height:1.5;padding-left:.25rem;}
+.login-mural-by{font-size:.68rem;color:#b89040;padding-left:.25rem;margin-top:.25rem;}
+body.dark .login-mural-card{background:linear-gradient(135deg,#1e1800,#1a1500);border-color:#6a5000;}
+body.dark .login-mural-card h6{color:#f5c842;}
+body.dark .login-mural-card p{color:#d4a830;}
+body.dark .login-mural-by{color:#8a6820;}
 /* Manutenção */
 .manut-chip{display:block;font-size:.68rem;font-weight:700;color:#b85000;background:#fff0e6;padding:.15rem .4rem;border-radius:3px;margin-bottom:2px;}
 body.dark .manut-chip{background:#1e0f00;color:#ff9040;}
@@ -598,21 +609,44 @@ body.dark .bug-report-card .bug-desc{background:var(--cream);}
 .modal-booking-avatar img{width:100%;height:100%;object-fit:cover;}
 .modal-booking-info{flex:1;}
 
-/* Busca global */
-.global-search-wrap{position:relative;max-width:420px;margin:0 auto 1.2rem;}
-.global-search-wrap input{width:100%;padding:.55rem 1rem .55rem 2.4rem;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.88rem;font-family:'Outfit',sans-serif;color:var(--ink);transition:border-color .2s;}
-.global-search-wrap input:focus{border-color:var(--plum);outline:none;}
-.global-search-wrap .search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.95rem;pointer-events:none;}
-.global-search-results{background:var(--white);border:1.5px solid var(--border);border-radius:10px;margin-top:.4rem;max-height:320px;overflow-y:auto;box-shadow:0 4px 18px rgba(61,26,79,.12);display:none;}
-.global-search-results.open{display:block;}
-.gs-item{padding:.6rem 1rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+/* Busca global — botão no topbar */
+.global-search-wrap{display:flex;align-items:center;}
+#gs-trigger-btn{background:rgba(255,255,255,.13);border:1.5px solid rgba(255,255,255,.22);border-radius:20px;color:rgba(255,255,255,.85);font-family:'Outfit',sans-serif;font-size:.82rem;padding:.35rem .9rem .35rem .65rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:background .15s;white-space:nowrap;}
+#gs-trigger-btn:hover{background:rgba(255,255,255,.22);}
+#gs-trigger-btn .gs-kbd{font-size:.68rem;background:rgba(255,255,255,.15);border-radius:4px;padding:.1rem .3rem;margin-left:.2rem;}
+/* Modal de busca */
+#gs-modal{position:fixed;inset:0;z-index:1000;display:none;flex-direction:column;}
+#gs-modal.open{display:flex;}
+#gs-backdrop{position:absolute;inset:0;background:rgba(10,5,18,.7);backdrop-filter:blur(4px);}
+#gs-box{position:relative;z-index:1;margin:3.5rem auto 0;width:100%;max-width:580px;background:var(--white);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 5rem);animation:gsIn .18s ease both;}
+@keyframes gsIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+#gs-input-row{display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;border-bottom:1.5px solid var(--border);}
+#gs-input-row .gs-icon{font-size:1.05rem;color:var(--muted);flex-shrink:0;}
+#global-search-input{flex:1;border:none;outline:none;font-family:'Outfit',sans-serif;font-size:.98rem;color:var(--ink);background:transparent;}
+#global-search-input::placeholder{color:#b0a0b8;}
+#gs-close-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.2rem;padding:.2rem .4rem;border-radius:5px;line-height:1;transition:color .15s;}
+#gs-close-btn:hover{color:var(--coral);}
+#global-search-results{overflow-y:auto;flex:1;}
+.gs-item{padding:.75rem 1.1rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;display:flex;align-items:flex-start;gap:.75rem;}
 .gs-item:last-child{border-bottom:none;}
-.gs-item:hover{background:var(--cream);}
-.gs-item .gs-space{font-weight:700;font-size:.85rem;color:var(--plum);}
-.gs-item .gs-meta{font-size:.76rem;color:var(--muted);}
-.gs-empty{padding:1rem;text-align:center;color:var(--muted);font-size:.85rem;}
-body.dark .global-search-results{background:var(--card-bg);}
-body.dark .gs-item:hover{background:#1a1030;}
+.gs-item:hover,.gs-item:focus{background:var(--cream);outline:none;}
+.gs-item-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem;}
+.gs-item-body{flex:1;min-width:0;}
+.gs-item .gs-space{font-weight:700;font-size:.88rem;color:var(--plum);margin-bottom:.15rem;}
+.gs-item .gs-meta{font-size:.77rem;color:var(--muted);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gs-item .gs-teacher{font-size:.77rem;color:var(--ink2);font-weight:500;margin-top:.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gs-empty{padding:2rem 1rem;text-align:center;color:var(--muted);font-size:.88rem;}
+.gs-hint{padding:1.1rem 1.1rem .6rem;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+body.dark #gs-box{background:#1e1428;}
+body.dark #gs-input-row{border-color:var(--border);}
+body.dark #global-search-input{color:var(--ink);}
+body.dark .gs-item:hover{background:#251535;}
+body.dark .gs-item .gs-space{color:#c4a8d8;}
+body.dark .gs-item .gs-teacher{color:#a080c0;}
+@media(max-width:640px){
+  #gs-box{margin:0;border-radius:0;max-height:100vh;height:100vh;}
+  #gs-trigger-btn .gs-kbd{display:none;}
+}
 
 /* Vista por espaço */
 .space-view-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:.5rem;}
@@ -687,9 +721,9 @@ body.dark .chat-input-bar{background:var(--card-bg);}
          onerror="this.outerHTML='<svg width=\'140\' height=\'80\' viewBox=\'0 0 280 160\' fill=\'none\'><path d=\'M44 136C38 122 24 110 18 92C12 74 16 58 30 52C38 48 44 52 50 60\' fill=\'#f2839a\'/><path d=\'M50 60C56 52 62 48 70 52C84 58 88 74 82 92C76 110 62 122 56 136\' fill=\'#d9506a\'/><path d=\'M50 60C42 48 32 38 28 24C24 12 30 6 38 10C46 14 48 30 50 46\' fill=\'#9b3568\'/><path d=\'M50 46C52 30 54 14 62 10C70 6 76 12 72 24C68 38 58 48 50 60\' fill=\'#6e2e8a\'/><path d=\'M50 46C48 30 47 16 48 10C48.5 6 49.5 6 50 10C51 16 52 30 50 46\' fill=\'#fff\'/><text x=\'90\' y=\'90\' font-family=\'Playfair Display,serif\' font-size=\'50\' font-weight=\'700\' fill=\'white\'>enau</text><text x=\'90\' y=\'116\' font-family=\'Outfit,sans-serif\' font-size=\'17\' font-weight=\'400\' fill=\'rgba(255,255,255,.55)\' letter-spacing=\'2\'>RESERVAS</text></svg>'">
   </div>
   <div class="global-search-wrap" id="global-search-wrap" style="display:none">
-      <span class="search-icon">&#x1F50D;</span>
-      <input type="text" id="global-search-input" placeholder="Buscar reservas..." oninput="globalSearch(this.value)" onblur="setTimeout(function(){closeGlobalSearch()},200)" autocomplete="off">
-      <div class="global-search-results" id="global-search-results"></div>
+      <button id="gs-trigger-btn" onclick="openGlobalSearch()" title="Buscar reservas (/)">
+        <span>🔍</span> Buscar reservas... <span class="gs-kbd">/</span>
+      </button>
     </div>
     <div class="topbar-right">
     <div class="avatar" id="topbar-avatar" onclick="openMinhaConta()" title="Minha conta"></div>
@@ -714,6 +748,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
       <input type="text" id="l-user" placeholder="seu.usuario" autocomplete="username">
       <label class="lbl">Senha</label>
       <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+      <div id="login-mural-section" style="margin-top:.8rem"></div>
       <button class="btn btn-primary btn-full" id="btn-login" onclick="doLogin()">Entrar</button>
       <div class="err-box" id="l-err">Usuário ou senha incorretos.</div>
       <div class="credits-login">Idealizado e desenvolvido por <a href="https://wa.me/5511999999999" target="_blank">Lucas Martins</a> &middot; <a href="#" target="_blank">LTech Inform&aacute;tica</a></div>
@@ -973,6 +1008,10 @@ body.dark .chat-input-bar{background:var(--card-bg);}
         </div>
         <label class="lbl">Mensagem</label>
         <textarea id="mural-msg" style="min-height:70px" placeholder="Mensagem visível para todos os usuários ao abrir o sistema..."></textarea>
+        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.85rem;color:var(--ink2);margin-top:.7rem;">
+          <input type="checkbox" id="mural-public" style="width:15px;height:15px;accent-color:var(--plum);flex-shrink:0">
+          &#x1F310; Exibir também na <strong style="margin:0 .2rem">tela de login</strong> (público, antes do acesso)
+        </label>
         <button class="btn btn-primary" style="margin-top:.8rem" onclick="addMural()">Publicar Aviso</button>
         <div style="margin-top:1.2rem;border-top:1px solid var(--border);padding-top:.8rem">
           <label class="lbl">Avisos ativos</label>
@@ -1059,6 +1098,21 @@ body.dark .chat-input-bar{background:var(--card-bg);}
   </div>
 </div>
 
+<!-- Modal de busca global -->
+<div id="gs-modal" role="dialog" aria-modal="true" aria-label="Buscar reservas">
+  <div id="gs-backdrop" onclick="closeGlobalSearch()"></div>
+  <div id="gs-box">
+    <div id="gs-input-row">
+      <span class="gs-icon">🔍</span>
+      <input type="text" id="global-search-input" placeholder="Buscar por espaço, professor, turma..." oninput="globalSearch(this.value)" autocomplete="off" spellcheck="false">
+      <button id="gs-close-btn" onclick="closeGlobalSearch()" title="Fechar">✕</button>
+    </div>
+    <div id="global-search-results">
+      <div class="gs-hint">Digite para buscar reservas</div>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="overlay" style="display:none" onclick="overlayClick(event)">
   <div class="modal"><h3 id="m-title"></h3><div id="m-body"></div><div class="modal-acts" id="m-acts"></div></div>
 </div>
@@ -1133,7 +1187,7 @@ async function doLogin(){
     document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
     await loadAll();
-    renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();
+    renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();
     logAccess(ME.username,ME.fullname);
     resetInactivityTimer(false);
     // Sync avatar from Supabase into localStorage for offline use
@@ -1180,6 +1234,7 @@ async function loadAll(){
   if(isDemo()){
     BLOCKED_DATES=gLS('ebl',[]);
     BOOKINGS=gLS('eb',[]);CANCELLED=gLS('ec',[]);ACTIVITY_LOG=gLS('el',[]);
+    await loadMural();
   } else {
     const results=await Promise.all([
       api.get('reservas?select=*&order=date.asc,time_start.asc').catch(()=>[]),
@@ -1189,6 +1244,7 @@ async function loadAll(){
     BOOKINGS=results[0]||[];CANCELLED=results[1]||[];ACTIVITY_LOG=results[2]||[];
     var blkR=await api.get('blocked_dates?select=date,reason&order=date.asc').catch(function(){return[];});
     BLOCKED_DATES=(blkR||[]).map(function(r){return{date:r.date,reason:r.reason};});
+    await loadMural();
   }
 }
 
@@ -1989,30 +2045,75 @@ function checkConflictPreview(){
 }
 
 // ══════════════════════════════════════════════════════════════
-// MURAL DE AVISOS
+// MURAL DE AVISOS (Supabase — visível para todos)
 // ══════════════════════════════════════════════════════════════
-function getMural(){return gLS('enau_mural',[]);}
-function saveMural(arr){sLS('enau_mural',arr);}
+var MURAL_CACHE=[];
 
-function addMural(){
+// Carrega mural do Supabase (ou localStorage em demo)
+async function loadMural(){
+  if(isDemo()){
+    MURAL_CACHE=gLS('enau_mural',[]);
+    return;
+  }
+  try{
+    var r=await api.get('mural?select=*&order=ts.desc').catch(function(){return null;});
+    if(r!==null){
+      MURAL_CACHE=r||[];
+      // fallback: sincroniza no localStorage também
+      sLS('enau_mural',MURAL_CACHE);
+    } else {
+      // tabela não existe ainda — usa localStorage como fallback
+      MURAL_CACHE=gLS('enau_mural',[]);
+    }
+  }catch(e){MURAL_CACHE=gLS('enau_mural',[]);}
+}
+
+function getMural(){return MURAL_CACHE;}
+function saveMural(arr){
+  MURAL_CACHE=arr;
+  sLS('enau_mural',arr);
+}
+
+async function addMural(){
   var title=document.getElementById('mural-title').value.trim();
   var msg=document.getElementById('mural-msg').value.trim();
   var until=document.getElementById('mural-until').value;
+  var pub=document.getElementById('mural-public')?document.getElementById('mural-public').checked:false;
   if(!title||!msg){toast('Preencha título e mensagem.','err');return;}
-  var mural=getMural();
-  mural.unshift({id:Date.now(),title:title,msg:msg,until:until||null,by:ME.fullname,ts:new Date().toISOString()});
-  saveMural(mural);
+  var entry={id:Date.now(),title:title,msg:msg,until:until||null,by:ME.fullname,ts:new Date().toISOString(),publico:pub};
+  if(isDemo()){
+    var mural=getMural();
+    mural.unshift(entry);
+    saveMural(mural);
+  } else {
+    try{
+      var r=await api.post('mural',{title:title,msg:msg,until:until||null,by:ME.fullname,publico:pub}).catch(function(){return null;});
+      if(r&&r[0]){MURAL_CACHE.unshift(r[0]);}
+      else{MURAL_CACHE.unshift(entry);sLS('enau_mural',MURAL_CACHE);}
+    }catch(e){MURAL_CACHE.unshift(entry);sLS('enau_mural',MURAL_CACHE);}
+  }
   document.getElementById('mural-title').value='';
   document.getElementById('mural-msg').value='';
   document.getElementById('mural-until').value='';
-  addLog('&#x1F4E2;','Admin publicou aviso: '+title);
+  if(document.getElementById('mural-public'))document.getElementById('mural-public').checked=false;
+  addLog('&#x1F4E2;','Admin publicou aviso: '+title+(pub?' (público)':''));
   toast('Aviso publicado!','ok');
-  renderMuralAdmin();renderMuralBanner();
+  renderMuralAdmin();renderMuralBanner();renderLoginMural();
 }
 
-function removeMural(id){
-  saveMural(getMural().filter(function(m){return m.id!==id;}));
-  renderMuralAdmin();renderMuralBanner();toast('Aviso removido.','ok');
+async function removeMural(id){
+  if(isDemo()){
+    saveMural(getMural().filter(function(m){return m.id!==id;}));
+  } else {
+    await api.delete('mural?id=eq.'+id).catch(function(){
+      // fallback: remove do cache local
+      MURAL_CACHE=MURAL_CACHE.filter(function(m){return m.id!==id;});
+      sLS('enau_mural',MURAL_CACHE);
+    });
+    MURAL_CACHE=MURAL_CACHE.filter(function(m){return m.id!==id;});
+    sLS('enau_mural',MURAL_CACHE);
+  }
+  renderMuralAdmin();renderMuralBanner();renderLoginMural();toast('Aviso removido.','ok');
 }
 
 function renderMuralBanner(){
@@ -2022,8 +2123,26 @@ function renderMuralBanner(){
   if(!active.length){banner.style.display='none';return;}
   banner.style.display='block';
   banner.innerHTML=active.map(function(m){
-    return '<div class="mural-card"><h5>&#x1F4E2; '+m.title+'</h5><p>'+m.msg+'</p><div class="mural-meta">Por '+m.by+(m.until?' · Válido até '+fmtDate(m.until):'')+'</div></div>';
+    return '<div class="mural-card"><h5>&#x1F4E2; '+m.title+'</h5><p>'+m.msg+'</p><div class="mural-meta">Por '+m.by+(m.until?' · Válido até '+fmtDate(m.until):'')+(m.publico?' · <span style="color:#f5c842">&#x1F310; Público</span>':'')+'</div></div>';
   }).join('');
+}
+
+// Mural visível na tela de LOGIN (apenas avisos marcados como público)
+function renderLoginMural(){
+  var el=document.getElementById('login-mural-section');if(!el)return;
+  var today=new Date().toISOString().split('T')[0];
+  var active=getMural().filter(function(m){return m.publico&&(!m.until||m.until>=today);});
+  if(!active.length){el.style.display='none';el.innerHTML='';return;}
+  el.style.display='block';
+  el.innerHTML='<div class="login-mural-wrap">'+
+    active.map(function(m){
+      return '<div class="login-mural-card">'+
+        '<h6>&#x1F4E2; '+m.title+'</h6>'+
+        '<p>'+m.msg+'</p>'+
+        '<div class="login-mural-by">'+m.by+(m.until?' · Válido até '+fmtDate(m.until):'')+'</div>'+
+      '</div>';
+    }).join('')+
+  '</div>';
 }
 
 function renderMuralAdmin(){
@@ -2031,9 +2150,9 @@ function renderMuralAdmin(){
   var mural=getMural();
   if(!mural.length){el.innerHTML='<div style="padding:.8rem;color:var(--muted);font-size:.85rem">Nenhum aviso ativo.</div>';return;}
   el.innerHTML=mural.map(function(m){
-    return '<div class="mural-card"><button class="mural-del" onclick="removeMural('+m.id+')">&#x2715;</button>'+
+    return '<div class="mural-card"><button class="mural-del" onclick="removeMural(\''+m.id+'\')">&#x2715;</button>'+
       '<h5>'+m.title+'</h5><p>'+m.msg+'</p>'+
-      '<div class="mural-meta">Por '+m.by+(m.until?' · Válido até '+fmtDate(m.until):'· Sem validade')+'</div></div>';
+      '<div class="mural-meta">Por '+m.by+(m.until?' · Válido até '+fmtDate(m.until):'· Sem validade')+(m.publico?' · <span style="color:#f5c842;font-weight:700">&#x1F310; Público (aparece no login)</span>':'')+'</div></div>';
   }).join('');
 }
 
@@ -2185,6 +2304,21 @@ function hideLoading(){
 }
 // Show loading immediately
 loadingProgress(15,'Iniciando...');
+// Carregar mural público na tela de login (sem autenticação)
+(function loadLoginMural(){
+  try{
+    var cached=gLS('enau_mural',[]);
+    if(cached&&cached.length){MURAL_CACHE=cached;renderLoginMural();}
+  }catch(e){}
+  // Tenta buscar do Supabase sem autenticação para atualizar
+  if(!isDemo()&&SUPABASE_URL&&!SUPABASE_URL.includes('SEU_PROJETO')){
+    fetch(SUPABASE_URL+'/rest/v1/mural?select=*&order=ts.desc',{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    }).then(function(r){return r.ok?r.json():null;}).then(function(data){
+      if(data&&data.length){MURAL_CACHE=data;sLS('enau_mural',data);renderLoginMural();}
+    }).catch(function(){});
+  }
+})();
 
 // ══════════════════════════════════════════════════════════════
 // AVATAR / FOTO DE PERFIL
@@ -2614,34 +2748,66 @@ async function deleteBug(ts){
 }
 
 // ══════════════════════════════════════════════════════════════
-// BUSCA GLOBAL
+// BUSCA GLOBAL (modal)
 // ══════════════════════════════════════════════════════════════
 function initGlobalSearch(){
   var wrap=document.getElementById('global-search-wrap');
   if(wrap)wrap.style.display='flex';
+  // Atalho de teclado "/"
+  document.addEventListener('keydown',function(e){
+    if(!ME)return;
+    if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
+      e.preventDefault();openGlobalSearch();
+    }
+    if(e.key==='Escape'){closeGlobalSearch();}
+  });
 }
+
+function openGlobalSearch(){
+  var modal=document.getElementById('gs-modal');
+  var inp=document.getElementById('global-search-input');
+  var res=document.getElementById('global-search-results');
+  if(!modal)return;
+  modal.classList.add('open');
+  res.innerHTML='<div class="gs-hint">Digite para buscar reservas</div>';
+  setTimeout(function(){if(inp)inp.focus();},80);
+}
+
+function closeGlobalSearch(){
+  var modal=document.getElementById('gs-modal');
+  var inp=document.getElementById('global-search-input');
+  if(!modal)return;
+  modal.classList.remove('open');
+  if(inp)inp.value='';
+}
+
 function globalSearch(q){
   var res=document.getElementById('global-search-results');
   if(!res)return;
   q=(q||'').trim().toLowerCase();
-  if(!q){res.classList.remove('open');return;}
+  if(!q){
+    res.innerHTML='<div class="gs-hint">Digite para buscar reservas</div>';
+    return;
+  }
   var matches=BOOKINGS.filter(function(b){
     return (b.teacher+b.turma+b.space+(b.lesson||'')+(b.notes||'')+(b.booked_by_name||'')).toLowerCase().indexOf(q)>=0;
-  }).slice(0,8);
-  if(!matches.length){res.innerHTML='<div class="gs-empty">Nenhuma reserva encontrada</div>';res.classList.add('open');return;}
-  res.innerHTML=matches.map(function(b){
-    return '<div class="gs-item" onclick="openModal(\''+b.id+'\');closeGlobalSearch()">'+
-      '<div class="gs-space">'+b.space+'</div>'+
-      '<div class="gs-meta">'+fmtDate(b.date)+' &middot; '+b.time_start.slice(0,5)+'-'+b.time_end.slice(0,5)+' &middot; '+b.teacher+' &middot; '+b.turma+'</div>'+
-    '</div>';
-  }).join('');
-  res.classList.add('open');
-}
-function closeGlobalSearch(){
-  var res=document.getElementById('global-search-results');
-  var inp=document.getElementById('global-search-input');
-  if(res)res.classList.remove('open');
-  if(inp)inp.value='';
+  }).slice(0,12);
+  if(!matches.length){
+    res.innerHTML='<div class="gs-empty">&#x1F50D; Nenhuma reserva encontrada para <strong>"'+q+'"</strong></div>';
+    return;
+  }
+  res.innerHTML='<div class="gs-hint">'+matches.length+' resultado'+(matches.length!==1?'s':'')+'</div>'+
+    matches.map(function(b){
+      var chip=SPACE_CLS[b.space]||'ch-0';
+      return '<div class="gs-item" tabindex="0" onclick="openModal(\''+b.id+'\');closeGlobalSearch()" onkeydown="if(event.key===\'Enter\'){openModal(\''+b.id+'\');closeGlobalSearch();}">'+
+        '<span class="gs-item-icon">&#x1F4CD;</span>'+
+        '<div class="gs-item-body">'+
+          '<div class="gs-space">'+b.space+'</div>'+
+          '<div class="gs-meta">&#x1F4C5; '+fmtDate(b.date)+' &nbsp;&#x23F0; '+b.time_start.slice(0,5)+' – '+b.time_end.slice(0,5)+(b.lesson?' &nbsp;&#x1F4D6; '+b.lesson:'')+'</div>'+
+          '<div class="gs-teacher">&#x1F464; '+b.teacher+' &nbsp;&#x1F393; '+b.turma+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2732,8 +2898,6 @@ async function initChat(){
   if(tabBtn)tabBtn.style.display='inline-block';
   // Load users list
   await loadChatUsers();
-  // Render sidebar immediately so it's ready when user opens chat
-  renderChatUserList();
   // Load unread counts
   await loadChatUnread();
   updateChatTabBadge();
@@ -3159,7 +3323,7 @@ function resetInactivityTimer(clear){
   refreshTopbarAvatar();
   buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
   initGlobalSearch();
-  loadAll().then(function(){loadUsersAvatarCache();initChat();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
+  loadAll().then(function(){loadUsersAvatarCache();initChat();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
   resetInactivityTimer(false);
 })();
 
