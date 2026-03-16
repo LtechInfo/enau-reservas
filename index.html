@@ -821,6 +821,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
 
     <div class="tab-panel" id="tab-hoje">
       <div class="ph"><h2>Reservas de Hoje</h2><p id="hoje-date"></p></div>
+      <div id="hoje-checklist"></div>
       <div id="hoje-content"></div>
     </div>
 
@@ -843,6 +844,25 @@ body.dark .chat-input-bar{background:var(--card-bg);}
               <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
             </select></div>
           <div><label class="lbl">Data *</label><input type="date" id="f-date" onchange="checkConflictPreview()"></div>
+        </div>
+        <div class="info-note" id="fav-spaces-box" style="margin-bottom:.8rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+            <strong style="font-size:.82rem">Favoritos de Espaço</strong>
+            <button class="btn btn-outline" type="button" style="padding:.25rem .55rem;font-size:.74rem" onclick="toggleFavoriteCurrentSpace()">Favoritar/Desfavoritar selecionado</button>
+          </div>
+          <div id="fav-space-chips" style="margin-top:.45rem;display:flex;gap:.35rem;flex-wrap:wrap"></div>
+        </div>
+        <div class="form-row" style="margin-bottom:.7rem">
+          <div>
+            <label class="lbl">Template Rápido</label>
+            <select id="f-template" onchange="applyBookingTemplate(this.value)">
+              <option value="">Selecione um template...</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:.5rem;flex-wrap:wrap">
+            <button class="btn btn-outline" type="button" style="padding:.5rem .9rem;font-size:.78rem" onclick="saveBookingTemplate()">Salvar Template</button>
+            <button class="btn btn-outline" type="button" style="padding:.5rem .9rem;font-size:.78rem" onclick="deleteBookingTemplate()">Remover</button>
+          </div>
         </div>
         <div class="form-row">
           <div><label class="lbl">Horário Início *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-start-h" onchange="syncTimeField('start');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-start-m" onchange="syncTimeField('start');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-start"></div>
@@ -946,8 +966,15 @@ body.dark .chat-input-bar{background:var(--card-bg);}
           <option value="future">Próximas</option>
           <option value="past">Passadas</option>
         </select>
+        <select id="mine-page-size" onchange="renderMine()" style="width:auto;min-width:110px">
+          <option value="5">5 por página</option>
+          <option value="10" selected>10 por página</option>
+          <option value="20">20 por página</option>
+        </select>
+        <button class="btn btn-outline" type="button" style="padding:.45rem .8rem;font-size:.78rem" onclick="exportQuickReport('mine')">Exportar CSV</button>
       </div>
       <div id="mine-list"></div>
+      <div id="mine-page-nav" style="display:none;align-items:center;justify-content:flex-end;gap:.45rem;margin-top:.75rem;flex-wrap:wrap"></div>
     </div>
 
     <div class="tab-panel" id="tab-chat">
@@ -982,8 +1009,17 @@ body.dark .chat-input-bar{background:var(--card-bg);}
       <div class="ph"><h2>Painel do Coordenador</h2></div>
       <div class="card">
         <h3>&#x1F50D; Todas as Reservas</h3>
-        <div class="search-bar"><input type="text" id="coord-search" placeholder="Buscar por professor, turma, espaço..." oninput="renderCoordBookings()"></div>
+        <div class="search-bar">
+          <input type="text" id="coord-search" placeholder="Buscar por professor, turma, espaço..." oninput="onCoordSearchInput()">
+          <select id="coord-page-size" onchange="renderCoordBookings()" style="width:auto;min-width:110px">
+            <option value="5">5/página</option>
+            <option value="10" selected>10/página</option>
+            <option value="20">20/página</option>
+          </select>
+          <button class="btn btn-outline" type="button" style="padding:.45rem .8rem;font-size:.78rem" onclick="exportQuickReport('coord')">Exportar CSV</button>
+        </div>
         <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Período/Aula</th><th>Ação</th></tr></thead><tbody id="coord-tbody"></tbody></table></div>
+        <div id="coord-page-nav" style="display:none;align-items:center;justify-content:flex-end;gap:.45rem;margin-top:.75rem;flex-wrap:wrap"></div>
       </div>
       <div class="card">
         <h3>&#x1F5C2; Histórico de Cancelamentos</h3>
@@ -993,7 +1029,15 @@ body.dark .chat-input-bar{background:var(--card-bg);}
     <div class="tab-panel" id="tab-admin">
       <div class="card">
         <h3>&#x1F50D; Busca Rápida</h3>
-        <div class="search-bar"><input type="text" id="adm-search" placeholder="Buscar por professor, turma, espaço, observações..." oninput="renderAdmBookings()"></div>
+        <div class="search-bar">
+          <input type="text" id="adm-search" placeholder="Buscar por professor, turma, espaço, observações..." oninput="onAdmSearchInput()">
+          <select id="adm-page-size" onchange="renderAdmBookings()" style="width:auto;min-width:110px">
+            <option value="5" selected>5/página</option>
+            <option value="10">10/página</option>
+            <option value="20">20/página</option>
+          </select>
+          <button class="btn btn-outline" type="button" style="padding:.45rem .8rem;font-size:.78rem" onclick="exportQuickReport('admin')">Exportar CSV</button>
+        </div>
         <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Período/Aula</th><th>Feito por</th><th>Ação</th></tr></thead><tbody id="adm-tbody"></tbody></table></div>
         <div id="adm-page-nav" style="display:none;align-items:center;justify-content:flex-end;gap:.45rem;margin-top:.75rem;flex-wrap:wrap"></div>
       </div>
@@ -1129,7 +1173,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
   <div id="gs-box">
     <div id="gs-input-row">
       <span class="gs-icon">🔍</span>
-      <input type="text" id="global-search-input" placeholder="Buscar por espaço, professor, turma..." oninput="globalSearch(this.value)" autocomplete="off" spellcheck="false">
+      <input type="text" id="global-search-input" placeholder="Buscar por espaço, professor, turma..." oninput="onGlobalSearchInput(this.value)" autocomplete="off" spellcheck="false">
       <button id="gs-close-btn" onclick="closeGlobalSearch()" title="Fechar">✕</button>
     </div>
     <div id="global-search-results">
@@ -1149,14 +1193,55 @@ const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 const SPACES=['Auditório','Lab Informática','Lab Multi (Bio/Qui/Fis)','Área Verde','Biblioteca','Skill Lab','Lab Anatomia','Sala de Artes','Brinquedoteca','Lab Enfermagem'];
 const SPACE_CLS={};SPACES.forEach((s,i)=>SPACE_CLS[s]='ch-'+i);
 
-async function sb(method,path,body){
+var API_GET_CACHE={};
+function sleepMs(ms){return new Promise(function(resolve){setTimeout(resolve,ms);});}
+function isRetryableStatus(status){return [408,425,429,500,502,503,504].indexOf(status)>=0;}
+function clearApiGetCache(){API_GET_CACHE={};}
+
+async function sb(method,path,body,opts){
+  opts=opts||{};
   const headers={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Accept':'application/json'};
   if(method==='POST')headers['Prefer']='return=representation';
-  const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{method,headers,body:body?JSON.stringify(body):undefined});
-  if(!res.ok){const e=await res.json().catch(()=>({}));console.error('SB error',e);throw new Error(e.message||e.hint||res.statusText);}
-  const t=await res.text();return t?JSON.parse(t):null;
+  const retries=typeof opts.retries==='number'?opts.retries:(method==='GET'?2:((method==='PATCH'||method==='DELETE')?1:0));
+  const backoffBase=typeof opts.backoffBase==='number'?opts.backoffBase:180;
+  var lastErr=null;
+
+  for(var attempt=0;attempt<=retries;attempt++){
+    try{
+      const res=await fetch(SUPABASE_URL+'/rest/v1/'+path,{method,headers,body:body?JSON.stringify(body):undefined});
+      if(!res.ok){
+        const e=await res.json().catch(()=>({}));
+        var err=new Error(e.message||e.hint||res.statusText||'Erro na API');
+        err.status=res.status;err.payload=e;
+        if(attempt<retries&&isRetryableStatus(res.status)){await sleepMs(backoffBase*Math.pow(2,attempt));continue;}
+        throw err;
+      }
+      const t=await res.text();
+      if(method!=='GET')clearApiGetCache();
+      return t?JSON.parse(t):null;
+    }catch(err){
+      lastErr=err;
+      var canRetry=attempt<retries&&(!err.status||isRetryableStatus(err.status));
+      if(!canRetry){console.error('SB error',err);throw err;}
+      await sleepMs(backoffBase*Math.pow(2,attempt));
+    }
+  }
+  console.error('SB error',lastErr);
+  throw lastErr||new Error('Falha desconhecida na comunicação com o servidor.');
 }
-const api={get:p=>sb('GET',p),post:(p,b)=>sb('POST',p,b),patch:(p,b)=>sb('PATCH',p,b),delete:p=>sb('DELETE',p)};
+function apiGet(path,opts){
+  opts=opts||{};
+  var ttl=opts.cacheTtlMs||0;
+  if(!ttl)return sb('GET',path,null,opts);
+  var now=Date.now();
+  var cache=API_GET_CACHE[path];
+  if(cache&&cache.exp>now)return Promise.resolve(cache.data);
+  return sb('GET',path,null,opts).then(function(data){
+    API_GET_CACHE[path]={data:data,exp:now+ttl};
+    return data;
+  });
+}
+const api={get:(p,o)=>apiGet(p,o),post:(p,b,o)=>sb('POST',p,b,o),patch:(p,b,o)=>sb('PATCH',p,b,o),delete:(p,o)=>sb('DELETE',p,null,o)};
 
 function isDemo(){return SUPABASE_URL.includes('SEU_PROJETO');}
 function gLS(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
@@ -1177,8 +1262,278 @@ var BOOKING_ALERT_SEEN={};
 var BOOKING_ALERT_PREV_MIN={};
 var BOOKING_ALERT_SYNCING=false;
 var BOOKING_ALERT_RUNNING=false;
+var BOOKING_CACHE_VER=0;
+var BOOKING_SORT_CACHE={ver:-1,list:[]};
+var ALERT_BOOKINGS=[];
+var SEARCH_CACHE={
+  admin:{ver:-1,q:'',list:[]},
+  coord:{ver:-1,q:'',list:[]},
+  global:{ver:-1,q:'',list:[]}
+};
+var DEBOUNCE_MS=250;
+var GLOBAL_SEARCH_BOUND=false;
+var ACTIVE_TAB_ID='calendar';
+var USER_PREFS_BOUND=false;
+var TEMPLATE_CACHE=[];
 let calView='week',weekStart=monday(new Date()),monthCursor=new Date();
 function monday(d){const dt=new Date(d),day=dt.getDay();dt.setDate(dt.getDate()-(day===0?6:day-1));dt.setHours(0,0,0,0);return dt;}
+
+function debounce(fn,wait){
+  var t=null;
+  return function(){
+    var ctx=this,args=arguments;
+    if(t)clearTimeout(t);
+    t=setTimeout(function(){fn.apply(ctx,args);},wait);
+  };
+}
+var _debCoord=debounce(function(){renderCoordBookings();},DEBOUNCE_MS);
+var _debAdm=debounce(function(){renderAdmBookings();},DEBOUNCE_MS);
+var _debGlobal=debounce(function(q){globalSearch(q);},DEBOUNCE_MS);
+function onCoordSearchInput(){_debCoord();}
+function onAdmSearchInput(){_debAdm();}
+function onGlobalSearchInput(q){_debGlobal(q);}
+
+function touchBookings(){
+  BOOKING_CACHE_VER++;
+  BOOKING_SORT_CACHE.ver=-1;
+  SEARCH_CACHE.admin.ver=-1;
+  SEARCH_CACHE.coord.ver=-1;
+  SEARCH_CACHE.global.ver=-1;
+}
+function getSortedBookings(){
+  if(BOOKING_SORT_CACHE.ver===BOOKING_CACHE_VER)return BOOKING_SORT_CACHE.list;
+  BOOKING_SORT_CACHE={ver:BOOKING_CACHE_VER,list:BOOKINGS.slice().sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;})};
+  return BOOKING_SORT_CACHE.list;
+}
+
+function setActiveTab(id){ACTIVE_TAB_ID=id||'calendar';}
+function getActiveTabId(){
+  var on=document.querySelector('.tab-panel.on');
+  if(on&&on.id)return on.id.replace('tab-','');
+  return ACTIVE_TAB_ID||'calendar';
+}
+function renderActiveTab(){
+  var id=getActiveTabId();
+  if(id==='calendar'){renderCal();renderCalendarAlerts(getAlertEligibleBookings());return;}
+  if(id==='hoje'){renderHoje();return;}
+  if(id==='mine'){renderMine();return;}
+  if(id==='admin'){renderAdmin();return;}
+  if(id==='coord'){renderCoord();return;}
+  if(id==='spaces'){renderSpaceView();return;}
+  if(id==='chat'){renderChatUserList();if(CHAT_ACTIVE_USER)renderChatMessages();return;}
+}
+
+function userScopedKey(suffix){return 'enau_'+suffix+'_'+(ME?ME.username:'guest');}
+function getUserPref(key,def){return gLS(userScopedKey('pref_'+key),def);}
+function setUserPref(key,val){sLS(userScopedKey('pref_'+key),val);}
+
+function bindUserPrefs(){
+  if(USER_PREFS_BOUND)return;
+  USER_PREFS_BOUND=true;
+  var ids=['cal-filter','mine-filter-space','mine-filter-period','mine-page-size','adm-page-size','coord-page-size','sv-period'];
+  ids.forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('change',function(){if(!ME)return;setUserPref(id,el.value);});
+  });
+}
+
+function restoreUserPrefs(){
+  if(!ME)return;
+  ['cal-filter','mine-filter-space','mine-filter-period','mine-page-size','adm-page-size','coord-page-size','sv-period'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    var val=getUserPref(id,null);
+    if(val!==null&&val!==undefined&&val!==''){
+      var opt=Array.prototype.find.call(el.options||[],function(o){return o.value===val;});
+      if(opt)el.value=val;
+    }
+  });
+}
+
+function normalizeAlertMarks(arr){
+  var marks=(arr||[]).map(function(v){return parseInt(v,10);}).filter(function(v){return [5,10,30,60].indexOf(v)>=0;});
+  if(!marks.length)marks=[60,30,10];
+  marks=[].concat(new Set(marks)).sort(function(a,b){return b-a;});
+  return marks;
+}
+function getAlertMarks(){
+  return normalizeAlertMarks(gLS(userScopedKey('alert_marks'),[60,30,10]));
+}
+function saveAlertMarks(arr){
+  var marks=normalizeAlertMarks(arr);
+  sLS(userScopedKey('alert_marks'),marks);
+  BOOKING_ALERT_MARKS=marks;
+  startBookingAlerts();
+}
+function getAlertMarkLabel(v){return v===5?'5 min':(v===10?'10 min':(v===30?'30 min':'60 min'));}
+function renderAlertMarkEditor(){
+  var box=document.getElementById('alert-marks-editor');
+  if(!box||!ME)return;
+  var current=getAlertMarks();
+  var marks=[60,30,10,5];
+  box.innerHTML=marks.map(function(m){
+    var ck=current.indexOf(m)>=0?' checked':'';
+    return '<label style="display:inline-flex;align-items:center;gap:.35rem;margin-right:.75rem;font-size:.82rem"><input type="checkbox" value="'+m+'"'+ck+' onchange="updateAlertMarksFromModal()">'+getAlertMarkLabel(m)+'</label>';
+  }).join('');
+}
+function updateAlertMarksFromModal(){
+  var box=document.getElementById('alert-marks-editor');if(!box)return;
+  var vals=[].slice.call(box.querySelectorAll('input[type=checkbox]:checked')).map(function(i){return parseInt(i.value,10);});
+  saveAlertMarks(vals);
+  toast('Lembretes atualizados.','ok');
+}
+
+function getFavoriteSpaces(){return gLS(userScopedKey('fav_spaces'),[]);}
+function saveFavoriteSpaces(arr){sLS(userScopedKey('fav_spaces'),arr||[]);}
+function isFavoriteSpace(name){return getFavoriteSpaces().indexOf(name)>=0;}
+function toggleFavoriteCurrentSpace(){
+  if(!ME){toast('Faça login para usar favoritos.','err');return;}
+  var select=document.getElementById('f-space');if(!select||!select.value){toast('Selecione um espaço.','err');return;}
+  var name=select.value;
+  var fav=getFavoriteSpaces();
+  var idx=fav.indexOf(name);
+  if(idx>=0){fav.splice(idx,1);toast('Favorito removido: '+name,'ok');}
+  else{fav.push(name);toast('Favorito salvo: '+name,'ok');}
+  saveFavoriteSpaces(fav);
+  renderFavoriteSpaceChips();
+  refreshAllSpaceDropdowns();
+}
+function pickFavoriteSpace(space){
+  var sel=document.getElementById('f-space');if(!sel)return;
+  sel.value=space;checkConflictPreview();
+}
+function renderFavoriteSpaceChips(){
+  var box=document.getElementById('fav-space-chips');if(!box)return;
+  var fav=getFavoriteSpaces();
+  if(!fav.length){box.innerHTML='<span style="font-size:.77rem;color:var(--muted)">Nenhum favorito ainda.</span>';return;}
+  box.innerHTML=fav.map(function(s){
+    return '<button class="btn btn-outline" type="button" style="padding:.22rem .55rem;font-size:.74rem" onclick="pickFavoriteSpace(\''+s.replace(/'/g,'\\\'')+'\')">★ '+s+'</button>';
+  }).join('');
+}
+
+async function loadBookingTemplates(){
+  if(!ME){TEMPLATE_CACHE=[];renderTemplateOptions();return;}
+  var local=gLS(userScopedKey('booking_templates'),[]);
+  TEMPLATE_CACHE=local||[];
+  renderTemplateOptions();
+  if(isDemo())return;
+  try{
+    var rows=await api.get('booking_templates?select=id,name,space,time_start,time_end,periodo,turmas,aulas,notes,user_username&user_username=eq.'+encodeURIComponent(ME.username)+'&order=name.asc',{cacheTtlMs:30000}).catch(function(){return null;});
+    if(rows&&rows.length){
+      TEMPLATE_CACHE=rows.map(function(r){
+        return {id:String(r.id||('tpl_'+Date.now())),name:r.name,space:r.space,time_start:r.time_start,time_end:r.time_end,periodo:r.periodo,turmas:r.turmas||[],aulas:r.aulas||[],notes:r.notes||''};
+      });
+      sLS(userScopedKey('booking_templates'),TEMPLATE_CACHE);
+      renderTemplateOptions();
+    }
+  }catch(e){}
+}
+function renderTemplateOptions(){
+  var el=document.getElementById('f-template');if(!el)return;
+  var current=el.value;
+  var opts='<option value=\"\">Selecione um template...</option>';
+  TEMPLATE_CACHE.forEach(function(t){opts+='<option value=\"'+t.id+'\">'+t.name+'</option>';});
+  el.innerHTML=opts;
+  if(current)el.value=current;
+}
+function applyBookingTemplate(id){
+  if(!id)return;
+  var tpl=TEMPLATE_CACHE.find(function(t){return String(t.id)===String(id);});
+  if(!tpl)return;
+  document.getElementById('f-space').value=tpl.space||'';
+  setTimeDropdowns('start',tpl.time_start||'');
+  setTimeDropdowns('end',tpl.time_end||'');
+  document.getElementById('f-periodo').value=tpl.periodo||'';
+  document.getElementById('f-notes').value=tpl.notes||'';
+  msClear('turma');(tpl.turmas||[]).forEach(function(t){msSetValue('turma',t);});msRender('turma');
+  msClear('aula');(tpl.aulas||[]).forEach(function(a){msSetValue('aula',a);});msRender('aula');
+  checkConflictPreview();
+}
+async function saveBookingTemplate(){
+  if(!ME){toast('Faça login para salvar templates.','err');return;}
+  var space=document.getElementById('f-space').value;
+  var start=document.getElementById('f-start').value;
+  var end=document.getElementById('f-end').value;
+  var periodo=document.getElementById('f-periodo').value;
+  var turmas=msGetValues('turma');
+  var aulas=msGetValues('aula');
+  var notes=document.getElementById('f-notes').value.trim();
+  if(!space||!start||!end||!periodo||!turmas.length){toast('Preencha espaço/horário/período/turma para salvar template.','err');return;}
+  var name=prompt('Nome do template:','Template '+space);
+  if(!name)return;
+  var tpl={id:'tpl_'+Date.now(),name:name.trim(),space:space,time_start:start,time_end:end,periodo:periodo,turmas:turmas,aulas:aulas,notes:notes};
+  TEMPLATE_CACHE.unshift(tpl);
+  TEMPLATE_CACHE=TEMPLATE_CACHE.slice(0,50);
+  sLS(userScopedKey('booking_templates'),TEMPLATE_CACHE);
+  renderTemplateOptions();
+  document.getElementById('f-template').value=tpl.id;
+  if(!isDemo()){
+    api.post('booking_templates',{name:tpl.name,space:tpl.space,time_start:tpl.time_start,time_end:tpl.time_end,periodo:tpl.periodo,turmas:tpl.turmas,aulas:tpl.aulas,notes:tpl.notes,user_username:ME.username}).catch(function(){});
+  }
+  toast('Template salvo!','ok');
+}
+async function deleteBookingTemplate(){
+  var sel=document.getElementById('f-template');if(!sel||!sel.value){toast('Selecione um template para remover.','err');return;}
+  var id=sel.value;
+  var tpl=TEMPLATE_CACHE.find(function(t){return String(t.id)===String(id);});
+  if(!tpl)return;
+  if(!confirm('Remover template \"'+tpl.name+'\"?'))return;
+  TEMPLATE_CACHE=TEMPLATE_CACHE.filter(function(t){return String(t.id)!==String(id);});
+  sLS(userScopedKey('booking_templates'),TEMPLATE_CACHE);
+  renderTemplateOptions();
+  if(!isDemo()){
+    api.delete('booking_templates?id=eq.'+encodeURIComponent(id)).catch(function(){});
+  }
+  toast('Template removido.','ok');
+}
+
+function toCsvCell(v){
+  var s=(v==null?'':String(v)).replace(/"/g,'""');
+  return '\"'+s+'\"';
+}
+function exportCsv(filename,headers,rows){
+  var csv=[headers.join(',')].concat(rows.map(function(r){return r.map(toCsvCell).join(',');})).join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},500);
+}
+function getReportBookings(scope){
+  var list=getSortedBookings().slice();
+  if(scope==='mine'){
+    var fs=(document.getElementById('mine-filter-space')||{value:''}).value;
+    var fp=(document.getElementById('mine-filter-period')||{value:''}).value;
+    var nowIso=new Date().toISOString().slice(0,10);
+    list=(isCoord()?list:list.filter(function(b){return b.booked_by===ME.username;}));
+    if(fs)list=list.filter(function(b){return b.space===fs;});
+    if(fp==='future')list=list.filter(function(b){return b.date>=nowIso;});
+    if(fp==='past')list=list.filter(function(b){return b.date<nowIso;});
+    return list;
+  }
+  if(scope==='coord'){
+    var q=(document.getElementById('coord-search')||{value:''}).value.toLowerCase();
+    if(q)list=list.filter(function(b){return (b.space+b.teacher+b.turma+(b.lesson||'')+(b.notes||'')).toLowerCase().indexOf(q)>=0;});
+    return list;
+  }
+  if(scope==='admin'){
+    var qa=(document.getElementById('adm-search')||{value:''}).value.toLowerCase();
+    if(qa)list=list.filter(function(b){return [b.space,b.teacher,b.turma,b.lesson,b.notes,b.booked_by_name].join(' ').toLowerCase().indexOf(qa)>=0;});
+    return list;
+  }
+  return list;
+}
+function exportQuickReport(scope){
+  if(!ME){toast('Faça login.','err');return;}
+  var rows=getReportBookings(scope);
+  if(!rows.length){toast('Nenhum dado para exportar.','err');return;}
+  exportCsv('enau_relatorio_'+scope+'_'+new Date().toISOString().slice(0,10)+'.csv',
+    ['Espaço','Data','Início','Fim','Professor','Turma','Período/Aula','Observações','Feito por'],
+    rows.map(function(b){return [b.space,b.date,b.time_start,b.time_end,b.teacher,b.turma,b.lesson||'',b.notes||'',b.booked_by_name||''];})
+  );
+  toast('CSV exportado!','ok');
+}
 
 function addLog(icon,msg){
   const entry={icon,msg,ts:new Date().toISOString()};
@@ -1203,6 +1558,7 @@ async function doLogin(){
     }
     if(!user)throw new Error('invalid');
     ME=user;
+    BOOKING_ALERT_MARKS=getAlertMarks();
     sLS('enau_session', user);
     document.getElementById('l-err').style.display='none';
     document.getElementById('login-wrap').style.display='none';
@@ -1218,7 +1574,7 @@ async function doLogin(){
     document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
     document.getElementById('f-date').value=now.toISOString().split('T')[0];
     await loadAll();
-    renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();
+    touchBookings();
     logAccess(ME.username,ME.fullname);
     resetInactivityTimer(false);
     // Sync avatar from Supabase into localStorage for offline use
@@ -1227,6 +1583,12 @@ async function doLogin(){
     refreshTopbarAvatar();
     buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
     refreshAllSpaceDropdowns();
+    bindUserPrefs();
+    restoreUserPrefs();
+    renderFavoriteSpaceChips();
+    loadBookingTemplates();
+    renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();
+    setActiveTab('calendar');
     initGlobalSearch();
     checkFirstAccess();
     loadUsersAvatarCache();
@@ -1244,7 +1606,8 @@ async function doLogin(){
 document.getElementById('l-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 
 function logout(msg){
-  ME=null;BOOKINGS=[];CANCELLED=[];ACTIVITY_LOG=[];BLOCKED_DATES=[];BUGS=[];CHAT_MESSAGES=[];CHAT_ACTIVE_USER=null;CHAT_UNREAD={};editId=null;
+  ME=null;BOOKINGS=[];ALERT_BOOKINGS=[];CANCELLED=[];ACTIVITY_LOG=[];BLOCKED_DATES=[];BUGS=[];CHAT_MESSAGES=[];CHAT_ACTIVE_USER=null;CHAT_UNREAD={};TEMPLATE_CACHE=[];editId=null;
+  touchBookings();
   stopBookingAlerts();
   if(CHAT_REALTIME)try{CHAT_REALTIME.close();}catch(e){}
   localStorage.removeItem('enau_session');
@@ -1267,6 +1630,7 @@ async function loadAll(){
   if(isDemo()){
     BLOCKED_DATES=gLS('ebl',[]);
     BOOKINGS=gLS('eb',[]);CANCELLED=gLS('ec',[]);ACTIVITY_LOG=gLS('el',[]);
+    ALERT_BOOKINGS=BOOKINGS.slice();
     await loadMural();
   } else {
     const results=await Promise.all([
@@ -1275,10 +1639,12 @@ async function loadAll(){
       api.get('activity_log?select=*&order=ts.desc&limit=200').catch(()=>[]),
     ]);
     BOOKINGS=results[0]||[];CANCELLED=results[1]||[];ACTIVITY_LOG=results[2]||[];
+    ALERT_BOOKINGS=BOOKINGS.slice();
     var blkR=await api.get('blocked_dates?select=date,reason&order=date.asc').catch(function(){return[];});
     BLOCKED_DATES=(blkR||[]).map(function(r){return{date:r.date,reason:r.reason};});
     await loadMural();
   }
+  touchBookings();
 }
 
 const DAYS_W=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -1403,7 +1769,8 @@ function bookingAlertKey(b){
 function getAlertEligibleBookings(){
   if(!ME)return [];
   var adminUser=isAdmin();
-  return BOOKINGS.filter(function(b){
+  var src=(ALERT_BOOKINGS&&ALERT_BOOKINGS.length)?ALERT_BOOKINGS:BOOKINGS;
+  return src.filter(function(b){
     if(!b||!b.date||!b.time_start)return false;
     if(!adminUser&&b.booked_by!==ME.username)return false;
     var mins=minutesUntilBooking(b);
@@ -1454,14 +1821,14 @@ async function syncBookingsForAlerts(){
   if(isDemo()||!ME||BOOKING_ALERT_SYNCING)return;
   BOOKING_ALERT_SYNCING=true;
   try{
-    var rows=await api.get('reservas?select=*&order=date.asc,time_start.asc').catch(function(){return null;});
-    if(rows)BOOKINGS=rows;
-    var active=document.querySelector('.tab-panel.on');
-    if(active&&active.id==='tab-calendar')renderCal();
-    if(active&&active.id==='tab-hoje')renderHoje();
-    if(active&&active.id==='tab-mine')renderMine();
-    if(active&&active.id==='tab-admin')renderAdmin();
-    if(active&&active.id==='tab-coord')renderCoord();
+    var from=new Date();from.setHours(0,0,0,0);
+    var to=new Date(from);to.setDate(to.getDate()+2);
+    var fromIso=from.toISOString().split('T')[0];
+    var toIso=to.toISOString().split('T')[0];
+    var path='reservas?select=*&date=gte.'+fromIso+'&date=lte.'+toIso+'&order=date.asc,time_start.asc';
+    if(!isAdmin())path+='&booked_by=eq.'+encodeURIComponent(ME.username);
+    var rows=await api.get(path,{cacheTtlMs:10000}).catch(function(){return null;});
+    if(rows)ALERT_BOOKINGS=rows;
   }catch(e){
     // Silent fail: alerts continue with local cache
   }finally{
@@ -1523,6 +1890,7 @@ async function runBookingAlertCycle(opts){
 function startBookingAlerts(){
   stopBookingAlerts();
   if(!ME)return;
+  BOOKING_ALERT_MARKS=getAlertMarks();
   BOOKING_ALERT_SEEN={};
   BOOKING_ALERT_PREV_MIN={};
   runBookingAlertCycle({skipSync:false});
@@ -1608,7 +1976,10 @@ async function submitBooking(){
       }
     } catch(e){toast('Erro: '+e.message,'err');}
   }
-  clearForm();renderCal();renderMine();if(ME.role==='admin')renderAdmin();
+  ALERT_BOOKINGS=BOOKINGS.slice();
+  touchBookings();
+  clearForm();
+  renderActiveTab();
   runBookingAlertCycle({skipSync:true});
   btn.innerHTML='Confirmar Reserva';btn.disabled=false;
 }
@@ -1705,10 +2076,12 @@ async function deleteBooking(id,andFuture){
   if(isDemo()){BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});sLS('eb',BOOKINGS);}
   else{for(var i=0;i<toDelete.length;i++)await api.delete('reservas?id=eq.'+toDelete[i]);}
   BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});
+  ALERT_BOOKINGS=BOOKINGS.slice();
+  touchBookings();
   addLog('&#x1F5D1;',ME.fullname+' cancelou '+toDelete.length+' reserva(s) em '+b.space+' ('+fmtDate(b.date)+')');
   toast('Reserva(s) cancelada(s).','ok');
   runBookingAlertCycle({skipSync:true});
-  closeModal();renderCal();renderMine();if(isAdmin())renderAdmin();if(isCoord()&&!isAdmin())renderCoord();
+  closeModal();renderActiveTab();
 }
 
 function closeModal(){
@@ -1717,15 +2090,48 @@ function overlayClick(e){if(e.target===document.getElementById('overlay'))closeM
 
 function renderMine(){
   var list=document.getElementById('mine-list');
-  var mine=(isCoord()?BOOKINGS:BOOKINGS.filter(function(b){return b.booked_by===ME.username;})).sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
-  if(!mine.length){list.innerHTML='<div class="empty"><div class="ico">&#x1F4ED;</div><p>Nenhuma reserva ativa.</p></div>';return;}
-  list.innerHTML=mine.map(function(b){
+  var nav=document.getElementById('mine-page-nav');
+  var spaceF=(document.getElementById('mine-filter-space')||{value:''}).value;
+  var periodF=(document.getElementById('mine-filter-period')||{value:''}).value;
+  var sizeEl=document.getElementById('mine-page-size');
+  var pageSize=parseInt(sizeEl?sizeEl.value:'10',10)||10;
+  var base=getSortedBookings();
+  var mine=(isCoord()?base:base.filter(function(b){return b.booked_by===ME.username;}));
+  if(spaceF)mine=mine.filter(function(b){return b.space===spaceF;});
+  if(periodF){
+    var todayIso=new Date().toISOString().split('T')[0];
+    if(periodF==='future')mine=mine.filter(function(b){return b.date>=todayIso;});
+    if(periodF==='past')mine=mine.filter(function(b){return b.date<todayIso;});
+  }
+  var key=[BOOKING_CACHE_VER,ME?ME.username:'',isCoord()?1:0,spaceF,periodF,pageSize].join('|');
+  if(key!==MINE_LAST_KEY){MINE_LAST_KEY=key;MINE_PAGE=1;}
+
+  if(!mine.length){
+    list.innerHTML='<div class="empty"><div class="ico">&#x1F4ED;</div><p>Nenhuma reserva ativa.</p></div>';
+    if(nav){nav.style.display='none';nav.innerHTML='';}
+    return;
+  }
+
+  var totalPages=Math.max(1,Math.ceil(mine.length/pageSize));
+  if(MINE_PAGE>totalPages)MINE_PAGE=totalPages;
+  if(MINE_PAGE<1)MINE_PAGE=1;
+  var pageRows=mine.slice((MINE_PAGE-1)*pageSize,(MINE_PAGE-1)*pageSize+pageSize);
+
+  list.innerHTML=pageRows.map(function(b){
     var hl=hoursUntil(b),canAct=hl>=5;
     var badge=canAct?'<span class="badge badge-ok">Editável</span>':'<span class="badge badge-lock">Bloqueado</span>';
     var rb=b.recur_group?'<span class="badge badge-recur">&#x21BB; Recorrente</span>':'';
     var acts=canAct?'<button class="btn btn-outline" style="padding:.4rem .8rem;font-size:.78rem" onclick="startEdit(\''+b.id+'\')">Editar</button><button class="btn btn-danger" style="padding:.4rem .8rem;font-size:.78rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button>':'';
-    return '<div class="bk-card"><div class="bk-info"><h4>'+b.space+' '+badge+rb+'</h4><div class="meta"><strong>'+fmtDate(b.date)+'</strong> · '+b.time_start+'–'+b.time_end+'<br>Turma: '+b.turma+(b.lesson?' · '+b.lesson:'')+'<br>'+(b.notes?'Recursos: '+b.notes:'')+'</div></div><div class="bk-acts">'+acts+'</div></div>';
+    return '<div class="bk-card"><div class="bk-info"><h4>'+b.space+' '+badge+rb+'</h4><div class="meta"><strong>'+fmtDate(b.date)+'</strong> - '+b.time_start+'-'+b.time_end+'<br>Turma: '+b.turma+(b.lesson?' - '+b.lesson:'')+'<br>'+(b.notes?'Recursos: '+b.notes:'')+'</div></div><div class="bk-acts">'+acts+'</div></div>';
   }).join('');
+
+  if(!nav)return;
+  if(totalPages<=1){nav.style.display='none';nav.innerHTML='';return;}
+  nav.style.display='flex';
+  nav.innerHTML=
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(MINE_PAGE===1?'disabled':'')+' onclick="setMinePage('+(MINE_PAGE-1)+')">&#x2190; Anterior</button>'+
+    '<span style="font-size:.78rem;color:var(--muted)">Pagina '+MINE_PAGE+' de '+totalPages+' ('+mine.length+' reservas)</span>'+
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(MINE_PAGE===totalPages?'disabled':'')+' onclick="setMinePage('+(MINE_PAGE+1)+')">Proxima &#x2192;</button>';
 }
 
 function showUserForm(m){
@@ -1733,14 +2139,23 @@ function showUserForm(m){
   document.getElementById('form-batch').style.display=m==='batch'?'block':'none';
 }
 
-var ADM_BOOKINGS_PAGE_SIZE=5;
 var ADM_BOOKINGS_PAGE=1;
 var ADM_BOOKINGS_LAST_Q='';
+var COORD_BOOKINGS_PAGE=1;
+var COORD_BOOKINGS_LAST_Q='';
+var MINE_PAGE=1;
+var MINE_LAST_KEY='';
+var GS_PAGE=1;
+var GS_PAGE_SIZE=5;
+var GS_LAST_QUERY='';
 
 function setAdmBookingsPage(page){
   ADM_BOOKINGS_PAGE=page;
   renderAdmBookings();
 }
+function setCoordBookingsPage(page){COORD_BOOKINGS_PAGE=page;renderCoordBookings();}
+function setMinePage(page){MINE_PAGE=page;renderMine();}
+function setGlobalSearchPage(page){GS_PAGE=page;globalSearch(GS_LAST_QUERY);}
 
 function renderAdmin(){
   if(!isAdmin())return;
@@ -1752,24 +2167,32 @@ function renderAdmBookings(){
   var q=(document.getElementById('adm-search')?document.getElementById('adm-search').value:'').toLowerCase();
   var tbody=document.getElementById('adm-tbody');
   var nav=document.getElementById('adm-page-nav');
+  var sizeEl=document.getElementById('adm-page-size');
+  var pageSize=parseInt(sizeEl?sizeEl.value:'5',10)||5;
   if(q!==ADM_BOOKINGS_LAST_Q){
     ADM_BOOKINGS_LAST_Q=q;
     ADM_BOOKINGS_PAGE=1;
   }
-  var list=BOOKINGS.slice().sort(function(a,b){return (a.date+a.time_start)>(b.date+b.time_start)?1:-1;});
-  if(q)list=list.filter(function(b){return [b.space,b.teacher,b.turma,b.lesson,b.notes,b.booked_by_name].join(' ').toLowerCase().indexOf(q)>=0;});
+  var cache=SEARCH_CACHE.admin;
+  var list=[];
+  if(cache.ver===BOOKING_CACHE_VER&&cache.q===q){list=cache.list;}
+  else{
+    list=getSortedBookings();
+    if(q)list=list.filter(function(b){return [b.space,b.teacher,b.turma,b.lesson,b.notes,b.booked_by_name].join(' ').toLowerCase().indexOf(q)>=0;});
+    cache.ver=BOOKING_CACHE_VER;cache.q=q;cache.list=list;
+  }
   if(!list.length){
     tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted)">'+(q?'Nenhum resultado.':'Nenhuma reserva.')+'</td></tr>';
     if(nav){nav.style.display='none';nav.innerHTML='';}
     return;
   }
 
-  var totalPages=Math.max(1,Math.ceil(list.length/ADM_BOOKINGS_PAGE_SIZE));
+  var totalPages=Math.max(1,Math.ceil(list.length/pageSize));
   if(ADM_BOOKINGS_PAGE>totalPages)ADM_BOOKINGS_PAGE=totalPages;
   if(ADM_BOOKINGS_PAGE<1)ADM_BOOKINGS_PAGE=1;
 
-  var start=(ADM_BOOKINGS_PAGE-1)*ADM_BOOKINGS_PAGE_SIZE;
-  var pageRows=list.slice(start,start+ADM_BOOKINGS_PAGE_SIZE);
+  var start=(ADM_BOOKINGS_PAGE-1)*pageSize;
+  var pageRows=list.slice(start,start+pageSize);
 
   tbody.innerHTML=pageRows.map(function(b){
     return '<tr><td><span class="chip '+(SPACE_CLS[b.space]||'ch-0')+'" style="display:inline-block">'+b.space+(b.recur_group?' &#x21BB;':'')+'</span></td><td>'+fmtDate(b.date)+'</td><td>'+b.time_start+' - '+b.time_end+'</td><td>'+b.teacher+'</td><td>'+b.turma+'</td><td>'+(b.lesson||'-')+'</td><td>'+b.booked_by_name+'</td><td><button class="btn btn-danger" style="padding:.3rem .7rem;font-size:.75rem" onclick="deleteBooking(\''+b.id+'\',false)">Cancelar</button></td></tr>';
@@ -1804,7 +2227,7 @@ function renderLog(){
 async function renderAdmUsers(){
   var users=[];
   if(isDemo())users=gLS('eu',[]);
-  else users=await api.get('usuarios?select=id,username,fullname,role,email&order=fullname.asc').catch(function(){return [];});
+  else users=await api.get('usuarios?select=id,username,fullname,role,email&order=fullname.asc',{cacheTtlMs:30000}).catch(function(){return [];});
   document.getElementById('adm-users').innerHTML=users.map(function(u,i){
     var editBtn='<button class="btn btn-outline" style="padding:.3rem .6rem;font-size:.74rem" onclick=\'openEditUser('+JSON.stringify({id:u.id||i,username:u.username,fullname:u.fullname,role:u.role})+')\'>&#x270F;&#xFE0F; Editar</button>';
     var delBtn=u.username!=='admin'?'<button class="btn btn-danger" style="padding:.3rem .6rem;font-size:.74rem" onclick="removeUser('+(u.id||i)+',\''+u.username+'\')">&#x1F5D1; Remover</button>':'';
@@ -1935,6 +2358,7 @@ document.addEventListener('click',function(e){
 function showTab(id,btn){
   if(id==='admin'&&(!ME||ME.role!=='admin'))return;
   if(id==='coord'&&(!ME||!isCoord()))return;
+  setActiveTab(id);
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
   document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
@@ -2072,6 +2496,7 @@ function renderHoje(){
   var days=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
   el.textContent=days[now.getDay()]+', '+fmtDate(today);
   var list=BOOKINGS.filter(function(b){return b.date===today;}).sort(function(a,b){return a.time_start>b.time_start?1:-1;});
+  renderHojeChecklist(list);
   var blocked=BLOCKED_DATES.find(function(d){return d.date===today;});
   var wrap=document.getElementById('hoje-content');
   var html='';
@@ -2082,6 +2507,25 @@ function renderHoje(){
     return '<div class="today-card"><div class="today-item"><div class="today-time">'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</div><div><div class="today-space">'+b.space+(b.recur_group?' &#x21BB;':'')+'</div><div class="today-meta">&#x1F464; '+b.teacher+' · &#x1F393; '+b.turma+(b.lesson?' · &#x1F4D6; '+b.lesson:'')+(b.notes?'<br>&#x1F4CC; '+b.notes:'')+'</div></div></div></div>';
   }).join('');
   wrap.innerHTML=html;
+}
+
+function renderHojeChecklist(todayList){
+  var wrap=document.getElementById('hoje-checklist');
+  if(!wrap||!ME)return;
+  var now=new Date();
+  var base=(isCoord()?todayList:todayList.filter(function(b){return b.booked_by===ME.username;}));
+  if(!base.length){wrap.innerHTML='';return;}
+  var done=base.filter(function(b){return new Date(b.date+'T'+b.time_end)<=now;}).length;
+  var pending=Math.max(0,base.length-done);
+  var next=base.filter(function(b){return new Date(b.date+'T'+b.time_end)>now;}).slice(0,3);
+  wrap.innerHTML=
+    '<div class="card" style="margin-bottom:1rem;padding:.85rem 1rem">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap">'+
+        '<strong style="font-size:.9rem">Checklist diario</strong>'+
+        '<span style="font-size:.78rem;color:var(--muted)">'+done+' concluida(s) - '+pending+' pendente(s)</span>'+
+      '</div>'+
+      (next.length?'<div style="margin-top:.55rem;font-size:.8rem;color:var(--ink2)">Proximas: '+next.map(function(b){return b.time_start.slice(0,5)+' '+b.space;}).join(' - ')+'</div>':'<div style="margin-top:.55rem;font-size:.8rem;color:var(--muted)">Sem proximas reservas para hoje.</div>')+
+    '</div>';
 }
 
 // ── Bloqueio de Datas ──────────────────────────────────────────
@@ -2171,11 +2615,19 @@ function buildSpaceOptions(selectId){
   var el=document.getElementById(selectId);if(!el)return;
   var cur=el.value;
   var spaces=getSpaces();
+  var fav=getFavoriteSpaces();
+  spaces.sort(function(a,b){
+    var af=fav.indexOf(a)>=0?0:1;
+    var bf=fav.indexOf(b)>=0?0:1;
+    if(af!==bf)return af-bf;
+    return a.localeCompare(b,'pt-BR');
+  });
   var manut=getManut();
   var opts='<option value="">Selecione...</option>';
   spaces.forEach(function(s){
     var isM=manut[s];
-    opts+='<option value="'+s+'"'+(cur===s?' selected':'')+(isM?' disabled':'')+'>'+s+(isM?' [Manut.]':'')+'</option>';
+    var star=isFavoriteSpace(s)?'&#9733; ':'';
+    opts+='<option value="'+s+'"'+(cur===s?' selected':'')+(isM?' disabled':'')+'>'+star+s+(isM?' [Manut.]':'')+'</option>';
   });
   el.innerHTML=opts;
 }
@@ -2183,8 +2635,18 @@ function buildSpaceFilter(selectId){
   var el=document.getElementById(selectId);if(!el)return;
   var cur=el.value;
   var spaces=getSpaces();
+  var fav=getFavoriteSpaces();
+  spaces.sort(function(a,b){
+    var af=fav.indexOf(a)>=0?0:1;
+    var bf=fav.indexOf(b)>=0?0:1;
+    if(af!==bf)return af-bf;
+    return a.localeCompare(b,'pt-BR');
+  });
   var opts='<option value="">Todos os espaços</option>';
-  spaces.forEach(function(s){opts+='<option value="'+s+'"'+(cur===s?' selected':'')+'>'+s+'</option>';});
+  spaces.forEach(function(s){
+    var star=isFavoriteSpace(s)?'&#9733; ':'';
+    opts+='<option value="'+s+'"'+(cur===s?' selected':'')+'>'+star+s+'</option>';
+  });
   el.innerHTML=opts;
 }
 function refreshAllSpaceDropdowns(){
@@ -2420,8 +2882,10 @@ function openMinhaConta(){if(!ME)return;
     avatarHtml+
     '<label class="mlbl">Senha atual</label><input type="password" id="pwd-cur" placeholder="Senha atual">'+
     '<label class="mlbl">Nova senha</label><input type="password" id="pwd-new" placeholder="Mínimo 6 caracteres">'+
-    '<label class="mlbl">Confirmar nova senha</label><input type="password" id="pwd-confirm" placeholder="Repita a nova senha">';
+    '<label class="mlbl">Confirmar nova senha</label><input type="password" id="pwd-confirm" placeholder="Repita a nova senha">'+
+    '<label class="mlbl" style="margin-top:.9rem">Lembretes de inicio</label><div id="alert-marks-editor" style="padding:.35rem 0 .15rem"></div>';
   buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
+  renderAlertMarkEditor();
   document.getElementById('m-acts').innerHTML=
     '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>'+
     '<button class="btn btn-primary" onclick="trocarSenha()">Salvar senha</button>';
@@ -2448,6 +2912,7 @@ function uploadAvatar(input){
       var data=canvas.toDataURL('image/jpeg',0.82);
       setAvatarData(data);
       buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
+  renderAlertMarkEditor();
       refreshTopbarAvatar();
       toast('Foto atualizada!','ok');
     };
@@ -2459,6 +2924,7 @@ function removeAvatar(){
   setAvatarData(null);
   refreshTopbarAvatar();
   buildAvatar(document.getElementById('modal-avatar'),ME.fullname,72);
+  renderAlertMarkEditor();
   toast('Foto removida.','ok');
 }
 async function trocarSenha(){
@@ -2662,22 +3128,49 @@ function isCoord(){ return ME && (ME.role === 'coord' || ME.role === 'admin'); }
 function renderCoordBookings(){
   var q=(document.getElementById('coord-search')||{value:''}).value.toLowerCase();
   var tbody=document.getElementById('coord-tbody');if(!tbody)return;
-  var bks=BOOKINGS.filter(function(b){
-    return !q||(b.space+b.teacher+b.turma+(b.lesson||'')+(b.notes||'')).toLowerCase().indexOf(q)>=0;
-  }).sort(function(a,b){return (a.date+a.time_start)<(b.date+b.time_start)?-1:1;});
-  if(!bks.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Nenhuma reserva encontrada.</td></tr>';return;}
-  tbody.innerHTML=bks.map(function(b){
+  var nav=document.getElementById('coord-page-nav');
+  var sizeEl=document.getElementById('coord-page-size');
+  var pageSize=parseInt(sizeEl?sizeEl.value:'10',10)||10;
+  if(q!==COORD_BOOKINGS_LAST_Q){COORD_BOOKINGS_LAST_Q=q;COORD_BOOKINGS_PAGE=1;}
+  var cache=SEARCH_CACHE.coord;
+  var bks=[];
+  if(cache.ver===BOOKING_CACHE_VER&&cache.q===q){bks=cache.list;}
+  else{
+    bks=getSortedBookings().filter(function(b){
+      return !q||(b.space+b.teacher+b.turma+(b.lesson||'')+(b.notes||'')).toLowerCase().indexOf(q)>=0;
+    });
+    cache.ver=BOOKING_CACHE_VER;cache.q=q;cache.list=bks;
+  }
+  if(!bks.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem">Nenhuma reserva encontrada.</td></tr>';
+    if(nav){nav.style.display='none';nav.innerHTML='';}
+    return;
+  }
+  var totalPages=Math.max(1,Math.ceil(bks.length/pageSize));
+  if(COORD_BOOKINGS_PAGE>totalPages)COORD_BOOKINGS_PAGE=totalPages;
+  if(COORD_BOOKINGS_PAGE<1)COORD_BOOKINGS_PAGE=1;
+  var pageRows=bks.slice((COORD_BOOKINGS_PAGE-1)*pageSize,(COORD_BOOKINGS_PAGE-1)*pageSize+pageSize);
+
+  tbody.innerHTML=pageRows.map(function(b){
     var canCancel=new Date(b.date+'T'+b.time_start)-new Date()>5*3600000;
     return '<tr>'+
       '<td>'+b.space+'</td>'+
       '<td>'+fmtDate(b.date)+'</td>'+
-      '<td>'+b.time_start.slice(0,5)+' – '+b.time_end.slice(0,5)+'</td>'+
+      '<td>'+b.time_start.slice(0,5)+' - '+b.time_end.slice(0,5)+'</td>'+
       '<td>'+b.teacher+'</td>'+
       '<td>'+b.turma+'</td>'+
-      '<td>'+(b.lesson||'—')+'</td>'+
-      '<td>'+(canCancel?'<button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.75rem" onclick="openModal(\''+b.id+'\')">Cancelar</button>':'<span style="color:var(--muted);font-size:.78rem">—</span>')+'</td>'+
+      '<td>'+(b.lesson||'-')+'</td>'+
+      '<td>'+(canCancel?'<button class="btn btn-danger" style="padding:.25rem .6rem;font-size:.75rem" onclick="openModal(\''+b.id+'\')">Cancelar</button>':'<span style="color:var(--muted);font-size:.78rem">-</span>')+'</td>'+
     '</tr>';
   }).join('');
+
+  if(!nav)return;
+  if(totalPages<=1){nav.style.display='none';nav.innerHTML='';return;}
+  nav.style.display='flex';
+  nav.innerHTML=
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(COORD_BOOKINGS_PAGE===1?'disabled':'')+' onclick="setCoordBookingsPage('+(COORD_BOOKINGS_PAGE-1)+')">&#x2190; Anterior</button>'+
+    '<span style="font-size:.78rem;color:var(--muted)">Pagina '+COORD_BOOKINGS_PAGE+' de '+totalPages+' ('+bks.length+' reservas)</span>'+
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(COORD_BOOKINGS_PAGE===totalPages?'disabled':'')+' onclick="setCoordBookingsPage('+(COORD_BOOKINGS_PAGE+1)+')">Proxima &#x2192;</button>';
 }
 
 function renderCoordCancelled(){
@@ -2704,7 +3197,7 @@ async function loadUsersList(){
   if(isDemo()){
     USERS_LIST=gLS('eu',[]).filter(function(u){return u.role==='user'||u.role==='coord';});
   } else {
-    var r=await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc').catch(function(){return[];});
+    var r=await api.get('usuarios?select=id,username,fullname,role&order=fullname.asc',{cacheTtlMs:30000}).catch(function(){return[];});
     USERS_LIST=(r||[]).filter(function(u){return u.username!==ME.username;});
   }
   buildProxySelect();
@@ -2894,7 +3387,7 @@ async function loadBugs(){
   if(isDemo()){
     BUGS=JSON.parse(localStorage.getItem('enau_bugs')||'[]');
   } else {
-    var r=await api.get('bugs?select=*&order=ts.desc').catch(function(){return[];});
+    var r=await api.get('bugs?select=*&order=ts.desc',{cacheTtlMs:30000}).catch(function(){return[];});
     BUGS=r||[];
   }
 }
@@ -2984,6 +3477,8 @@ async function deleteBug(ts){
 function initGlobalSearch(){
   var wrap=document.getElementById('global-search-wrap');
   if(wrap)wrap.style.display='flex';
+  if(GLOBAL_SEARCH_BOUND)return;
+  GLOBAL_SEARCH_BOUND=true;
   // Atalho de teclado "/"
   document.addEventListener('keydown',function(e){
     if(!ME)return;
@@ -2999,6 +3494,7 @@ function openGlobalSearch(){
   var inp=document.getElementById('global-search-input');
   var res=document.getElementById('global-search-results');
   if(!modal)return;
+  GS_PAGE=1;GS_LAST_QUERY='';
   modal.classList.add('open');
   res.innerHTML='<div class="gs-hint">Digite para buscar reservas</div>';
   setTimeout(function(){if(inp)inp.focus();},80);
@@ -3009,6 +3505,7 @@ function closeGlobalSearch(){
   var inp=document.getElementById('global-search-input');
   if(!modal)return;
   modal.classList.remove('open');
+  GS_PAGE=1;GS_LAST_QUERY='';
   if(inp)inp.value='';
 }
 
@@ -3016,20 +3513,32 @@ function globalSearch(q){
   var res=document.getElementById('global-search-results');
   if(!res)return;
   q=(q||'').trim().toLowerCase();
+  if(q!==GS_LAST_QUERY){GS_LAST_QUERY=q;GS_PAGE=1;}
   if(!q){
+    GS_LAST_QUERY='';
+    GS_PAGE=1;
     res.innerHTML='<div class="gs-hint">Digite para buscar reservas</div>';
     return;
   }
-  var matches=BOOKINGS.filter(function(b){
-    return (b.teacher+b.turma+b.space+(b.lesson||'')+(b.notes||'')+(b.booked_by_name||'')).toLowerCase().indexOf(q)>=0;
-  }).slice(0,12);
+  var cache=SEARCH_CACHE.global;
+  var matches=[];
+  if(cache.ver===BOOKING_CACHE_VER&&cache.q===q){matches=cache.list;}
+  else{
+    matches=getSortedBookings().filter(function(b){
+      return (b.teacher+b.turma+b.space+(b.lesson||'')+(b.notes||'')+(b.booked_by_name||'')).toLowerCase().indexOf(q)>=0;
+    });
+    cache.ver=BOOKING_CACHE_VER;cache.q=q;cache.list=matches;
+  }
   if(!matches.length){
     res.innerHTML='<div class="gs-empty">&#x1F50D; Nenhuma reserva encontrada para <strong>"'+q+'"</strong></div>';
     return;
   }
-  res.innerHTML='<div class="gs-hint">'+matches.length+' resultado'+(matches.length!==1?'s':'')+'</div>'+
-    matches.map(function(b){
-      var chip=SPACE_CLS[b.space]||'ch-0';
+  var totalPages=Math.max(1,Math.ceil(matches.length/GS_PAGE_SIZE));
+  if(GS_PAGE>totalPages)GS_PAGE=totalPages;
+  if(GS_PAGE<1)GS_PAGE=1;
+  var pageRows=matches.slice((GS_PAGE-1)*GS_PAGE_SIZE,(GS_PAGE-1)*GS_PAGE_SIZE+GS_PAGE_SIZE);
+  var html='<div class="gs-hint">'+matches.length+' resultado'+(matches.length!==1?'s':'')+'</div>'+
+    pageRows.map(function(b){
       return '<div class="gs-item" tabindex="0" onclick="openModal(\''+b.id+'\');closeGlobalSearch()" onkeydown="if(event.key===\'Enter\'){openModal(\''+b.id+'\');closeGlobalSearch();}">'+
         '<span class="gs-item-icon">&#x1F4CD;</span>'+
         '<div class="gs-item-body">'+
@@ -3039,6 +3548,14 @@ function globalSearch(q){
         '</div>'+
       '</div>';
     }).join('');
+  if(totalPages>1){
+    html+='<div class="gs-hint" style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.55rem">'+
+      '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(GS_PAGE===1?'disabled':'')+' onclick="setGlobalSearchPage('+(GS_PAGE-1)+')">&#x2190; Anterior</button>'+
+      '<span style="font-size:.78rem;color:var(--muted)">P�gina '+GS_PAGE+' de '+totalPages+'</span>'+
+      '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(GS_PAGE===totalPages?'disabled':'')+' onclick="setGlobalSearchPage('+(GS_PAGE+1)+')">Pr�xima &#x2192;</button>'+
+    '</div>';
+  }
+  res.innerHTML=html;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3051,7 +3568,7 @@ async function loadUsersAvatarCache(){
       var us=gLS('eu',[]);
       us.forEach(function(u){USERS_AVATAR_CACHE[u.username]={fullname:u.fullname,avatar:u.avatar||null};});
     } else {
-      var r=await api.get('usuarios?select=username,fullname,avatar').catch(function(){return[];});
+      var r=await api.get('usuarios?select=username,fullname,avatar',{cacheTtlMs:30000}).catch(function(){return[];});
       (r||[]).forEach(function(u){USERS_AVATAR_CACHE[u.username]={fullname:u.fullname,avatar:u.avatar||null};});
     }
   }catch(e){}
@@ -3522,8 +4039,16 @@ function resetInactivityTimer(clear){
     if(ME){logout('Você foi deslogado por inatividade (10 minutos).');}
   },10*60*1000);
 }
+var _lastActivityPing=0;
+function onUserActivity(){
+  if(!ME)return;
+  var now=Date.now();
+  if(now-_lastActivityPing<1500)return;
+  _lastActivityPing=now;
+  resetInactivityTimer(false);
+}
 ['mousemove','keydown','click','touchstart','scroll'].forEach(function(ev){
-  document.addEventListener(ev,function(){if(ME)resetInactivityTimer(false);},true);
+  document.addEventListener(ev,onUserActivity,{capture:true,passive:(ev==='scroll'||ev==='touchstart'||ev==='mousemove')});
 });
 
 // ── Restaurar sessão do localStorage ───────────────────────────
@@ -3531,6 +4056,7 @@ function resetInactivityTimer(clear){
   var saved=gLS('enau_session',null);
   if(!saved||!saved.username){loadingProgress(100);setTimeout(hideLoading,400);return;}
   ME=saved;
+  BOOKING_ALERT_MARKS=getAlertMarks();
   // Re-fetch from Supabase to get fresh avatar and other fields
   if(!isDemo()){
     api.get('usuarios?username=eq.'+encodeURIComponent(ME.username)+'&select=*').then(function(r){
@@ -3553,8 +4079,12 @@ function resetInactivityTimer(clear){
   BLOCKED_DATES=gLS('ebl',[]);
   refreshTopbarAvatar();
   buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
+  bindUserPrefs();
+  restoreUserPrefs();
+  renderFavoriteSpaceChips();
+  loadBookingTemplates();
   initGlobalSearch();
-  loadAll().then(function(){loadUsersAvatarCache();initChat();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();startBookingAlerts();if(ME&&ME.role==='admin')renderAdmin();refreshAllSpaceDropdowns();hideLoading();});
+  loadAll().then(function(){loadUsersAvatarCache();initChat();refreshAllSpaceDropdowns();restoreUserPrefs();renderFavoriteSpaceChips();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();startBookingAlerts();if(ME&&ME.role==='admin')renderAdmin();setActiveTab('calendar');hideLoading();});
   resetInactivityTimer(false);
 })();
 
