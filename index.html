@@ -4264,7 +4264,6 @@ function onUserActivity(){
   document.getElementById('topbar').style.display='flex';
   document.getElementById('app').style.display='block';
   document.body.classList.add('is-logged-in');
-  setupBottomNav();
   document.getElementById('topbar-user').textContent=ME.fullname;
   document.getElementById('f-teacher-name').textContent=ME.fullname;
   document.querySelector('.admin-tab').style.display=ME.role==='admin'?'inline-block':'none';
@@ -4282,7 +4281,7 @@ function onUserActivity(){
   renderFavoriteSpaceChips();
   loadBookingTemplates();
   initGlobalSearch();
-  loadAll().then(function(){loadUsersAvatarCache();initChat();refreshAllSpaceDropdowns();restoreUserPrefs();renderFavoriteSpaceChips();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();startBookingAlerts();startCalRealtime();if(ME&&ME.role==='admin')renderAdmin();setActiveTab('calendar');hideLoading();});
+  loadAll().then(function(){loadUsersAvatarCache();initChat();refreshAllSpaceDropdowns();restoreUserPrefs();renderFavoriteSpaceChips();renderCal();renderMine();renderLegend();renderHoje();renderMuralBanner();renderLoginMural();checkFirstAccess();startBookingAlerts();startCalRealtime();if(ME&&ME.role==='admin')renderAdmin();setActiveTab('calendar');setupBottomNav();hideLoading();});
   resetInactivityTimer(false);
 })();
 
@@ -4365,23 +4364,11 @@ function updateBottomNav(id){
   if(el)el.classList.add('on');
 }
 function setupBottomNav(){
-  // Esconde tudo que é role-específico primeiro
+  var show=isAdmin()?['bnav-coord','bnav-admin']:isCoord()?['bnav-coord','bnav-chat']:['bnav-mine','bnav-chat'];
   ['bnav-spaces','bnav-mine','bnav-chat','bnav-coord','bnav-admin'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.style.display='none';
+    var el=document.getElementById(id);if(!el)return;
+    el.style.display=show.indexOf(id)>=0?'flex':'none';
   });
-  if(isAdmin()){
-    // admin: Cal, Hoje, Reservar, Painel, Admin
-    document.getElementById('bnav-coord').style.display='flex';
-    document.getElementById('bnav-admin').style.display='flex';
-  } else if(isCoord()){
-    // coord: Cal, Hoje, Reservar, Painel, Mensagens
-    document.getElementById('bnav-coord').style.display='flex';
-    document.getElementById('bnav-chat').style.display='flex';
-  } else {
-    // user: Cal, Hoje, Reservar, Minhas, Mensagens
-    document.getElementById('bnav-mine').style.display='flex';
-    document.getElementById('bnav-chat').style.display='flex';
-  }
 }
 
 // ══════════════════════════════════════════════════════════════
