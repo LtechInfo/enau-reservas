@@ -671,6 +671,10 @@ body.dark #btn-top{background:rgba(30,20,40,.65);}
 body.dark #btn-top:hover{background:rgba(30,20,40,.9);}
 
 /* Botão reportar bug */
+@media(max-width:768px){
+  #btn-bug{bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + .6rem)!important;}
+  #btn-top{bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + .6rem)!important;}
+}
 #btn-bug{
   position:fixed;bottom:1.5rem;left:1.5rem;z-index:800;
   height:36px;padding:0 .9rem;border-radius:18px;border:none;cursor:pointer;
@@ -1658,6 +1662,7 @@ async function doLogin(){
     document.getElementById('topbar').style.display='flex';
     document.getElementById('app').style.display='block';
     document.body.classList.add('is-logged-in');
+    setupBottomNav();
     document.getElementById('topbar-user').textContent=user.fullname;
     document.getElementById('f-teacher-name').textContent=user.fullname;
     document.querySelector('.admin-tab').style.display=user.role==='admin'?'inline-block':'none';
@@ -4259,6 +4264,7 @@ function onUserActivity(){
   document.getElementById('topbar').style.display='flex';
   document.getElementById('app').style.display='block';
   document.body.classList.add('is-logged-in');
+  setupBottomNav();
   document.getElementById('topbar-user').textContent=ME.fullname;
   document.getElementById('f-teacher-name').textContent=ME.fullname;
   document.querySelector('.admin-tab').style.display=ME.role==='admin'?'inline-block':'none';
@@ -4357,6 +4363,25 @@ function updateBottomNav(id){
   document.querySelectorAll('.bnav-btn').forEach(function(b){b.classList.remove('on');});
   var el=document.getElementById('bnav-'+id);
   if(el)el.classList.add('on');
+}
+function setupBottomNav(){
+  // Esconde tudo que é role-específico primeiro
+  ['bnav-spaces','bnav-mine','bnav-chat','bnav-coord','bnav-admin'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.style.display='none';
+  });
+  if(isAdmin()){
+    // admin: Cal, Hoje, Reservar, Painel, Admin
+    document.getElementById('bnav-coord').style.display='flex';
+    document.getElementById('bnav-admin').style.display='flex';
+  } else if(isCoord()){
+    // coord: Cal, Hoje, Reservar, Painel, Mensagens
+    document.getElementById('bnav-coord').style.display='flex';
+    document.getElementById('bnav-chat').style.display='flex';
+  } else {
+    // user: Cal, Hoje, Reservar, Minhas, Mensagens
+    document.getElementById('bnav-mine').style.display='flex';
+    document.getElementById('bnav-chat').style.display='flex';
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -4491,6 +4516,9 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
   <button class="bnav-btn bnav-new" id="bnav-new" onclick="bnavGo('new',this)"><span class="bnav-ico" style="font-size:1.4rem;font-weight:300">＋</span>Reservar</button>
   <button class="bnav-btn" id="bnav-mine" onclick="bnavGo('mine',this)"><span class="bnav-ico">&#x1F4CB;</span>Minhas</button>
   <button class="bnav-btn" id="bnav-spaces" onclick="bnavGo('spaces',this)"><span class="bnav-ico">&#x1F3E2;</span>Espaços</button>
+  <button class="bnav-btn" id="bnav-chat" onclick="bnavGo('chat',this)" style="display:none"><span class="bnav-ico">&#x1F4AC;</span>Mensagens</button>
+  <button class="bnav-btn" id="bnav-coord" onclick="bnavGo('coord',this)" style="display:none"><span class="bnav-ico">&#x1F4CB;</span>Painel</button>
+  <button class="bnav-btn" id="bnav-admin" onclick="bnavGo('admin',this)" style="display:none"><span class="bnav-ico">&#x2699;&#xFE0F;</span>Admin</button>
 </div>
 </body>
 </html>
