@@ -2204,7 +2204,7 @@ async function deleteBooking(id,andFuture){
 var _modalPrevFocus=null;
 function openOverlay(){
   _modalPrevFocus=document.activeElement;
-  openOverlay();
+  document.getElementById('overlay').style.display='flex';
   // Foca no título do modal para leitores de tela
   setTimeout(function(){
     var el=document.querySelector('#overlay .modal h3,#overlay .modal input,#overlay .modal button');
