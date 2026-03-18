@@ -331,6 +331,9 @@ body.dark .space-name{color:var(--ink);}
 .conflict-preview{background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:.7rem 1rem;margin-top:.5rem;font-size:.82rem;color:#b91c1c;display:none;}
 .conflict-preview strong{display:block;margin-bottom:.3rem;}
 body.dark .conflict-preview{background:#1a0a0a;border-color:#7a2020;color:#fca5a5;}
+/* Campos com erro de validação */
+input.field-error,select.field-error{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(220,38,38,.12)!important;}
+input.field-error:focus,select.field-error:focus{border-color:var(--red)!important;}
 /* Histórico de acesso */
 .access-row{display:flex;gap:.7rem;align-items:center;padding:.45rem .8rem;border-bottom:1px solid var(--border);font-size:.82rem;}
 .access-row:last-child{border-bottom:none;}
@@ -837,17 +840,17 @@ body.dark .chat-input-bar{background:var(--card-bg);}
         </div>
         <div class="form-row">
           <div><label class="lbl">Espaço *</label>
-            <select id="f-space" onchange="checkConflictPreview()">
+            <select id="f-space" onchange="debouncedConflictPreview()">
               <option value="">Selecione...</option>
               <option>Auditório</option><option>Lab Informática</option><option>Lab Multi (Bio/Qui/Fis)</option>
               <option>Área Verde</option><option>Biblioteca</option><option>Skill Lab</option>
               <option>Lab Anatomia</option><option>Sala de Artes</option><option>Brinquedoteca</option><option>Lab Enfermagem</option>
             </select></div>
-          <div><label class="lbl">Data *</label><input type="date" id="f-date" onchange="checkConflictPreview()"></div>
+          <div><label class="lbl">Data *</label><input type="date" id="f-date" onchange="debouncedConflictPreview()"></div>
         </div>
         <div class="form-row">
-          <div><label class="lbl">Horário Início *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-start-h" onchange="syncTimeField('start');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-start-m" onchange="syncTimeField('start');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-start"></div>
-          <div><label class="lbl">Horário Fim *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-end-h" onchange="syncTimeField('end');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-end-m" onchange="syncTimeField('end');checkConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-end"></div>
+          <div><label class="lbl">Horário Início *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-start-h" onchange="syncTimeField('start');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-start-m" onchange="syncTimeField('start');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-start"></div>
+          <div><label class="lbl">Horário Fim *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-end-h" onchange="syncTimeField('end');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-end-m" onchange="syncTimeField('end');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-end"></div>
         </div>
         <div class="conflict-preview" id="conflict-preview"><strong>&#x26A0; Conflito detectado:</strong><span id="conflict-detail"></span></div>
         <div class="form-row">
@@ -1050,6 +1053,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
       <div class="card">
         <h3>&#x1F5C2; Histórico de Cancelamentos</h3>
         <div class="tbl-wrap"><table class="data"><thead><tr><th>Espaço</th><th>Data</th><th>Horário</th><th>Professor</th><th>Turma</th><th>Cancelado por</th><th>Cancelado em</th></tr></thead><tbody id="adm-cancelled"></tbody></table></div>
+        <div id="adm-cancelled-nav" style="display:none;justify-content:space-between;align-items:center;margin-top:.7rem;gap:.5rem;flex-wrap:wrap"></div>
       </div>
       <div class="card">
         <h3>&#x1F4CB; Log de Atividade</h3>
@@ -1188,8 +1192,8 @@ body.dark .chat-input-bar{background:var(--card-bg);}
   </div>
 </div>
 
-<div class="overlay" id="overlay" style="display:none" onclick="overlayClick(event)">
-  <div class="modal"><h3 id="m-title"></h3><div id="m-body"></div><div class="modal-acts" id="m-acts"></div></div>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="m-title" style="display:none" onclick="overlayClick(event)">
+  <div class="modal"><h3 id="m-title" tabindex="-1"></h3><div id="m-body"></div><div class="modal-acts" id="m-acts"></div></div>
 </div>
 <div id="toast"></div>
 
@@ -1292,6 +1296,8 @@ function debounce(fn,wait){
     t=setTimeout(function(){fn.apply(ctx,args);},wait);
   };
 }
+// Converte Date para string YYYY-MM-DD usando hora local (evita bug de fuso UTC)
+function toLocalDateStr(d){var y=d.getFullYear(),m=d.getMonth()+1,dy=d.getDate();return y+'-'+(m<10?'0':'')+m+'-'+(dy<10?'0':'')+dy;}
 var _debCoord=debounce(function(){renderCoordBookings();},DEBOUNCE_MS);
 var _debAdm=debounce(function(){renderAdmBookings();},DEBOUNCE_MS);
 var _debGlobal=debounce(function(q){globalSearch(q);},DEBOUNCE_MS);
@@ -1432,7 +1438,7 @@ async function loadBookingTemplates(){
       sLS(userScopedKey('booking_templates'),TEMPLATE_CACHE);
       renderTemplateOptions();
     }
-  }catch(e){}
+  }catch(e){console.warn('[ENAU] Templates:',e);}
 }
 function renderTemplateOptions(){
   var el=document.getElementById('f-template');if(!el)return;
@@ -1511,7 +1517,7 @@ function getReportBookings(scope){
   if(scope==='mine'){
     var fs=(document.getElementById('mine-filter-space')||{value:''}).value;
     var fp=(document.getElementById('mine-filter-period')||{value:''}).value;
-    var nowIso=new Date().toISOString().slice(0,10);
+    var nowIso=toLocalDateStr(new Date());
     list=(isCoord()?list:list.filter(function(b){return b.booked_by===ME.username;}));
     if(fs)list=list.filter(function(b){return b.space===fs;});
     if(fp==='future')list=list.filter(function(b){return b.date>=nowIso;});
@@ -1544,7 +1550,7 @@ function exportQuickReport(scope){
 function addLog(icon,msg){
   const entry={icon,msg,ts:new Date().toISOString()};
   if(isDemo()){const l=gLS('el',[]);l.unshift(entry);if(l.length>200)l.pop();sLS('el',l);ACTIVITY_LOG=[entry,...ACTIVITY_LOG].slice(0,200);}
-  else api.post('activity_log',{icon,msg}).catch(()=>{});
+  else api.post('activity_log',{icon,msg}).catch(function(e){console.warn('[ENAU] Log:',e);});
 }
 
 async function doLogin(){
@@ -1578,7 +1584,7 @@ async function doLogin(){
     loadUsersList();
     const now=new Date();
     document.getElementById('ph-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-    document.getElementById('f-date').value=now.toISOString().split('T')[0];
+    document.getElementById('f-date').value=toLocalDateStr(now);
     await loadAll();
     touchBookings();
     logAccess(ME.username,ME.fullname);
@@ -1678,7 +1684,7 @@ function renderWeek(){
   var today=new Date();today.setHours(0,0,0,0);
   var fmt=function(d){return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});};
   document.getElementById('wlbl').textContent=fmt(days[0])+' – '+fmt(days[5]);
-  var weekDates=days.map(function(d){return d.toISOString().split('T')[0];});
+  var weekDates=days.map(function(d){return toLocalDateStr(d);});
   var bkFiltered=BOOKINGS.filter(function(b){return weekDates.indexOf(b.date)>=0&&(!filter||b.space===filter);});
   var slotSet={};bkFiltered.forEach(function(b){slotSet[b.time_start+'–'+b.time_end]=1;});
   var slots=Object.keys(slotSet).sort();
@@ -1686,7 +1692,7 @@ function renderWeek(){
   var html='<div class="cal-table-wrap"><table class="cal"><thead><tr><th>Horário</th>';
   days.forEach(function(d){
     var isT=d.getTime()===today.getTime();
-    var ds_w=d.toISOString().split('T')[0];
+    var ds_w=toLocalDateStr(d);
     var blkW=BLOCKED_DATES.find(function(bd){return bd.date===ds_w;});
     var blkReasonW=blkW&&blkW.reason?blkW.reason:'Data bloqueada';
     var blkReasonWAttr=blkReasonW.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1699,7 +1705,7 @@ function renderWeek(){
   slots.forEach(function(slot){
     html+='<tr><td>'+slot.replace('–','<br>')+'</td>';
     days.forEach(function(d){
-      var ds=d.toISOString().split('T')[0];
+      var ds=toLocalDateStr(d);
       var isT=d.getTime()===today.getTime();
       var cell=BOOKINGS.filter(function(b){return b.date===ds&&(b.time_start+'–'+b.time_end)===slot&&(!filter||b.space===filter);});
       var chips=cell.map(function(b){
@@ -1729,7 +1735,7 @@ function renderMonth(){
   var html='<div class="month-header">'+DAYS_W.map(function(d){return '<span>'+d+'</span>';}).join('')+'</div><div class="month-grid">';
   for(var i=0;i<startDay;i++){var pd=new Date(y,m,1-startDay+i);html+='<div class="month-day other-month"><div class="month-day-num">'+pd.getDate()+'</div></div>';}
   for(var day=1;day<=last.getDate();day++){
-    var dt=new Date(y,m,day);var ds=dt.toISOString().split('T')[0];
+    var dt=new Date(y,m,day);var ds=toLocalDateStr(dt);
     var isT=dt.getTime()===today.getTime();
     var blk=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
     var dayBks=BOOKINGS.filter(function(b){return b.date===ds&&(!filter||b.space===filter);});
@@ -1930,17 +1936,23 @@ async function submitBooking(){
   var cls=turmas.join(', ');
   var lesson=periodo+(aulas.length?' · '+aulas.join(', '):'');
   var isRecur=document.getElementById('f-recur-on').checked&&!editId;
-  if(!space||!date||!start||!end||!periodo||!turmas.length){toast('Preencha todos os campos obrigatórios (*).','err');return;}
+  if(!space||!date||!start||!end||!periodo||!turmas.length){
+    // Destacar campos inválidos
+    var reqFields=[['f-space',!space],['f-date',!date],['f-start',!start],['f-end',!end],['f-periodo',!periodo]];
+    reqFields.forEach(function(pair){var el=document.getElementById(pair[0]);if(el){el.classList.toggle('field-error',pair[1]);el.addEventListener('change',function rm(){el.classList.remove('field-error');el.removeEventListener('change',rm);},{once:true});}});
+    if(!turmas.length){var msBtn=document.getElementById('ms-turma-btn');if(msBtn)msBtn.classList.add('field-error');}
+    toast('Preencha todos os campos obrigatórios (*).','err');return;
+  }
   if(BLOCKED_DATES.find(function(d){return d.date===date;})){toast('Esta data está bloqueada pelo administrador.','err');return;}
   if(start>=end){toast('Horário fim deve ser após o início.','err');return;}
-  if(!editId){var bookDt=new Date(date+'T'+start);var diffH=(bookDt-new Date())/3600000;if(diffH<24){toast('Agendamento deve ser feito com no mínimo 24 horas de antecedência.','err');return;}}
+  if(!isAdmin()){var bookDt=new Date(date+'T'+start);var diffH=(bookDt-new Date())/3600000;if(diffH<24){toast('Agendamento deve ser feito com no mínimo 24 horas de antecedência.','err');return;}}
   var btn=document.getElementById('btn-submit');btn.innerHTML='<span class="spin"></span> Salvando...';btn.disabled=true;
   if(isRecur){
     var until=document.getElementById('f-recur-until').value;
     if(!until){toast('Defina a data final da recorrência.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
     var selDays=[].slice.call(document.querySelectorAll('.day-pill.on')).map(function(el){return parseInt(el.dataset.d);});
     if(!selDays.length){toast('Selecione pelo menos um dia da semana.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
-    var rg='rg_'+Date.now();var count=0;
+    var rg='rg_'+Date.now();var count=0;var skipped=0;
     var cur=new Date(date+'T12:00:00');var endD=new Date(until+'T12:00:00');
     while(cur<=endD){
       var dow=cur.getDay()===0?7:cur.getDay();
@@ -1950,16 +1962,22 @@ async function submitBooking(){
         if(!hasConflict){
           var payload={space:space,date:ds,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:bookedBy,booked_by_name:bookedByName,recur_group:rg};
           if(isDemo()){BOOKINGS.push(Object.assign({},payload,{id:'bk_'+Date.now()+'_'+count,created_at:new Date().toISOString()}));}
-          else{try{var r=await api.post('reservas',payload);BOOKINGS.push(r[0]);}catch(e){}}
+          else{try{var r=await api.post('reservas',payload);BOOKINGS.push(r[0]);}catch(e){console.warn('[ENAU] Recorrente:',e);}}
           count++;
+        } else {
+          skipped++;
         }
       }
       cur.setDate(cur.getDate()+1);
     }
     if(isDemo())sLS('eb',BOOKINGS);
-    addLog('&#x1F501;',ME.fullname+' criou '+count+' reservas recorrentes em '+space);
-    toast('&#x2705; '+count+' reservas recorrentes criadas!','ok');
+    addLog('&#x1F501;',ME.fullname+' criou '+count+' reservas recorrentes em '+space+(skipped?' ('+skipped+' conflito(s) pulado(s))':''));
+    var recurMsg=count>0?'&#x2705; '+count+' reservas recorrentes criadas!':'&#x26A0; Nenhuma reserva criada.';
+    if(skipped>0)recurMsg+=' &#x26A0; '+skipped+' data(s) pulada(s) por conflito.';
+    toast(recurMsg,count>0?'ok':'err');
   } else {
+    // Detectar reserva idêntica acidental
+    if(!editId){var isDuplicate=BOOKINGS.some(function(b){return b.space===space&&b.date===date&&b.time_start===start&&b.time_end===end&&b.booked_by===bookedBy;});if(isDuplicate){toast('&#x26A0; Já existe uma reserva idêntica sua neste horário.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
     var conflict=BOOKINGS.find(function(b){return b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId);});
     if(conflict){toast('Conflito! "'+space+'" já reservado das '+conflict.time_start+'–'+conflict.time_end+' por '+conflict.teacher+'.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
     if(editId){var orig=BOOKINGS.find(function(b){return b.id===editId;});if(orig&&orig.booked_by!==ME.username&&!isAdmin()){toast('Sem permissão.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
@@ -1993,7 +2011,7 @@ async function submitBooking(){
 function clearForm(){
   resetTimeDropdowns();
   ['f-space','f-start','f-end','f-notes','f-periodo','f-recur-until'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value=toLocalDateStr(new Date());
   document.getElementById('f-recur-on').checked=false;
   document.getElementById('recur-box').style.display='none';
   document.querySelectorAll('.day-pill').forEach(function(p){p.classList.remove('on');});
@@ -2038,7 +2056,7 @@ function openModal(id){
       acts.innerHTML+='<button class="btn btn-danger" onclick="deleteBooking(\''+b.id+'\',false)">&#x1F5D1; Cancelar</button>';
     }
   }
-  document.getElementById('overlay').style.display='flex';
+  openOverlay();
 }
 
 function startEdit(id){
@@ -2070,14 +2088,19 @@ function startEdit(id){
 async function deleteBooking(id,andFuture){
   var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
   if(b.booked_by!==ME.username&&!isAdmin()&&!isCoord()){toast('Sem permissão.','err');return;}
-  if(!confirm('Cancelar esta reserva?'))return;
+  var confirmMsg='Cancelar esta reserva?';
+  if(andFuture&&b.recur_group){
+    var futureDates=BOOKINGS.filter(function(x){return x.recur_group===b.recur_group&&x.date>=b.date;});
+    confirmMsg='Cancelar série recorrente?\n\nIsso removerá '+futureDates.length+' reserva(s):\n'+futureDates.slice(0,5).map(function(x){return '• '+fmtDate(x.date)+' '+x.time_start+'–'+x.time_end;}).join('\n')+(futureDates.length>5?'\n  ... e mais '+(futureDates.length-5)+' data(s).':'')+'\n\nDeseja continuar?';
+  }
+  if(!confirm(confirmMsg))return;
   var toDelete=andFuture&&b.recur_group?BOOKINGS.filter(function(x){return x.recur_group===b.recur_group&&x.date>=b.date;}).map(function(x){return x.id;}):[id];
   var now=new Date().toISOString();
   toDelete.forEach(function(bid){
     var bk=BOOKINGS.find(function(x){return x.id==bid;});if(!bk)return;
     var ce=Object.assign({},bk,{cancelled_by:ME.username,cancelled_by_name:ME.fullname,cancelled_at:now});
     if(isDemo()){var c=gLS('ec',[]);c.unshift(ce);sLS('ec',c);CANCELLED.unshift(ce);}
-    else api.post('cancelamentos',ce).catch(function(){});
+    else api.post('cancelamentos',ce).catch(function(e){console.warn('[ENAU] Cancelamento:',e);});
   });
   if(isDemo()){BOOKINGS=BOOKINGS.filter(function(x){return toDelete.indexOf(x.id)<0;});sLS('eb',BOOKINGS);}
   else{for(var i=0;i<toDelete.length;i++)await api.delete('reservas?id=eq.'+toDelete[i]);}
@@ -2090,8 +2113,23 @@ async function deleteBooking(id,andFuture){
   closeModal();renderActiveTab();
 }
 
+var _modalPrevFocus=null;
+function openOverlay(){
+  _modalPrevFocus=document.activeElement;
+  openOverlay();
+  // Foca no título do modal para leitores de tela
+  setTimeout(function(){
+    var el=document.querySelector('#overlay .modal h3,#overlay .modal input,#overlay .modal button');
+    if(el)el.focus();
+  },50);
+}
 function closeModal(){
-  if(typeof BUG_IMAGE_DATA!=='undefined'&&BUG_IMAGE_DATA)bugImageClear();document.getElementById('overlay').style.display='none';}
+  if(typeof BUG_IMAGE_DATA!=='undefined'&&BUG_IMAGE_DATA)bugImageClear();
+  document.getElementById('overlay').style.display='none';
+  // Restaura foco ao elemento que abriu o modal
+  if(_modalPrevFocus&&_modalPrevFocus.focus)try{_modalPrevFocus.focus();}catch(e){}
+  _modalPrevFocus=null;
+}
 function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
 
 function renderMine(){
@@ -2147,6 +2185,7 @@ function showUserForm(m){
 
 var ADM_BOOKINGS_PAGE=1;
 var ADM_BOOKINGS_LAST_Q='';
+var ADM_CANCELLED_PAGE=1;
 var COORD_BOOKINGS_PAGE=1;
 var COORD_BOOKINGS_LAST_Q='';
 var MINE_PAGE=1;
@@ -2155,10 +2194,8 @@ var GS_PAGE=1;
 var GS_PAGE_SIZE=5;
 var GS_LAST_QUERY='';
 
-function setAdmBookingsPage(page){
-  ADM_BOOKINGS_PAGE=page;
-  renderAdmBookings();
-}
+function setAdmBookingsPage(page){ADM_BOOKINGS_PAGE=page;renderAdmBookings();}
+function setAdmCancelledPage(page){ADM_CANCELLED_PAGE=page;renderAdmCancelled();}
 function setCoordBookingsPage(page){COORD_BOOKINGS_PAGE=page;renderCoordBookings();}
 function setMinePage(page){MINE_PAGE=page;renderMine();}
 function setGlobalSearchPage(page){GS_PAGE=page;globalSearch(GS_LAST_QUERY);}
@@ -2216,10 +2253,23 @@ function renderAdmBookings(){
 
 function renderAdmCancelled(){
   var tbody=document.getElementById('adm-cancelled');
-  if(!CANCELLED.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Nenhum cancelamento registrado.</td></tr>';return;}
-  tbody.innerHTML=CANCELLED.slice(0,100).map(function(b){
+  var nav=document.getElementById('adm-cancelled-nav');
+  if(!CANCELLED.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--muted)">Nenhum cancelamento registrado.</td></tr>';if(nav){nav.style.display='none';nav.innerHTML='';}return;}
+  var pageSize=20;
+  var totalPages=Math.max(1,Math.ceil(CANCELLED.length/pageSize));
+  if(ADM_CANCELLED_PAGE>totalPages)ADM_CANCELLED_PAGE=totalPages;
+  if(ADM_CANCELLED_PAGE<1)ADM_CANCELLED_PAGE=1;
+  var start=(ADM_CANCELLED_PAGE-1)*pageSize;
+  tbody.innerHTML=CANCELLED.slice(start,start+pageSize).map(function(b){
     return '<tr><td><span class="chip '+(SPACE_CLS[b.space]||'ch-0')+'" style="display:inline-block">'+b.space+'</span></td><td>'+fmtDate(b.date)+'</td><td>'+b.time_start+'–'+b.time_end+'</td><td>'+b.teacher+'</td><td>'+b.turma+'</td><td>'+(b.cancelled_by_name||'—')+'</td><td>'+(b.cancelled_at?new Date(b.cancelled_at).toLocaleString('pt-BR'):'—')+'</td></tr>';
   }).join('');
+  if(!nav)return;
+  if(totalPages<=1){nav.style.display='none';nav.innerHTML='';return;}
+  nav.style.display='flex';
+  nav.innerHTML=
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(ADM_CANCELLED_PAGE===1?'disabled':'')+' onclick="setAdmCancelledPage('+(ADM_CANCELLED_PAGE-1)+')">&#x2190; Anterior</button>'+
+    '<span style="font-size:.78rem;color:var(--muted)">Página '+ADM_CANCELLED_PAGE+' de '+totalPages+' ('+CANCELLED.length+' registros)</span>'+
+    '<button class="btn btn-outline" style="padding:.25rem .65rem;font-size:.76rem" '+(ADM_CANCELLED_PAGE===totalPages?'disabled':'')+' onclick="setAdmCancelledPage('+(ADM_CANCELLED_PAGE+1)+')">Próxima &#x2192;</button>';
 }
 
 function renderLog(){
@@ -2246,7 +2296,7 @@ function openEditUser(u){
   document.getElementById('m-title').textContent='Editar Usuário: '+u.username;
   document.getElementById('m-body').innerHTML='<label class="mlbl">Nome completo</label><input type="text" id="eu-full" value="'+u.fullname+'"><label class="mlbl">E-mail</label><input type="email" id="eu-email" value="'+(u.email||'')+'" placeholder="email@colegioENAU.com.br"><label class="mlbl">Nova senha <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.8rem">(deixe em branco para não alterar)</span></label><input type="password" id="eu-pass" placeholder="Nova senha (mín. 6 chars)"><label class="mlbl">Perfil</label><select id="eu-role"><option value="user"'+(u.role==='user'?' selected':'')+'>Usuário</option><option value="coord"'+(u.role==='coord'?' selected':'')+'>Coordenador / Diretor</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>Administrador</option></select>';
   document.getElementById('m-acts').innerHTML='<button class="btn btn-outline" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveEditUser('+u.id+',\''+u.username+'\')">Salvar</button>';
-  document.getElementById('overlay').style.display='flex';
+  openOverlay();
 }
 
 async function saveEditUser(id,username){
@@ -2723,6 +2773,24 @@ function renderEspacosList(){
 // ══════════════════════════════════════════════════════════════
 // CONFLITO ANTECIPADO
 // ══════════════════════════════════════════════════════════════
+function getSuggestedSlots(space,date,start,end){
+  // Duração solicitada em minutos
+  var dur=0;
+  if(start&&end){var sh=parseInt(start),sm=parseInt(start.split(':')[1]||0),eh=parseInt(end),em=parseInt(end.split(':')[1]||0);dur=(eh*60+em)-(sh*60+sm);}
+  if(dur<=0)dur=50;
+  var dayBookings=BOOKINGS.filter(function(b){return b.space===space&&b.date===date&&(!editId||b.id!==editId);});
+  var SLOTS=['06:00','06:50','07:00','07:50','08:00','08:40','08:50','09:00','09:50','10:00','10:40','10:50','11:00','11:30','12:00','13:00','13:50','14:00','14:40','14:50','15:00','15:30','16:00','16:20','17:00','17:10','18:00','19:00','20:00'];
+  var suggestions=[];
+  for(var i=0;i<SLOTS.length&&suggestions.length<3;i++){
+    var s=SLOTS[i];var sh2=parseInt(s),sm2=parseInt(s.split(':')[1]||0);
+    var totalMin=sh2*60+sm2+dur;var eh2=Math.floor(totalMin/60),em2=totalMin%60;
+    if(eh2>=22)continue;
+    var e=(eh2<10?'0':'')+eh2+':'+(em2<10?'0':'')+em2;
+    var free=!dayBookings.some(function(b){return b.time_start<e&&b.time_end>s;});
+    if(free)suggestions.push(s+' – '+e);
+  }
+  return suggestions;
+}
 function checkConflictPreview(){
   var space=document.getElementById('f-space').value;
   var date=document.getElementById('f-date').value;
@@ -2736,12 +2804,15 @@ function checkConflictPreview(){
   });
   if(conflicts.length){
     var msgs=conflicts.map(function(b){return ' '+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+' ('+b.teacher+')';});
-    det.textContent=msgs.join('; ');
+    var suggestions=getSuggestedSlots(space,date,start,end);
+    var sugHtml=suggestions.length?' <span style="display:block;margin-top:.3rem;font-size:.78rem;color:#7a2020">Horários livres: <strong>'+suggestions.join('</strong>, <strong>')+'</strong></span>':'';
+    det.innerHTML=msgs.join('; ')+sugHtml;
     prev.style.display='block';
   } else {
     prev.style.display='none';
   }
 }
+var debouncedConflictPreview=debounce(checkConflictPreview,280);
 
 // ══════════════════════════════════════════════════════════════
 // MURAL DE AVISOS (Supabase — visível para todos)
@@ -2895,7 +2966,7 @@ function openMinhaConta(){if(!ME)return;
   document.getElementById('m-acts').innerHTML=
     '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>'+
     '<button class="btn btn-primary" onclick="trocarSenha()">Salvar senha</button>';
-  document.getElementById('overlay').style.display='flex';
+  openOverlay();
 }
 
 
@@ -2965,7 +3036,7 @@ function checkFirstAccess(){
       '<label class="mlbl">Confirmar nova senha</label><input type="password" id="pwd-confirm" placeholder="Repita a nova senha">';
     document.getElementById('m-acts').innerHTML=
       '<button class="btn btn-primary" onclick="trocarSenhaFirstAccess()">Definir senha e entrar</button>';
-    document.getElementById('overlay').style.display='flex';
+    openOverlay();
   }
 }
 
@@ -3296,7 +3367,7 @@ function openBugReport(){
   document.getElementById('m-acts').innerHTML=
     '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>'+
     '<button class="btn btn-primary" onclick="submitBugReport()">Enviar relatório</button>';
-  document.getElementById('overlay').style.display='flex';
+  openOverlay();
 }
 
 function setBugRating(v){
@@ -3582,13 +3653,9 @@ async function loadUsersAvatarCache(){
 function buildUserAvatar(username,fullname){
   var info=USERS_AVATAR_CACHE[username]||{fullname:fullname,avatar:null};
   var avatarData=info.avatar||gLS('enau_avatar_'+username,null);
-  var colors=['#7b2d52','#3d1a4f','#d9506a','#5b3a8a','#2d6a7b','#7b5230'];
-  var sum=0;for(var i=0;i<(fullname||'').length;i++)sum+=(fullname||'').charCodeAt(i);
-  var bg=colors[sum%colors.length];
-  var parts=(fullname||'?').trim().split(' ');
-  var initials=(parts[0][0]+(parts.length>1?parts[parts.length-1][0]:'')).toUpperCase();
-  if(avatarData)return '<div class="modal-booking-avatar"><img src="'+avatarData+'" alt="'+fullname+'"></div>';
-  return '<div class="modal-booking-avatar" style="background:'+bg+'">'+initials+'</div>';
+  var name=fullname||'?';
+  if(avatarData)return '<div class="modal-booking-avatar"><img src="'+avatarData+'" alt="'+name+'"></div>';
+  return '<div class="modal-booking-avatar" style="background:'+getAvatarColor(name)+'">'+getInitials(name)+'</div>';
 }
 
 // ══════════════════════════════════════════════════════════════
