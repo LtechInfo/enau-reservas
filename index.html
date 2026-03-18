@@ -147,6 +147,23 @@ table.cal tbody tr:last-child td{border-bottom:none;}
 .chip-recur::after{content:' ↻';font-size:.65rem;opacity:.7;}
 .plus-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.3rem;color:#d8bfe0;pointer-events:none;opacity:0;transition:opacity .12s;}
 table.cal tbody tr td:hover .plus-hint{opacity:1;}
+/* ── Dias passados ── */
+table.cal thead tr th.past-h{background:#4a3860;opacity:.75;}
+table.cal tbody tr td.past-c{background:#f0ecf3;cursor:default;}
+table.cal tbody tr td.past-c:hover{background:#f0ecf3;}
+table.cal tbody tr td.past-c .plus-hint{display:none;}
+.chip.chip-past{opacity:.52;filter:grayscale(35%);}
+.chip.chip-past::before{content:'✓ ';font-size:.6rem;opacity:.8;}
+.month-day.past-day{background:#f2eef5;cursor:default;}
+.month-day.past-day:hover{background:#f2eef5;}
+.month-day.past-day .month-day-num{color:var(--muted);}
+.month-chip.chip-past{opacity:.52;filter:grayscale(35%);}
+.month-chip.chip-past::before{content:'✓ ';font-size:.58rem;opacity:.8;}
+body.dark table.cal thead tr th.past-h{background:#180e24;opacity:.8;}
+body.dark table.cal tbody tr td.past-c{background:#0b0910;}
+body.dark table.cal tbody tr td.past-c:hover{background:#0b0910;}
+body.dark .month-day.past-day{background:#09070d;}
+body.dark .month-day.past-day .month-day-num{color:#3a2855;}
 .legend{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem;font-size:.78rem;color:var(--muted);}
 .legend span{display:flex;align-items:center;gap:.3rem;}
 .cal-alerts{display:none;background:linear-gradient(135deg,#fff8e6 0%,#fffdf5 100%);border:1.5px solid #f5c842;border-radius:10px;padding:.75rem .9rem;margin:0 0 .85rem;}
@@ -396,6 +413,8 @@ body.dark .access-user{color:#c4a8d8;}
   .month-header span{font-size:.65rem;padding:.2rem 0;}
   .chip{font-size:.58rem!important;padding:.08rem .22rem!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;}
   .legend{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .5rem;font-size:.72rem;}
+  /* No mobile mensal, ocultar o ✓ no chip passado (muito pequeno) — mantém só o desbotado */
+  .month-chip.chip-past::before{display:none;}
 }
 body.compact .wrap{padding:.5rem .4rem;}
 body.compact .bk-card{padding:.35rem .6rem;margin-bottom:.3rem;}
@@ -546,6 +565,8 @@ body.compact .section-title{font-size:.9rem;}
   /* Bloqueio de datas */
   .block-tabs{flex-wrap:wrap;}
   .block-tab{font-size:.78rem;padding:.35rem .7rem;}
+  /* Chip passado no semanal mobile: só desbotado, sem ✓ */
+  table.cal .chip.chip-past::before{display:none;}
 }
 
 @media(max-width:400px){
@@ -1692,11 +1713,12 @@ function renderWeek(){
   var html='<div class="cal-table-wrap"><table class="cal"><thead><tr><th>Horário</th>';
   days.forEach(function(d){
     var isT=d.getTime()===today.getTime();
+    var isPast=d<today&&!isT;
     var ds_w=toLocalDateStr(d);
     var blkW=BLOCKED_DATES.find(function(bd){return bd.date===ds_w;});
     var blkReasonW=blkW&&blkW.reason?blkW.reason:'Data bloqueada';
     var blkReasonWAttr=blkReasonW.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    html+='<th class="'+(isT?'today-h ':'')+(blkW?'blocked-week-h':'')+'">';
+    html+='<th class="'+(isT?'today-h ':(isPast?'past-h ':' '))+(blkW?'blocked-week-h':'')+'">';
     html+=DAYS_W[d.getDay()]+'<br><span style="font-weight:400;font-size:.75rem">'+d.getDate()+'/'+(d.getMonth()+1)+'</span>';
     if(blkW)html+='<br><span class="holiday-pill" title="'+blkReasonWAttr+'">&#x1F6AB; '+escHtml(blkReasonW)+'</span>';
     html+='</th>';
@@ -1707,15 +1729,18 @@ function renderWeek(){
     days.forEach(function(d){
       var ds=toLocalDateStr(d);
       var isT=d.getTime()===today.getTime();
+      var isPast=d<today&&!isT;
       var cell=BOOKINGS.filter(function(b){return b.date===ds&&(b.time_start+'–'+b.time_end)===slot&&(!filter||b.space===filter);});
       var chips=cell.map(function(b){
-        return '<span class="chip '+(SPACE_CLS[b.space]||'ch-0')+(b.recur_group?' chip-recur':'')+'" onclick="openModal(\''+b.id+'\')">'+b.space+' · '+b.teacher+'</span>';
+        return '<span class="chip '+(SPACE_CLS[b.space]||'ch-0')+(b.recur_group?' chip-recur':'')+(isPast?' chip-past':'')+'" onclick="openModal(\''+b.id+'\')">'+b.space+' · '+b.teacher+'</span>';
       }).join('');
       var isBlkW=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
       if(isBlkW){
         var blkReasonC=isBlkW.reason||'Data bloqueada';
         var blkReasonCAttr=blkReasonC.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        html+='<td class="'+(isT?'today-c ':'')+'blocked-week-day" title="Bloqueado: '+blkReasonCAttr+'">'+chips+'</td>';
+        html+='<td class="'+(isT?'today-c ':(isPast?'past-c ':' '))+'blocked-week-day" title="Bloqueado: '+blkReasonCAttr+'">'+chips+'</td>';
+      } else if(isPast){
+        html+='<td class="past-c">'+chips+'</td>';
       } else {
         html+='<td class="'+(isT?'today-c':'')+'" onclick="prefillNew(\''+ds+'\')">'+chips+'<span class="plus-hint">+</span></td>';
       }
@@ -1737,14 +1762,16 @@ function renderMonth(){
   for(var day=1;day<=last.getDate();day++){
     var dt=new Date(y,m,day);var ds=toLocalDateStr(dt);
     var isT=dt.getTime()===today.getTime();
+    var isPast=dt<today&&!isT;
     var blk=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
     var dayBks=BOOKINGS.filter(function(b){return b.date===ds&&(!filter||b.space===filter);});
     var shown=dayBks.slice(0,3);var more=dayBks.length-3;
-    var dayCls='month-day'+(isT?' today-day':'')+(blk?' blocked-day':'');
-    html+='<div class="'+dayCls+'"'+(blk?' style="cursor:not-allowed"':' onclick="prefillNew(\''+ds+'\')"')+'>';
+    var dayCls='month-day'+(isT?' today-day':'')+(isPast?' past-day':'')+(blk?' blocked-day':'');
+    var dayClick=(!blk&&!isPast)?' onclick="prefillNew(\''+ds+'\')"':(blk?' style="cursor:not-allowed"':'');
+    html+='<div class="'+dayCls+'"'+dayClick+'>';
     html+='<div class="month-day-num'+(isT?' today-num':'')+'">'+day+(isT?' <span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>';
     if(blk)html+='<span class="blocked-chip">&#x1F6AB; '+blk.reason+'</span>';
-    html+=shown.map(function(b){return '<span class="month-chip '+(SPACE_CLS[b.space]||'ch-0')+'" onclick="event.stopPropagation();openModal(\''+b.id+'\')">'+b.space+'</span>';}).join('');
+    html+=shown.map(function(b){return '<span class="month-chip '+(SPACE_CLS[b.space]||'ch-0')+(isPast?' chip-past':'')+'" onclick="event.stopPropagation();openModal(\''+b.id+'\')">'+b.space+'</span>';}).join('');
     html+=(more>0?'<div class="month-more">+'+more+' mais</div>':'')+'</div>';
   }
     var total=startDay+last.getDate();var rem=(7-total%7)%7;
