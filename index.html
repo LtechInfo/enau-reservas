@@ -672,10 +672,6 @@ body.dark #btn-top{background:rgba(30,20,40,.65);}
 body.dark #btn-top:hover{background:rgba(30,20,40,.9);}
 
 /* Botão reportar bug */
-@media(max-width:768px){
-  #btn-bug{bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + .6rem)!important;}
-  #btn-top{bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + .6rem)!important;}
-}
 #btn-bug{
   position:fixed;bottom:1.5rem;left:1.5rem;z-index:800;
   height:36px;padding:0 .9rem;border-radius:18px;border:none;cursor:pointer;
@@ -690,6 +686,16 @@ body.dark #btn-top:hover{background:rgba(30,20,40,.9);}
 #btn-bug:hover{background:rgba(217,80,106,.32);opacity:1;}
 body.dark #btn-bug{background:rgba(217,80,106,.12);}
 body.dark #btn-bug:hover{background:rgba(217,80,106,.28);}
+@media(max-width:768px){
+  #btn-bug{
+    left:auto;right:.9rem;
+    bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + .7rem);
+    width:38px;height:38px;padding:0;border-radius:50%;
+    font-size:1rem;justify-content:center;opacity:.75;
+  }
+  #btn-bug .bug-label{display:none;}
+  #btn-top{bottom:calc(4.5rem + env(safe-area-inset-bottom,0px) + 3.6rem)!important;right:.9rem;}
+}
 
 /* Modal de bug */
 .bug-stars{display:flex;gap:.4rem;margin:.5rem 0 1rem;}
@@ -4499,7 +4505,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 </script>
 
 <button id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Voltar ao topo">&#x2191;</button>
-<button id="btn-bug" onclick="openBugReport()" title="Reportar um problema">&#x1F41B; Reportar bug</button>
+<button id="btn-bug" onclick="openBugReport()" title="Reportar um problema">&#x1F41B;<span class="bug-label"> Reportar bug</span></button>
 
 <!-- Bottom Navigation Bar (mobile) -->
 <div id="bottom-nav" role="navigation" aria-label="Navegação principal">
