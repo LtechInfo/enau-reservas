@@ -1792,7 +1792,7 @@ function renderWeek(){
       var isPast=d<today&&!isT;
       var cell=BOOKINGS.filter(function(b){return b.date===ds&&(b.time_start+'–'+b.time_end)===slot&&(!filter||b.space===filter);});
       var chips=cell.map(function(b){
-        return '<span class="chip '+(SPACE_CLS[b.space]||'ch-0')+(b.recur_group?' chip-recur':'')+(isPast?' chip-past':'')+(isBookingLive(b)?' chip-live':'')+'" onclick="openModal(\''+b.id+'\')">'+b.space+' · '+b.teacher+'</span>';
+        return '<span class="chip '+(SPACE_CLS[b.space]||'ch-0')+(b.recur_group?' chip-recur':'')+(isPast?' chip-past':'')+(isBookingLive(b)?' chip-live':'')+'" onclick="event.stopPropagation();openModal(\''+b.id+'\')">'+b.space+' · '+b.teacher+'</span>';
       }).join('');
       var isBlkW=BLOCKED_DATES.find(function(bd){return bd.date===ds;});
       if(isBlkW){
@@ -1832,11 +1832,29 @@ function renderMonth(){
     html+='<div class="month-day-num'+(isT?' today-num':'')+'">'+day+(isT?' <span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>';
     if(blk)html+='<span class="blocked-chip">&#x1F6AB; '+blk.reason+'</span>';
     html+=shown.map(function(b){return '<span class="month-chip '+(SPACE_CLS[b.space]||'ch-0')+(isPast?' chip-past':'')+(isBookingLive(b)?' chip-live':'')+'" onclick="event.stopPropagation();openModal(\''+b.id+'\')">'+b.space+'</span>';}).join('');
-    html+=(more>0?'<div class="month-more">+'+more+' mais</div>':'')+'</div>';
+    html+=(more>0?'<div class="month-more" onclick="event.stopPropagation();openDayList(\''+ds+'\')">+'+more+' mais</div>':'')+'</div>';
   }
     var total=startDay+last.getDate();var rem=(7-total%7)%7;
   for(var j=1;j<=rem;j++)html+='<div class="month-day other-month"><div class="month-day-num">'+j+'</div></div>';
   document.getElementById('cal-content').innerHTML='<div class="month-scroll-wrap">'+html+'</div>'+'</div>';
+}
+
+function openDayList(ds){
+  var filter=document.getElementById('cal-filter').value;
+  var bks=BOOKINGS.filter(function(b){return b.date===ds&&(!filter||b.space===filter);});
+  bks.sort(function(a,b){return a.time_start.localeCompare(b.time_start);});
+  var parts=ds.split('-');
+  var title='Reservas — '+parts[2]+'/'+parts[1]+'/'+parts[0];
+  document.getElementById('m-title').textContent=title;
+  document.getElementById('m-body').innerHTML=bks.map(function(b){
+    return '<div class="bk-card" style="margin-bottom:.5rem;cursor:pointer" onclick="closeModal();setTimeout(function(){openModal(\''+b.id+'\');},80)">'
+      +'<span class="chip '+( SPACE_CLS[b.space]||'ch-0')+'" style="margin-bottom:.25rem">'+b.space+'</span>'
+      +'<div style="font-size:.82rem"><strong>'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</strong> · '+escHtml(b.teacher)+'</div>'
+      +(b.turma?'<div style="font-size:.75rem;color:var(--muted)">'+escHtml(b.turma)+'</div>':'')
+      +'</div>';
+  }).join('');
+  document.getElementById('m-acts').innerHTML='<button class="btn btn-outline" onclick="closeModal()">Fechar</button>';
+  openOverlay();
 }
 
 function renderLegend(){
