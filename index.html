@@ -609,6 +609,36 @@ body.dark .bnav-btn.on{color:#c4a8d8;}
 }
 @media(min-width:769px){#bottom-nav{display:none!important;}}
 
+/* ── Admin Sidebar Layout ─────────────────────────────────────── */
+.admin-sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:linear-gradient(180deg,#0e0519 0%,#1a0929 35%,#2a1040 65%,#3d1a4f 100%);z-index:105;display:none;flex-direction:column;overflow:hidden;border-right:1px solid rgba(255,255,255,.07);box-shadow:4px 0 28px rgba(0,0,0,.45);}
+body.admin-mode .admin-sidebar{display:flex;}
+body.admin-mode #topbar{margin-left:220px;}
+body.admin-mode #app{margin-left:220px;}
+body.admin-mode .tabs{display:none!important;}
+body.admin-mode #bottom-nav{display:none!important;}
+body.admin-mode .wrap{max-width:none;padding:1.5rem 2rem;}
+.adm-sb-header{padding:1.1rem 1rem 1rem;border-bottom:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;align-items:center;gap:.45rem;background:rgba(0,0,0,.25);}
+.adm-sb-logo{height:54px;width:auto;filter:brightness(0) invert(1);object-fit:contain;}
+.adm-sb-badge{background:linear-gradient(135deg,#d9506a,#7b2d52);color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.15em;padding:.18rem .7rem;border-radius:30px;text-transform:uppercase;}
+.adm-sb-nav{flex:1;overflow-y:auto;padding:.5rem .4rem;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent;}
+.adm-sb-item{display:flex;align-items:center;gap:.6rem;width:100%;padding:.56rem .75rem;border:none;background:none;color:rgba(255,255,255,.52);font-family:'Outfit',sans-serif;font-size:.83rem;font-weight:500;cursor:pointer;border-radius:8px;transition:all .15s;text-align:left;white-space:nowrap;position:relative;}
+.adm-sb-item:hover{background:rgba(255,255,255,.09);color:rgba(255,255,255,.88);}
+.adm-sb-item.on{background:rgba(255,255,255,.13);color:#fff;font-weight:600;}
+.adm-sb-item.on::before{content:'';position:absolute;left:0;top:22%;bottom:22%;width:3px;background:var(--coral);border-radius:0 3px 3px 0;}
+.adm-sb-divider{height:1px;background:rgba(255,255,255,.09);margin:.4rem .4rem;}
+.adm-sb-item.adm-admin-item{color:rgba(255,210,60,.65);}
+.adm-sb-item.adm-admin-item:hover{color:#ffd966;background:rgba(255,200,50,.09);}
+.adm-sb-item.adm-admin-item.on{color:#ffd966;background:rgba(255,200,50,.12);}
+.adm-sb-item.adm-admin-item.on::before{background:#ffd966;}
+.adm-sb-footer{padding:.75rem .7rem .85rem;border-top:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.2);}
+.adm-sb-user{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem;padding:.25rem .15rem;}
+.adm-sb-fav{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d9506a,#7b2d52);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem;flex-shrink:0;}
+.adm-sb-uname{color:rgba(255,255,255,.78);font-size:.76rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.adm-sb-actions{display:flex;gap:.35rem;}
+.adm-sb-btn{flex:1;padding:.38rem .25rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);border-radius:6px;font-family:'Outfit',sans-serif;font-size:.72rem;cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;}
+.adm-sb-btn:hover{background:rgba(255,255,255,.17);color:#fff;border-color:rgba(255,255,255,.32);}
+body.dark .admin-sidebar{background:linear-gradient(180deg,#060210 0%,#100520 35%,#180830 65%,#1f0d3a 100%);}
+
 /* ── Pull-to-refresh ─────────────────────────────────────────── */
 #ptr-indicator{height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--plum);font-weight:600;transition:height .18s ease,opacity .18s ease;background:var(--cream-d);opacity:0;letter-spacing:.02em;}
 body.dark #ptr-indicator{background:var(--cream);}
@@ -916,6 +946,39 @@ body.dark .chat-input-bar{background:var(--card-bg);}
 
 <div id="app">
 <div id="ptr-indicator">&#x2193; Puxe para atualizar</div>
+
+<!-- Sidebar Admin -->
+<div class="admin-sidebar" id="admin-sidebar">
+  <div class="adm-sb-header">
+    <img class="adm-sb-logo" src="logo.png" alt="ENAU"
+         onerror="this.outerHTML='<div style=\'font-size:1.4rem;font-weight:700;color:#fff;letter-spacing:.1em\'>enau</div>'">
+    <div class="adm-sb-badge">&#x2699; Admin</div>
+  </div>
+  <nav class="adm-sb-nav">
+    <button class="adm-sb-item on" data-tab="calendar" onclick="showTab('calendar',null)">&#x1F4C5; Calendário</button>
+    <button class="adm-sb-item" data-tab="hoje" onclick="showTab('hoje',null)">&#x1F4CC; Hoje</button>
+    <button class="adm-sb-item" data-tab="new" onclick="showTab('new',null)">＋ Nova Reserva</button>
+    <button class="adm-sb-item" data-tab="mine" onclick="showTab('mine',null)">&#x1F4CB; Minhas Reservas</button>
+    <button class="adm-sb-item" data-tab="agora" onclick="showTab('agora',null)">&#x1F7E2; Agora</button>
+    <button class="adm-sb-item" data-tab="spaces" onclick="showTab('spaces',null)">&#x1F3E2; Espaços</button>
+    <button class="adm-sb-item" data-tab="chat" id="adm-sb-chat-btn" onclick="showTab('chat',null)" style="display:none">&#x1F4AC; Mensagens<span class="tab-badge" id="adm-chat-badge" style="display:none">0</span></button>
+    <div class="adm-sb-divider"></div>
+    <button class="adm-sb-item" data-tab="coord" id="adm-sb-coord-btn" onclick="showTab('coord',null)" style="display:none">&#x1F4CB; Painel Coord.</button>
+    <button class="adm-sb-item adm-admin-item" data-tab="admin" onclick="showTab('admin',null)">&#x2699;&#xFE0F; Painel Admin</button>
+  </nav>
+  <div class="adm-sb-footer">
+    <div class="adm-sb-user">
+      <div class="adm-sb-fav" id="adm-sb-initials"></div>
+      <span class="adm-sb-uname" id="adm-sb-uname"></span>
+    </div>
+    <div class="adm-sb-actions">
+      <button class="adm-sb-btn" onclick="toggleDark()" id="btn-dark-sidebar">&#x1F319; Tema</button>
+      <button class="adm-sb-btn" onclick="logout()">Sair &#x2192;</button>
+    </div>
+  </div>
+</div>
+<!-- /Sidebar Admin -->
+
   <div class="wrap">
     <div class="tabs">
       <button class="tab on" onclick="showTab('calendar',this)">&#x1F4C5; Calendário</button>
@@ -1749,7 +1812,16 @@ async function doLogin(){
     loadUsersAvatarCache();
     initChat();
     startBookingAlerts();
-    if(ME.role==='admin'){addLog('&#x1F511;',ME.fullname+' fez login');renderAdmin();}
+    if(ME.role==='admin'){
+      document.body.classList.add('admin-mode');
+      var _ini=ME.fullname.split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+      document.getElementById('adm-sb-initials').textContent=_ini;
+      document.getElementById('adm-sb-uname').textContent=ME.fullname;
+      document.getElementById('adm-sb-coord-btn').style.display='flex';
+      if(localStorage.getItem('enau_dark')){document.getElementById('btn-dark-sidebar').innerHTML='&#x2600;&#xFE0F; Tema';}
+      addLog('&#x1F511;',ME.fullname+' fez login');
+      renderAdmin();
+    }
   } catch(err){
     const errEl=document.getElementById('l-err');
     errEl.style.display='block';
@@ -1773,6 +1845,7 @@ function logout(msg){
     setTimeout(function(){var e=document.getElementById('l-err');e.style.display='block';e.style.color='#b87a00';e.style.background='#fffbe6';e.style.borderColor='#f5d000';e.textContent=msg;},120);
   }
   document.body.classList.remove('is-logged-in');
+  document.body.classList.remove('admin-mode');
   document.getElementById('login-wrap').style.display='flex';
   document.getElementById('topbar').style.display='none';
   document.getElementById('app').style.display='none';
@@ -2685,7 +2758,11 @@ function showTab(id,btn){
   setActiveTab(id);
   document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
-  document.getElementById('tab-'+id).classList.add('on');btn.classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+  if(btn)btn.classList.add('on');
+  document.querySelectorAll('.adm-sb-item').forEach(function(b){b.classList.remove('on');});
+  var sbi=document.querySelector('.adm-sb-item[data-tab="'+id+'"]');
+  if(sbi)sbi.classList.add('on');
   if(id==='calendar'){renderCal();renderMuralBanner();renderCalendarAlerts(getAlertEligibleBookings());}
   if(id==='hoje')renderHoje();
   if(id==='mine')renderMine();
@@ -2704,6 +2781,8 @@ function toggleDark(){
   var icon=dark?'&#x2600;&#xFE0F;':'&#x1F319;';
   document.getElementById('btn-dark').innerHTML=icon;
   document.getElementById('btn-dark-login').innerHTML=icon;
+  var sBtn=document.getElementById('btn-dark-sidebar');
+  if(sBtn)sBtn.innerHTML=icon+' Tema';
   localStorage.setItem('enau_dark',dark?'1':'');
 }
 if(localStorage.getItem('enau_dark')){
@@ -4061,6 +4140,8 @@ async function initChat(){
   // Show chat tab
   var tabBtn=document.getElementById('tab-btn-chat');
   if(tabBtn)tabBtn.style.display='inline-block';
+  var sbChatBtn=document.getElementById('adm-sb-chat-btn');
+  if(sbChatBtn)sbChatBtn.style.display='flex';
   // Load users list
   await loadChatUsers();
   // Load unread counts
