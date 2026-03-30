@@ -2698,7 +2698,7 @@ function showTab(id,btn){
 }
 
 function fmtDate(s){if(!s)return'';var p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
-function toast(msg,type){var t=document.getElementById('toast');t.textContent=msg;t.className=type||'';t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},4500);}
+function toast(msg,type){var t=document.getElementById('toast');t.innerHTML=msg;t.className=type||'';t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},4500);}
 function toggleDark(){
   var dark=document.body.classList.toggle('dark');
   var icon=dark?'&#x2600;&#xFE0F;':'&#x1F319;';
