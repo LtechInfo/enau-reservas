@@ -110,8 +110,8 @@ textarea{resize:vertical;min-height:72px;}
 .btn-outline{background:var(--white);color:var(--ink2);border:1.5px solid var(--border);}.btn-outline:hover{border-color:var(--plum-mid);}
 .btn-full{width:100%;margin-top:.8rem;}
 .err-box{background:var(--red-bg);border:1px solid #fecaca;color:var(--red);padding:.6rem .9rem;border-radius:6px;font-size:.83rem;margin-top:.8rem;display:none;}
-.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.8rem;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-.tabs::-webkit-scrollbar{height:3px;}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.8rem;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.tabs::-webkit-scrollbar{height:3px;width:0;}
 .tabs::-webkit-scrollbar-track{background:transparent;}
 .tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 .tabs::-webkit-scrollbar-thumb:hover{background:var(--muted);}
