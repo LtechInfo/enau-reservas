@@ -638,6 +638,7 @@ body.admin-mode .wrap{max-width:none;padding:1.5rem 2rem;}
 .adm-sb-btn{flex:1;padding:.38rem .25rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);border-radius:6px;font-family:'Outfit',sans-serif;font-size:.72rem;cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;}
 .adm-sb-btn:hover{background:rgba(255,255,255,.17);color:#fff;border-color:rgba(255,255,255,.32);}
 body.dark .admin-sidebar{background:linear-gradient(180deg,#060210 0%,#100520 35%,#180830 65%,#1f0d3a 100%);}
+body.admin-mode #btn-bug{display:none!important;}
 
 /* ── Pull-to-refresh ─────────────────────────────────────────── */
 #ptr-indicator{height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--plum);font-weight:600;transition:height .18s ease,opacity .18s ease;background:var(--cream-d);opacity:0;letter-spacing:.02em;}
@@ -965,6 +966,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
     <div class="adm-sb-divider"></div>
     <button class="adm-sb-item" data-tab="coord" id="adm-sb-coord-btn" onclick="showTab('coord',null)" style="display:none">&#x1F4CB; Painel Coord.</button>
     <button class="adm-sb-item adm-admin-item" data-tab="admin" onclick="showTab('admin',null)">&#x2699;&#xFE0F; Painel Admin</button>
+    <button class="adm-sb-item" style="color:rgba(217,80,106,.75)" onclick="openBugReport()">&#x1F41B; Reportar bug</button>
   </nav>
   <div class="adm-sb-footer">
     <div class="adm-sb-user">
