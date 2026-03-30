@@ -3460,8 +3460,12 @@ var bugRating=0;
 
 function openBugReport(){
   bugRating=0;
+  var nomeVal=ME?ME.fullname:'';
+  var nomeDisabled=ME?'disabled':'';
   document.getElementById('m-title').textContent='Reportar um problema';
   document.getElementById('m-body').innerHTML=
+    '<label class="mlbl">Seu nome <span style="color:var(--coral)">*</span></label>'+
+    '<input id="bug-nome" type="text" placeholder="Digite seu nome..." value="'+nomeVal+'" '+nomeDisabled+' style="margin-bottom:.6rem'+(ME?';background:var(--cream-d);color:var(--muted);cursor:not-allowed':'')+'" maxlength="80">'+
     '<label class="mlbl">O que aconteceu?</label>'+
     '<select id="bug-type" style="margin-bottom:.6rem">'+
       '<option value="">Selecione o tipo...</option>'+
@@ -3524,6 +3528,9 @@ async function sendTelegram(msg){
 }
 
 async function submitBugReport(){
+  var nomeEl=document.getElementById('bug-nome');
+  var nome=(nomeEl?nomeEl.value.trim():'');
+  if(!nome){toast('Informe seu nome.','err');if(nomeEl)nomeEl.focus();return;}
   var type=document.getElementById('bug-type').value;
   var desc=document.getElementById('bug-desc').value.trim();
   if(!type){toast('Selecione o tipo de problema.','err');return;}
@@ -3532,7 +3539,7 @@ async function submitBugReport(){
   var gravidades=['','Baixa','Média','Alta','Crítica'];
   var gravidadeEmoji=['','&#x1F7E2;','&#x1F7E1;','&#x1F7E0;','&#x1F534;'];
   var report={
-    usuario:ME?ME.fullname:'—',
+    usuario:nome,
     username:ME?ME.username:'—',
     tipo:type,
     descricao:desc,
