@@ -610,6 +610,22 @@ body.dark .bnav-btn.on{color:#c4a8d8;}
 #ptr-indicator{height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--plum);font-weight:600;transition:height .18s ease,opacity .18s ease;background:var(--cream-d);opacity:0;letter-spacing:.02em;}
 body.dark #ptr-indicator{background:var(--cream);}
 
+/* ── Painel disponibilidade geral de espaços ─────────────────── */
+#spaces-avail-panel{margin-top:.5rem;}
+.sap-inner{padding:.55rem .75rem;background:var(--cream-d);border:1.5px solid var(--border);border-radius:8px;}
+.sap-title{font-size:.72rem;font-weight:700;color:var(--ink2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em;}
+.sap-grid{display:flex;flex-wrap:wrap;gap:.35rem;}
+.sap-chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:600;padding:.22rem .6rem;border-radius:20px;cursor:pointer;transition:opacity .15s;border:1.5px solid transparent;}
+.sap-chip.free{background:#dcfce7;color:#15803d;border-color:#bbf7d0;}
+.sap-chip.free:hover{opacity:.75;}
+.sap-chip.busy{background:#fce8ee;color:#b91c1c;border-color:#fca5a5;cursor:default;}
+.sap-chip .sap-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sap-chip.free .sap-dot{background:#22c55e;}
+.sap-chip.busy .sap-dot{background:#ef4444;}
+body.dark .sap-inner{background:var(--cream-d);}
+body.dark .sap-chip.free{background:#0d2e1a;color:#4ade80;border-color:#14532d;}
+body.dark .sap-chip.busy{background:#2a0f1a;color:#f9a8b8;border-color:#7f1d1d;}
+
 /* ── Mini mapa de disponibilidade ───────────────────────────── */
 #avail-map{margin-top:.5rem;}
 .avail-map-inner{padding:.55rem .75rem;background:var(--cream-d);border:1.5px solid var(--border);border-radius:8px;}
@@ -719,6 +735,16 @@ body.dark #btn-bug:hover{background:rgba(217,80,106,.28);}
 body.dark .bug-report-card{background:var(--white);}
 body.dark .bug-report-card .bug-desc{background:var(--cream);}
 
+/* Check-in de presença */
+.checkin-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;font-weight:700;padding:.2rem .55rem;border-radius:10px;margin-left:.4rem;}
+.checkin-badge.present{background:#dcfce7;color:#15803d;}
+.checkin-badge.absent{background:#fef2f2;color:#b91c1c;}
+.checkin-badge.pending{background:#f3f4f6;color:#6b7280;}
+.sv-bk .checkin-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;margin-left:.3rem;}
+.checkin-dot.present{background:#22c55e;}
+.checkin-dot.absent{background:#ef4444;}
+.checkin-dot.pending{background:#d1d5db;}
+
 /* Avatar no modal de reserva */
 .modal-booking-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:.8rem;}
 .modal-booking-avatar{flex-shrink:0;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:#fff;border:2px solid var(--border);overflow:hidden;}
@@ -763,6 +789,19 @@ body.dark .gs-item .gs-teacher{color:#a080c0;}
   #gs-box{margin:0;border-radius:0;max-height:100vh;height:100vh;}
   #gs-trigger-btn .gs-kbd{display:none;}
 }
+
+/* Painel Agora */
+.agora-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.9rem;margin-top:.5rem;}
+.agora-card{border-radius:10px;overflow:hidden;border:1.5px solid var(--border);background:var(--white);}
+.agora-card-head{padding:.55rem .85rem;font-weight:700;font-size:.85rem;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
+.agora-status-badge{font-size:.68rem;font-weight:700;border-radius:8px;padding:.15rem .5rem;white-space:nowrap;}
+.agora-status-busy{background:rgba(255,255,255,.25);}
+.agora-status-free{background:rgba(255,255,255,.2);}
+.agora-card-body{padding:.55rem .85rem;font-size:.8rem;}
+.agora-current{color:var(--ink);font-weight:600;line-height:1.5;margin-bottom:.3rem;}
+.agora-next{color:var(--muted);font-size:.75rem;line-height:1.4;}
+.agora-free-tag{color:#15803d;font-weight:700;font-size:.82rem;}
+body.dark .agora-card{background:var(--white);}
 
 /* Vista por espaço */
 .space-view-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:.5rem;}
@@ -880,6 +919,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
       <button class="tab" id="tab-btn-hoje" onclick="showTab('hoje',this)">&#x1F4CC; Hoje</button>
       <button class="tab" onclick="showTab('new',this)">＋ Nova Reserva</button>
       <button class="tab" onclick="showTab('mine',this)">&#x1F4CB; Minhas Reservas</button>
+      <button class="tab" onclick="showTab('agora',this)">&#x1F7E2; Agora</button>
       <button class="tab" onclick="showTab('spaces',this)">&#x1F3E2; Espaços</button>
       <button class="tab" id="tab-btn-chat" onclick="showTab('chat',this)" style="display:none">&#x1F4AC; Mensagens<span class="tab-badge" id="chat-tab-badge" style="display:none">0</span></button>
       <button class="tab coord-tab" id="tab-btn-coord" onclick="showTab('coord',this)" style="display:none">&#x1F4CB; Painel</button>
@@ -939,6 +979,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
           <div><label class="lbl">Horário Início *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-start-h" onchange="syncTimeField('start');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-start-m" onchange="syncTimeField('start');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-start"></div>
           <div><label class="lbl">Horário Fim *</label><div style="display:flex;gap:.4rem;align-items:center"><select id="f-end-h" onchange="syncTimeField('end');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">hh</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option></select><span style="font-weight:700;color:var(--muted)">:</span><select id="f-end-m" onchange="syncTimeField('end');debouncedConflictPreview()" style="width:auto;min-width:70px"><option value="">mm</option><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select></div><input type="hidden" id="f-end"></div>
         </div>
+        <div id="spaces-avail-panel"></div>
         <div class="conflict-preview" id="conflict-preview"><strong>&#x26A0; Conflito detectado:</strong><span id="conflict-detail"></span></div>
         <div id="avail-map"></div>
         <div class="form-row">
@@ -1088,6 +1129,11 @@ body.dark .chat-input-bar{background:var(--card-bg);}
         </div>
       </div>
     </div>
+    <div class="tab-panel" id="tab-agora">
+      <div class="ph"><h2>&#x1F7E2; O que está acontecendo agora</h2><p id="agora-time"></p></div>
+      <div id="agora-content"></div>
+    </div>
+
     <div class="tab-panel" id="tab-spaces">
       <div class="ph"><h2>&#x1F3E2; Vista por Espaço</h2></div>
       <div class="card">
@@ -2040,6 +2086,40 @@ function stopBookingAlerts(){
 
 function toggleRecurBox(){document.getElementById('recur-box').style.display=document.getElementById('f-recur-on').checked?'block':'none';}
 
+function toMinutes(t){var p=(t||'').split(':');return parseInt(p[0]||0)*60+parseInt(p[1]||0);}
+function fromMinutes(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+
+function suggestFreeSlots(space,date,durMin,skipId){
+  var dayBks=BOOKINGS.filter(function(b){return b.space===space&&b.date===date&&(!skipId||b.id!==skipId);})
+    .sort(function(a,b){return toMinutes(a.time_start)-toMinutes(b.time_start);});
+  var slots=[];var cursor=toMinutes('07:00');var limit=toMinutes('22:00');
+  dayBks.forEach(function(b){
+    var bs=toMinutes(b.time_start),be=toMinutes(b.time_end);
+    if(bs-cursor>=durMin)slots.push({start:fromMinutes(cursor),end:fromMinutes(cursor+durMin)});
+    cursor=Math.max(cursor,be);
+  });
+  if(limit-cursor>=durMin)slots.push({start:fromMinutes(cursor),end:fromMinutes(cursor+durMin)});
+  return slots.slice(0,3);
+}
+
+function showConflictModal(msgHtml,sugs,space,date,durMin){
+  document.getElementById('m-title').textContent='Conflito de Horário';
+  document.getElementById('m-body').innerHTML='<div style="line-height:1.7;font-size:.88rem">'+msgHtml+'</div>';
+  var acts=document.getElementById('m-acts');
+  acts.innerHTML='<button class="btn btn-outline" onclick="closeModal()">Fechar</button>';
+  sugs.forEach(function(s){
+    acts.innerHTML+='<button class="btn btn-primary" style="font-size:.8rem" onclick="applyConflictSuggestion(\''+s.start+'\',\''+s.end+'\')">&#x1F552; '+s.start+'–'+s.end+'</button>';
+  });
+  openOverlay();
+}
+
+function applyConflictSuggestion(start,end){
+  closeModal();
+  setTimeDropdowns('start',start);
+  setTimeDropdowns('end',end);
+  toast('Horário sugerido aplicado: '+start+'–'+end,'ok');
+}
+
 async function submitBooking(){
   var space=document.getElementById('f-space').value;
   var date=document.getElementById('f-date').value;
@@ -2100,7 +2180,13 @@ async function submitBooking(){
     if(!editId){var isDuplicate=BOOKINGS.some(function(b){return b.space===space&&b.date===date&&b.time_start===start&&b.time_end===end&&b.booked_by===bookedBy;});if(isDuplicate){toast('&#x26A0; Já existe uma reserva idêntica sua neste horário.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
     if(!editId){var lim=checkBookingLimit(bookedBy);if(lim){toast('&#x26A0; Você atingiu o limite de '+lim+' reservas ativas.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
     var conflict=BOOKINGS.find(function(b){return b.space===space&&b.date===date&&b.time_start<end&&b.time_end>start&&(!editId||b.id!==editId);});
-    if(conflict){toast('Conflito! "'+space+'" já reservado das '+conflict.time_start+'–'+conflict.time_end+' por '+conflict.teacher+'.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}
+    if(conflict){
+      var dur=toMinutes(end)-toMinutes(start);
+      var sugs=suggestFreeSlots(space,date,dur,editId);
+      var sugHtml=sugs.length?'<br><br><b>Horários livres sugeridos:</b><br>'+sugs.map(function(s){return '&bull; '+s.start+'–'+s.end;}).join('<br>'):'';
+      showConflictModal('Conflito! <b>'+escHtml(space)+'</b> já reservado das '+conflict.time_start+'–'+conflict.time_end+' por <b>'+escHtml(conflict.teacher)+'</b>.'+sugHtml,sugs,space,date,dur);
+      btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;
+    }
     if(editId){var orig=BOOKINGS.find(function(b){return b.id===editId;});if(orig&&orig.booked_by!==ME.username&&!isAdmin()){toast('Sem permissão.','err');btn.innerHTML='Confirmar Reserva';btn.disabled=false;return;}}
     var pl={space:space,date:date,time_start:start,time_end:end,teacher:teacher,turma:cls,lesson:lesson,notes:notes,booked_by:bookedBy,booked_by_name:bookedByName};
     try{
@@ -2108,6 +2194,14 @@ async function submitBooking(){
         if(isDemo()){var idx=BOOKINGS.findIndex(function(b){return b.id===editId;});if(idx>-1)BOOKINGS[idx]=Object.assign({},BOOKINGS[idx],pl);sLS('eb',BOOKINGS);}
         else{await api.patch('reservas?id=eq.'+editId,pl);await loadAll();}
         addLog('&#x270F;&#xFE0F;',ME.fullname+' editou reserva em '+space+' ('+fmtDate(date)+')');
+        // Registrar histórico de edição na reserva
+        var origBk=BOOKINGS.find(function(x){return x.id===editId;});
+        if(origBk){
+          var hist=origBk.edit_history?JSON.parse(origBk.edit_history):[];
+          hist.push({by:ME.fullname,at:new Date().toISOString(),from:{space:origBk.space,date:origBk.date,time_start:origBk.time_start,time_end:origBk.time_end,turma:origBk.turma,lesson:origBk.lesson},to:{space:space,date:date,time_start:start,time_end:end,turma:cls,lesson:lesson}});
+          pl.edit_history=JSON.stringify(hist);
+          if(!isDemo())await api.patch('reservas?id=eq.'+editId,{edit_history:pl.edit_history}).catch(function(){});
+        }
         toast('Reserva atualizada!','ok');
         editId=null;
         document.getElementById('btn-cancel-edit').style.display='none';
@@ -2163,11 +2257,42 @@ function openModal(id){
   if(b.recur_group)body+='<div class="info-note" style="margin-top:.5rem">&#x21BB; Reserva recorrente</div>';
   if(isOwner&&!canAct)body+='<div class="info-note" style="margin-top:.5rem">&#x23F0; Menos de 5h. Edição bloqueada.</div>';
   if(!isOwner&&!isAdminOrCoord)body+='<div class="info-note" style="margin-top:.5rem">&#x2139;&#xFE0F; Somente visualização.</div>';
+  // Histórico de edições
+  if(b.edit_history){
+    try{
+      var hist=JSON.parse(b.edit_history);
+      if(hist.length){
+        body+='<details style="margin-top:.7rem"><summary style="font-size:.78rem;color:var(--muted);cursor:pointer;font-weight:600">&#x1F4DD; Histórico de edições ('+hist.length+')</summary>';
+        body+='<div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.4rem">';
+        hist.slice().reverse().forEach(function(h){
+          var dt=new Date(h.at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+          var changed=[];
+          if(h.from.space!==h.to.space)changed.push('Espaço: <em>'+escHtml(h.from.space)+'</em> → <em>'+escHtml(h.to.space)+'</em>');
+          if(h.from.date!==h.to.date)changed.push('Data: <em>'+fmtDate(h.from.date)+'</em> → <em>'+fmtDate(h.to.date)+'</em>');
+          if(h.from.time_start!==h.to.time_start||h.from.time_end!==h.to.time_end)changed.push('Horário: <em>'+h.from.time_start+'–'+h.from.time_end+'</em> → <em>'+h.to.time_start+'–'+h.to.time_end+'</em>');
+          if(h.from.turma!==h.to.turma)changed.push('Turma: <em>'+escHtml(h.from.turma)+'</em> → <em>'+escHtml(h.to.turma)+'</em>');
+          body+='<div style="font-size:.75rem;background:var(--cream-d);border-radius:6px;padding:.35rem .6rem;line-height:1.6">'+
+            '<strong style="color:var(--ink2)">'+escHtml(h.by)+'</strong> <span style="color:var(--muted)">'+dt+'</span>'+
+            (changed.length?'<div style="margin-top:.2rem">'+changed.join('<br>')+'</div>':'<div style="color:var(--muted)">Edição sem mudanças registradas</div>')+
+          '</div>';
+        });
+        body+='</div></details>';
+      }
+    }catch(e){}
+  }
+  // Status check-in
+  var ci=b.checkin||'pending';
+  var ciLabels={present:'&#x2705; Presença confirmada',absent:'&#x274C; Ausente',pending:'&#x23F3; Aguardando check-in'};
+  body+='<div style="margin-top:.7rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap"><span style="font-size:.8rem;color:var(--muted)">Presença:</span><span class="checkin-badge '+(ci==='present'?'present':ci==='absent'?'absent':'pending')+'">'+ciLabels[ci]+'</span></div>';
   body+='</div>';
   document.getElementById('m-body').innerHTML=body;
   var acts=document.getElementById('m-acts');
   acts.innerHTML='<button class="btn btn-outline" onclick="closeModal()">Fechar</button>';
   acts.innerHTML+='<button class="btn btn-outline" onclick="copyBooking(\''+b.id+'\')" title="Copiar para outra data">&#x2398; Copiar</button>';
+  if(isAdminOrCoord||(isOwner)){
+    if(b.checkin!=='present')acts.innerHTML+='<button class="btn btn-primary" style="background:#15803d;border-color:#15803d" onclick="setCheckin(\''+b.id+'\',\'present\')">&#x2705; Confirmar presença</button>';
+    if(b.checkin!=='absent')acts.innerHTML+='<button class="btn btn-outline" style="color:#b91c1c;border-color:#fca5a5" onclick="setCheckin(\''+b.id+'\',\'absent\')">&#x274C; Marcar ausência</button>';
+  }
   if(canAct){
     acts.innerHTML+='<button class="btn btn-primary" onclick="startEdit(\''+b.id+'\')">&#x270F;&#xFE0F; Editar</button>';
     if(b.recur_group){
@@ -2231,6 +2356,18 @@ async function deleteBooking(id,andFuture){
   addLog('&#x1F5D1;',ME.fullname+' cancelou '+toDelete.length+' reserva(s) em '+b.space+' ('+fmtDate(b.date)+')');
   toast('Reserva(s) cancelada(s).','ok');
   runBookingAlertCycle({skipSync:true});
+  closeModal();renderActiveTab();
+}
+
+// ── CHECK-IN DE PRESENÇA ──────────────────────────────────────
+async function setCheckin(id,status){
+  var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
+  b.checkin=status;
+  if(!isDemo()){await api.patch('reservas?id=eq.'+id,{checkin:status}).catch(function(e){console.warn('[ENAU] checkin:',e);});}
+  else{sLS('eb',BOOKINGS);}
+  var labels={present:'presença confirmada',absent:'ausência registrada'};
+  addLog('&#x1F4CD;',ME.fullname+' '+labels[status]+' em '+b.space+' ('+fmtDate(b.date)+')');
+  toast(status==='present'?'&#x2705; Presença confirmada!':'&#x274C; Ausência registrada.','ok');
   closeModal();renderActiveTab();
 }
 
@@ -2551,6 +2688,7 @@ function showTab(id,btn){
   if(id==='mine')renderMine();
   if(id==='admin')renderAdmin();
   if(id==='coord')renderCoord();
+  if(id==='agora')renderAgora();
   if(id==='spaces')renderSpaceView();
   if(id==='chat'){stopTitleBlink();renderChatUserList();if(CHAT_ACTIVE_USER)renderChatMessages();}
   updateBottomNav(id);
@@ -2689,7 +2827,9 @@ function renderHoje(){
   if(!list.length){wrap.innerHTML=html+'<div class="today-empty"><div style="font-size:2.2rem">&#x1F4ED;</div><p>Nenhuma reserva para hoje.</p></div>';return;}
   html+='<div style="margin-bottom:.5rem;font-size:.8rem;color:var(--muted);font-weight:600">'+list.length+' reserva'+(list.length!==1?'s':'')+' hoje</div>';
   html+=list.map(function(b){
-    return '<div class="today-card"><div class="today-item"><div class="today-time">'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</div><div><div class="today-space">'+b.space+(b.recur_group?' &#x21BB;':'')+'</div><div class="today-meta">&#x1F464; '+b.teacher+' · &#x1F393; '+b.turma+(b.lesson?' · &#x1F4D6; '+b.lesson:'')+(b.notes?'<br>&#x1F4CC; '+b.notes:'')+'</div></div></div></div>';
+    var ci=b.checkin||'pending';
+    var ciDot='<span class="checkin-dot '+ci+'" title="'+(ci==='present'?'Presença confirmada':ci==='absent'?'Ausente':'Aguardando check-in')+'"></span>';
+    return '<div class="today-card" onclick="openModal(\''+b.id+'\')" style="cursor:pointer"><div class="today-item"><div class="today-time">'+b.time_start.slice(0,5)+'–'+b.time_end.slice(0,5)+'</div><div style="flex:1"><div class="today-space" style="display:flex;align-items:center;gap:.4rem">'+b.space+(b.recur_group?' &#x21BB;':'')+ciDot+'</div><div class="today-meta">&#x1F464; '+b.teacher+' · &#x1F393; '+b.turma+(b.lesson?' · &#x1F4D6; '+b.lesson:'')+(b.notes?'<br>&#x1F4CC; '+b.notes:'')+'</div></div></div></div>';
   }).join('');
   wrap.innerHTML=html;
 }
@@ -2941,8 +3081,30 @@ function checkConflictPreview(){
     prev.style.display='none';
   }
   renderAvailMap();
+  renderSpacesAvailPanel();
 }
 var debouncedConflictPreview=debounce(checkConflictPreview,280);
+
+function renderSpacesAvailPanel(){
+  var panel=document.getElementById('spaces-avail-panel');if(!panel)return;
+  var date=document.getElementById('f-date').value;
+  var start=document.getElementById('f-start').value;
+  var end=document.getElementById('f-end').value;
+  if(!date){panel.innerHTML='';return;}
+  var spaces=getSpaces();
+  var chips=spaces.map(function(space,si){
+    var busy=BOOKINGS.some(function(b){
+      return b.space===space&&b.date===date&&(!start||!end||(b.time_start<end&&b.time_end>start))&&(!editId||b.id!==editId);
+    });
+    if(busy){
+      return '<span class="sap-chip busy"><span class="sap-dot"></span>'+escHtml(space)+'</span>';
+    } else {
+      return '<span class="sap-chip free" title="Clique para selecionar" onclick="document.getElementById(\'f-space\').value=\''+escAttr(space)+'\';debouncedConflictPreview()"><span class="sap-dot"></span>'+escHtml(space)+'</span>';
+    }
+  }).join('');
+  var label=start&&end?'Disponibilidade '+start+'–'+end+' em '+date.split('-').reverse().join('/'):'Espaços em '+date.split('-').reverse().join('/');
+  panel.innerHTML='<div class="sap-inner"><div class="sap-title">&#x1F4C5; '+label+'</div><div class="sap-grid">'+chips+'</div></div>';
+}
 
 // ══════════════════════════════════════════════════════════════
 // MURAL DE AVISOS (Supabase — visível para todos)
@@ -3837,6 +3999,48 @@ function renderSpaceView(){
 
 
 // ══════════════════════════════════════════════════════════════
+// PAINEL AGORA
+// ══════════════════════════════════════════════════════════════
+function renderAgora(){
+  var el=document.getElementById('agora-content');if(!el)return;
+  var now=new Date();
+  var todayStr=toLocalDateStr(now);
+  var nowT=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var timeEl=document.getElementById('agora-time');
+  if(timeEl)timeEl.textContent='Atualizado: '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  var spaces=getSpaces();
+  var html='<div class="agora-grid">';
+  spaces.forEach(function(space,si){
+    var color=SPACE_COLORS[si%SPACE_COLORS.length];
+    var todayBks=BOOKINGS.filter(function(b){return b.space===space&&b.date===todayStr;})
+      .sort(function(a,b){return a.time_start>b.time_start?1:-1;});
+    var current=todayBks.find(function(b){return b.time_start<=nowT&&b.time_end>nowT;});
+    var next=todayBks.find(function(b){return b.time_start>nowT;});
+    var statusLabel=current?'&#x1F534; Ocupado':'&#x1F7E2; Livre';
+    var statusCls=current?'agora-status-busy':'agora-status-free';
+    var bodyHtml='';
+    if(current){
+      var ciDot='<span class="checkin-dot '+(current.checkin||'pending')+'" style="margin-left:.4rem"></span>';
+      bodyHtml+='<div class="agora-current">&#x1F464; '+escHtml(current.teacher)+'<br>&#x1F393; '+escHtml(current.turma)+(current.lesson?'<br>&#x1F4D6; '+escHtml(current.lesson):'')+'<br>&#x23F0; até '+current.time_end+ciDot+'</div>';
+    } else {
+      bodyHtml+='<div class="agora-free-tag">Disponível agora</div>';
+    }
+    if(next){
+      bodyHtml+='<div class="agora-next">&#x23ED; Próx: '+next.time_start+'–'+next.time_end+' · '+escHtml(next.teacher)+'</div>';
+    } else if(!current){
+      bodyHtml+='<div class="agora-next">Sem mais reservas hoje.</div>';
+    }
+    html+='<div class="agora-card">'+
+      '<div class="agora-card-head" style="background:'+color+'"><span>'+escHtml(space)+'</span><span class="agora-status-badge '+statusCls+'">'+statusLabel+'</span></div>'+
+      '<div class="agora-card-body">'+bodyHtml+'</div>'+
+    '</div>';
+  });
+  html+='</div>';
+  html+='<div style="text-align:right;margin-top:.8rem"><button class="btn btn-outline" style="font-size:.78rem;padding:.35rem .75rem" onclick="renderAgora()">&#x21BA; Atualizar</button></div>';
+  el.innerHTML=html;
+}
+
+// ══════════════════════════════════════════════════════════════
 // CHAT
 // ══════════════════════════════════════════════════════════════
 var CHAT_USERS=[];
@@ -4002,6 +4206,7 @@ function renderChatMessages(){
 }
 
 function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function escAttr(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 function chatKeydown(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMessage();}
@@ -4446,7 +4651,53 @@ function renderAdmReport(){
   html+='<div class="report-stat-card"><div class="report-stat-num" style="color:#1a5c8f">'+recurBk+'</div><div class="report-stat-lbl">Recorrentes</div></div>';
   html+='<div class="report-stat-card"><div class="report-stat-num" style="color:var(--coral)">'+spaceRanked.length+'</div><div class="report-stat-lbl">Espaços ativos</div></div>';
   html+='</div>';
+  // ── Subutilização
+  html+=renderUnderusedSpaces(spaceCounts);
+  // ── Taxa de check-in
+  html+=renderCheckinStats();
   el.innerHTML=html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RELATÓRIO DE SUBUTILIZAÇÃO
+// ══════════════════════════════════════════════════════════════
+function renderUnderusedSpaces(spaceCounts){
+  var allSpaces=getSpaces();
+  var avg=allSpaces.length?allSpaces.reduce(function(s,sp){return s+(spaceCounts[sp]||0);},0)/allSpaces.length:0;
+  var threshold=Math.max(1,Math.floor(avg*0.4));
+  var underused=allSpaces.filter(function(sp){return (spaceCounts[sp]||0)<=threshold;})
+    .sort(function(a,b){return (spaceCounts[a]||0)-(spaceCounts[b]||0);});
+  if(!underused.length)return '';
+  var html='<div style="margin-top:1.2rem;border-top:1px solid var(--border);padding-top:1rem">';
+  html+='<div style="font-weight:700;font-size:.82rem;color:#b85000;margin-bottom:.6rem">&#x26A0;&#xFE0F; Espaços subutilizados <span style="font-size:.72rem;color:var(--muted);font-weight:400">(abaixo de '+Math.round(avg*0.4)+' reservas — média geral: '+Math.round(avg)+')</span></div>';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:.5rem">';
+  underused.forEach(function(sp){
+    var cnt=spaceCounts[sp]||0;
+    html+='<div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:.4rem .8rem;font-size:.8rem;color:#92400e">'+
+      '<strong>'+escHtml(sp)+'</strong> <span style="color:#b45309">'+cnt+' reserva'+(cnt!==1?'s':'')+'</span></div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+function renderCheckinStats(){
+  if(!BOOKINGS.length)return '';
+  var todayStr=toLocalDateStr(new Date());
+  var past=BOOKINGS.filter(function(b){return b.date<todayStr;});
+  if(!past.length)return '';
+  var confirmed=past.filter(function(b){return b.checkin==='present';}).length;
+  var absent=past.filter(function(b){return b.checkin==='absent';}).length;
+  var noInfo=past.length-confirmed-absent;
+  var pct=Math.round(confirmed/past.length*100);
+  var html='<div style="margin-top:1.2rem;border-top:1px solid var(--border);padding-top:1rem">';
+  html+='<div style="font-weight:700;font-size:.82rem;color:var(--plum);margin-bottom:.6rem">&#x1F4CD; Taxa de check-in (reservas passadas)</div>';
+  html+='<div style="display:flex;gap:.6rem;flex-wrap:wrap">';
+  html+='<div class="report-stat-card"><div class="report-stat-num" style="color:#15803d">'+pct+'%</div><div class="report-stat-lbl">Presença confirmada</div></div>';
+  html+='<div class="report-stat-card"><div class="report-stat-num" style="color:#15803d">'+confirmed+'</div><div class="report-stat-lbl">Confirmaram</div></div>';
+  html+='<div class="report-stat-card"><div class="report-stat-num" style="color:#b91c1c">'+absent+'</div><div class="report-stat-lbl">Ausentes</div></div>';
+  html+='<div class="report-stat-card"><div class="report-stat-num" style="color:var(--muted)">'+noInfo+'</div><div class="report-stat-lbl">Sem informação</div></div>';
+  html+='</div></div>';
+  return html;
 }
 
 // ══════════════════════════════════════════════════════════════
