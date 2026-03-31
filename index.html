@@ -4591,6 +4591,7 @@ function onUserActivity(){
   document.getElementById('topbar').style.display='flex';
   document.getElementById('app').style.display='block';
   document.body.classList.add('is-logged-in');
+  if(ME.role==='admin')document.body.classList.add('admin-mode');
   document.getElementById('topbar-user').textContent=ME.fullname;
   document.getElementById('f-teacher-name').textContent=ME.fullname;
   document.querySelector('.admin-tab').style.display=ME.role==='admin'?'inline-block':'none';
