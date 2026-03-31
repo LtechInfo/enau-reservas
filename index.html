@@ -4867,7 +4867,18 @@ function renderAvailMap(){
   },{passive:true});
 })();
 
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+if('serviceWorker' in navigator){
+  // Guarda o controller atual antes de registrar
+  var _swPrevCtrl = navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    // Força checagem de atualização do SW a cada visita
+    reg.update();
+  }).catch(function(){});
+  // Quando um novo SW assume o controle, recarrega para servir HTML fresco
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if(_swPrevCtrl){ window.location.reload(); }
+  });
+}
 </script>
 
 <button id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Voltar ao topo">&#x2191;</button>
