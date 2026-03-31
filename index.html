@@ -1948,6 +1948,8 @@ function renderWeek(){
   });
   html+='</tr></thead><tbody>';
   slots.forEach(function(slot){
+    var slotEsc=slot.replace(/'/g,"\\'");
+    var filterEsc=(filter||'').replace(/'/g,"\\'");
     html+='<tr><td>'+slot.replace('–','<br>')+'</td>';
     days.forEach(function(d){
       var ds=toLocalDateStr(d);
@@ -1965,7 +1967,7 @@ function renderWeek(){
       } else if(isPast){
         html+='<td class="past-c">'+chips+'</td>';
       } else {
-        html+='<td class="'+(isT?'today-c':'')+'" onclick="prefillNew(\''+ds+'\')">'+chips+'<span class="plus-hint">+</span></td>';
+        html+='<td class="'+(isT?'today-c':'')+'" onclick="prefillNew(\''+ds+'\',\''+slotEsc+'\',\''+filterEsc+'\')">'+chips+'<span class="plus-hint">+</span></td>';
       }
     });
     html+='</tr>';
@@ -1975,6 +1977,7 @@ function renderWeek(){
 
 function renderMonth(){
   var filter=document.getElementById('cal-filter').value;
+  var filterEsc=(filter||'').replace(/'/g,"\\'");
   var y=monthCursor.getFullYear(),m=monthCursor.getMonth();
   document.getElementById('wlbl').textContent=MONTHS_Y[m]+' '+y;
   var first=new Date(y,m,1),last=new Date(y,m+1,0);
@@ -1990,7 +1993,7 @@ function renderMonth(){
     var dayBks=BOOKINGS.filter(function(b){return b.date===ds&&(!filter||b.space===filter);});
     var shown=dayBks.slice(0,3);var more=dayBks.length-3;
     var dayCls='month-day'+(isT?' today-day':'')+(isPast?' past-day':'')+(blk?' blocked-day':'');
-    var dayClick=(!blk&&!isPast)?' onclick="prefillNew(\''+ds+'\')"':(blk?' style="cursor:not-allowed"':'');
+    var dayClick=(!blk&&!isPast)?' onclick="prefillNew(\''+ds+'\',\'\',\''+filterEsc+'\')"':(blk?' style="cursor:not-allowed"':'');
     html+='<div class="'+dayCls+'"'+dayClick+'>';
     html+='<div class="month-day-num'+(isT?' today-num':'')+'">'+day+(isT?' <span style="font-size:.65rem;color:var(--coral);font-weight:700">hoje</span>':'')+' </div>';
     if(blk)html+='<span class="blocked-chip">&#x1F6AB; '+blk.reason+'</span>';
@@ -2340,7 +2343,20 @@ function cancelEdit(){
   document.getElementById('btn-submit').textContent='Confirmar Reserva';
   document.getElementById('form-card-title').textContent='Preencha os dados';
 }
-function prefillNew(ds){showTab('new',document.querySelectorAll('.tab')[1]);document.getElementById('f-date').value=ds;}
+function prefillNew(ds,slot,space){
+  showTab('new',document.querySelectorAll('.tab')[1]);
+  if(ds)document.getElementById('f-date').value=ds;
+  if(space){document.getElementById('f-space').value=space;}
+  if(slot){
+    var normSlot=(slot||'').replace(/\u2013/g,'-');
+    var parts=normSlot.split('-');
+    var start=(parts[0]||'').trim();
+    var end=(parts[1]||'').trim();
+    if(start)setTimeDropdowns('start',start.slice(0,5));
+    if(end)setTimeDropdowns('end',end.slice(0,5));
+  }
+  if(typeof debouncedConflictPreview==='function')debouncedConflictPreview();
+}
 
 function openModal(id){
   var b=BOOKINGS.find(function(x){return x.id==id;});if(!b)return;
