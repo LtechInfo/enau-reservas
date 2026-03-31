@@ -639,6 +639,10 @@ body.admin-mode .wrap{max-width:none;padding:1.5rem 2rem;}
 .adm-sb-btn:hover{background:rgba(255,255,255,.17);color:#fff;border-color:rgba(255,255,255,.32);}
 body.dark .admin-sidebar{background:linear-gradient(180deg,#060210 0%,#100520 35%,#180830 65%,#1f0d3a 100%);}
 body.admin-mode #btn-bug{display:none!important;}
+body.admin-mode .logo-bar{display:none!important;}
+body.admin-mode #topbar-avatar{display:none!important;}
+body.admin-mode #topbar-user{display:none!important;}
+body.admin-mode .btn-dark-toggle{display:none!important;}
 /* Overlay do sidebar admin (mobile) */
 #adm-sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:104;display:none;opacity:0;pointer-events:none;transition:opacity .22s ease;}
 body.admin-mode.adm-sb-open #adm-sb-overlay{display:block;opacity:1;pointer-events:auto;}
@@ -1836,8 +1840,7 @@ async function doLogin(){
     startBookingAlerts();
     if(ME.role==='admin'){
       document.body.classList.add('admin-mode');
-      var _ini=ME.fullname.split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
-      document.getElementById('adm-sb-initials').textContent=_ini;
+      buildAvatar(document.getElementById('adm-sb-initials'),ME.fullname,30);
       document.getElementById('adm-sb-uname').textContent=ME.fullname;
       document.getElementById('adm-sb-coord-btn').style.display='flex';
       if(localStorage.getItem('enau_dark')){document.getElementById('btn-dark-sidebar').innerHTML='&#x2600;&#xFE0F; Tema';}
@@ -3543,6 +3546,7 @@ function buildAvatar(el, name, size){
 function refreshTopbarAvatar(){
   if(!ME)return;
   buildAvatar(document.getElementById('topbar-avatar'),ME.fullname);
+  if(ME.role==='admin')buildAvatar(document.getElementById('adm-sb-initials'),ME.fullname,30);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -4591,7 +4595,12 @@ function onUserActivity(){
   document.getElementById('topbar').style.display='flex';
   document.getElementById('app').style.display='block';
   document.body.classList.add('is-logged-in');
-  if(ME.role==='admin')document.body.classList.add('admin-mode');
+  if(ME.role==='admin'){
+    document.body.classList.add('admin-mode');
+    buildAvatar(document.getElementById('adm-sb-initials'),ME.fullname,30);
+    document.getElementById('adm-sb-uname').textContent=ME.fullname;
+    if(localStorage.getItem('enau_dark')){document.getElementById('btn-dark-sidebar').innerHTML='&#x2600;&#xFE0F; Tema';}
+  }
   document.getElementById('topbar-user').textContent=ME.fullname;
   document.getElementById('f-teacher-name').textContent=ME.fullname;
   document.querySelector('.admin-tab').style.display=ME.role==='admin'?'inline-block':'none';
