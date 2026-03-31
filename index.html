@@ -631,7 +631,8 @@ body.admin-mode .wrap{max-width:none;padding:1.5rem 2rem;}
 .adm-sb-item.adm-admin-item.on{color:#ffd966;background:rgba(255,200,50,.12);}
 .adm-sb-item.adm-admin-item.on::before{background:#ffd966;}
 .adm-sb-footer{padding:.75rem .7rem .85rem;border-top:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.2);}
-.adm-sb-user{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem;padding:.25rem .15rem;}
+.adm-sb-user{display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem;padding:.25rem .5rem;border-radius:7px;transition:background .15s;}
+.adm-sb-user:hover{background:rgba(255,255,255,.08);}
 .adm-sb-fav{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d9506a,#7b2d52);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem;flex-shrink:0;}
 .adm-sb-uname{color:rgba(255,255,255,.78);font-size:.76rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .adm-sb-actions{display:flex;gap:.35rem;}
@@ -993,7 +994,7 @@ body.dark .chat-input-bar{background:var(--card-bg);}
     <button class="adm-sb-item" style="color:rgba(217,80,106,.75)" onclick="openBugReport()">&#x1F41B; Reportar bug</button>
   </nav>
   <div class="adm-sb-footer">
-    <div class="adm-sb-user">
+    <div class="adm-sb-user" onclick="openMinhaConta()" title="Minha conta" style="cursor:pointer">
       <div class="adm-sb-fav" id="adm-sb-initials"></div>
       <span class="adm-sb-uname" id="adm-sb-uname"></span>
     </div>
